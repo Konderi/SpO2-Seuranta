@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "511544546057",
+    "project_id": "spo2-seuranta",
+    "storage_bucket": "spo2-seuranta.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511544546057:android:0d38f334b1c189a6acf9d8",
+        "android_client_info": {
+          "package_name": "com.konderi.spo2seuranta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArj8dhh03bQjIkAflX9nWfLVyLrh3UBfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

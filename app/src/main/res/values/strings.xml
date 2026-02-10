@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Name -->
+    <string name="app_name">SpO2 Seuranta</string>
+    
+    <!-- Navigation -->
+    <string name="nav_daily">Päivittäinen</string>
+    <string name="nav_exercise">Liikunta</string>
+    <string name="nav_reports">Raportit</string>
+    <string name="nav_settings">Asetukset</string>
+    
+    <!-- Auth Screen -->
+    <string name="auth_title">Tervetuloa</string>
+    <string name="auth_subtitle">Kirjaudu sisään jatkaaksesi</string>
+    <string name="auth_sign_in">Kirjaudu Google-tilillä</string>
+    <string name="auth_loading">Ladataan...</string>
+    
+    <!-- Daily Measurements -->
+    <string name="daily_title">Päivittäinen mittaus</string>
+    <string name="daily_spo2_label">SpO2 (%)</string>
+    <string name="daily_heart_rate_label">Syke (BPM)</string>
+    <string name="daily_notes_label">Muistiinpanot</string>
+    <string name="daily_save">Tallenna mittaus</string>
+    <string name="daily_timestamp">Ajankohta</string>
+    <string name="daily_low_oxygen_alert">Varoitus: Matala happisaturaatio!</string>
+    <string name="daily_low_oxygen_message">SpO2-arvosi on alle asetetun raja-arvon. Ole yhteydessä lääkäriin jos oireet jatkuvat.</string>
+    
+    <!-- Exercise Measurements -->
+    <string name="exercise_title">Liikuntamittaus</string>
+    <string name="exercise_before">Ennen liikuntaa</string>
+    <string name="exercise_after">Liikunnan jälkeen</string>
+    <string name="exercise_spo2_before_label">SpO2 ennen (%)</string>
+    <string name="exercise_hr_before_label">Syke ennen (BPM)</string>
+    <string name="exercise_spo2_after_label">SpO2 jälkeen (%)</string>
+    <string name="exercise_hr_after_label">Syke jälkeen (BPM)</string>
+    <string name="exercise_details_label">Liikunnan kuvaus</string>
+    <string name="exercise_details_hint">Esim. Kävely 15 minuuttia</string>
+    <string name="exercise_notes_label">Muistiinpanot</string>
+    <string name="exercise_save">Tallenna mittaus</string>
+    <string name="exercise_spo2_drop_warning">Huomio: SpO2 laski merkittävästi</string>
+    <string name="exercise_spo2_drop_message">Happisaturaatiosi laski yli 5% liikunnan aikana. Pidä tauko ja seuraa vointiasi.</string>
+    
+    <!-- Reports -->
+    <string name="reports_title">Raportit ja tilastot</string>
+    <string name="reports_daily">Päivittäiset</string>
+    <string name="reports_exercise">Liikunta</string>
+    <string name="reports_7_days">7 päivää</string>
+    <string name="reports_30_days">30 päivää</string>
+    <string name="reports_3_months">3 kuukautta</string>
+    <string name="reports_all_time">Kaikki</string>
+    <string name="reports_statistics">Tilastot</string>
+    <string name="reports_raw_data">Raakadata</string>
+    <string name="reports_graph">Kuvaaja</string>
+    <string name="reports_avg_spo2">Keskiarvo SpO2</string>
+    <string name="reports_avg_hr">Keskiarvo syke</string>
+    <string name="reports_min_spo2">Alin SpO2</string>
+    <string name="reports_max_spo2">Ylin SpO2</string>
+    <string name="reports_count">Mittausten määrä</string>
+    <string name="reports_low_oxygen_count">Matala happisaturaatio</string>
+    <string name="reports_no_data">Ei mittauksia valitulla aikavälillä</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Asetukset</string>
+    <string name="settings_alerts">Hälytykset</string>
+    <string name="settings_low_spo2_threshold">Matalan SpO2:n raja-arvo</string>
+    <string name="settings_threshold_description">Saat hälytyksen kun SpO2 on alle tämän arvon</string>
+    <string name="settings_display">Näyttö</string>
+    <string name="settings_large_font">Suuri fontti</string>
+    <string name="settings_large_font_description">Käytä suurempaa tekstikokoa</string>
+    <string name="settings_account">Tili</string>
+    <string name="settings_signed_in_as">Kirjautunut sisään:</string>
+    <string name="settings_sign_out">Kirjaudu ulos</string>
+    
+    <!-- Common -->
+    <string name="common_ok">OK</string>
+    <string name="common_cancel">Peruuta</string>
+    <string name="common_delete">Poista</string>
+    <string name="common_edit">Muokkaa</string>
+    <string name="common_save">Tallenna</string>
+    <string name="common_error">Virhe</string>
+    <string name="common_success">Tallennettu onnistuneesti</string>
+    <string name="common_loading">Ladataan...</string>
+    
+    <!-- Validation -->
+    <string name="validation_spo2_range">SpO2 pitää olla välillä 50-100</string>
+    <string name="validation_hr_range">Syke pitää olla välillä 30-220</string>
+    <string name="validation_required">Tämä kenttä on pakollinen</string>
+</resources>
