@@ -60,16 +60,31 @@ export function downloadJSON(data: any, filename: string) {
 }
 
 /**
- * Open print dialog with CSV-style tabular format
+ * Open print dialog with clean table-style layout (similar to CSV format)
  * @param data Array of objects to print
  * @param headers Array of header names (keys from data objects)
  * @param title Title for the print page
  */
 export function openPrintView(data: any[], headers: string[], title: string) {
-  // Generate CSV content
-  const csvContent = convertToCSV(data, headers)
+  // Create table rows with proper formatting (one entry per line)
+  let tableRows = ''
   
-  // Create HTML for print window with CSV-style formatting
+  data.forEach((row, index) => {
+    // For each row, create entries (one per line for better readability)
+    Object.keys(row).forEach(key => {
+      const value = row[key]
+      if (value !== undefined && value !== null && value !== '') {
+        tableRows += `<tr><td class="label">${key}</td><td class="value">${value}</td></tr>`
+      }
+    })
+    
+    // Add separator between different sections
+    if (index < data.length - 1) {
+      tableRows += '<tr><td colspan="2" class="separator"></td></tr>'
+    }
+  })
+  
+  // Create HTML for print window with table formatting
   const htmlContent = `
     <!DOCTYPE html>
     <html lang="fi">
@@ -85,41 +100,83 @@ export function openPrintView(data: any[], headers: string[], title: string) {
         }
         
         body {
-          font-family: 'Courier New', Courier, monospace;
-          padding: 20px;
+          font-family: Arial, sans-serif;
+          padding: 30px;
           background: white;
           color: #000;
+          max-width: 1000px;
+          margin: 0 auto;
         }
         
         h1 {
-          font-size: 18px;
+          font-size: 28px;
           font-weight: bold;
-          margin-bottom: 10px;
-          font-family: Arial, sans-serif;
+          margin-bottom: 15px;
+          color: #2c3e50;
         }
         
         .metadata {
-          font-size: 12px;
-          margin-bottom: 20px;
-          padding-bottom: 10px;
-          border-bottom: 2px solid #333;
-          font-family: Arial, sans-serif;
+          font-size: 16px;
+          margin-bottom: 30px;
+          padding-bottom: 15px;
+          border-bottom: 3px solid #2c3e50;
+          color: #555;
         }
         
-        .data {
-          font-size: 11px;
-          line-height: 1.4;
-          white-space: pre;
-          word-wrap: break-word;
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 18px;
+          line-height: 1.6;
+        }
+        
+        tr {
+          border-bottom: 1px solid #e0e0e0;
+        }
+        
+        td {
+          padding: 12px 16px;
+          vertical-align: top;
+        }
+        
+        td.label {
+          font-weight: 600;
+          width: 45%;
+          text-align: left;
+          color: #2c3e50;
+        }
+        
+        td.value {
+          width: 55%;
+          text-align: left;
+          color: #34495e;
+        }
+        
+        .separator {
+          height: 20px;
+          border-bottom: 2px solid #bdc3c7;
+          background-color: #f8f9fa;
         }
         
         @media print {
           body {
-            padding: 10mm;
+            padding: 15mm;
           }
           
-          .data {
-            font-size: 10px;
+          h1 {
+            font-size: 24px;
+          }
+          
+          .metadata {
+            font-size: 14px;
+          }
+          
+          table {
+            font-size: 16px;
+          }
+          
+          td {
+            padding: 10px 12px;
           }
         }
       </style>
@@ -127,10 +184,11 @@ export function openPrintView(data: any[], headers: string[], title: string) {
     <body>
       <h1>${title}</h1>
       <div class="metadata">
-        <div>Tulostettu: ${new Date().toLocaleString('fi-FI')}</div>
-        <div>Rivejä: ${data.length}</div>
+        <div><strong>Tulostettu:</strong> ${new Date().toLocaleString('fi-FI')}</div>
       </div>
-      <div class="data">${csvContent.replace(/\n/g, '<br>')}</div>
+      <table>
+        ${tableRows}
+      </table>
       <script>
         // Auto-print when loaded
         window.onload = function() {
@@ -141,8 +199,8 @@ export function openPrintView(data: any[], headers: string[], title: string) {
     </html>
   `
   
-  // Open new window with CSV-style content
-  const printWindow = window.open('', '_blank', 'width=900,height=700')
+  // Open new window with formatted content
+  const printWindow = window.open('', '_blank', 'width=1000,height=800')
   
   if (!printWindow) {
     alert('Pop-up ikkuna estettiin. Salli pop-upit tulostaaksesi.')

@@ -307,23 +307,12 @@ export default function Statistics() {
       timeRange === '3months' ? '3 kuukautta' :
       `${customStartDate} - ${customEndDate}`
     
-    // Prepare summary statistics
+    // Prepare summary statistics only (no undefined chart data)
     const summaryData = [formatStatisticsForExport(stats, timeRangeText)]
     
-    // Prepare chart data
-    const chartDataForPrint = chartData.map(item => ({
-      Päivämäärä: item.dateLabel,
-      'SpO2 (%)': item.spo2 || '-',
-      'Syke (bpm)': item.heartRate || '-'
-    }))
-    
-    // Combine summary and chart data
-    const allData = [...summaryData, ...chartDataForPrint]
-    const headers = Object.keys(allData[0] || {})
-    
     openPrintView(
-      allData,
-      headers,
+      summaryData,
+      Object.keys(summaryData[0] || {}),
       `Hapetus Tilastot - ${timeRangeText}`
     )
   }
