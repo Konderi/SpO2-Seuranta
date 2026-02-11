@@ -1,0 +1,19 @@
+# Firebase Configuration for Cloudflare Pages
+# Copy these values when setting up environment variables
+
+NEXT_PUBLIC_FIREBASE_API_KEY=AIzaSyAdVTxKdA1d8tg5ot6P9tpEWPF2gXUhkIc
+
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=spo2-seuranta.firebaseapp.com
+
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=spo2-seuranta
+
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=spo2-seuranta.firebasestorage.app
+
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=511544546057
+
+NEXT_PUBLIC_FIREBASE_APP_ID=1:511544546057:web:f737f2b03e0c51f4acf9d8
+
+NEXT_PUBLIC_API_URL=https://api.hapetus.info
+
+# Note: We don't need measurementId for basic functionality
+# NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=G-HBGXHSW57D
