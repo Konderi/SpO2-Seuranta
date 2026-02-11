@@ -25,6 +25,7 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 
 ### Ominaisuudet
 - **[DEMO_MODE_COMPLETE.md](DEMO_MODE_COMPLETE.md)** - Demo-tilan toteutus ja käyttö
+- **[DEMO_MODE_FIX.md](DEMO_MODE_FIX.md)** - Demo-tilan korjaukset: tilastot, 3kk data, navigointi ✅
 - **[STATISTICS_TIME_RANGES.md](STATISTICS_TIME_RANGES.md)** - Tilastojen aikavälit (7d, 30d, 3m, custom)
 - **[EXPORT_PRINT_FEATURE.md](EXPORT_PRINT_FEATURE.md)** - Vie CSV/JSON ja tulostustoiminto
 

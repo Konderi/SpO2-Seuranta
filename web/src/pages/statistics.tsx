@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, ArrowLeft, TrendingUp, Heart, BarChart3, Calendar, Download, Printer, FileDown } from 'lucide-react'
+import { Activity, TrendingUp, Heart, BarChart3, Calendar, Download, Printer, FileDown } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -64,32 +64,75 @@ export default function Statistics() {
         
         // Recalculate stats for filtered data
         if (filteredMeasurements.length > 0) {
-          const spo2Values = filteredMeasurements.map(m => m.spo2)
-          const hrValues = filteredMeasurements.map(m => m.heart_rate)
+          // Filter only daily measurements for stats calculation
+          const dailyFiltered = filteredMeasurements.filter(m => m.type === 'daily')
+          const spo2Values = dailyFiltered.map(m => m.spo2).filter(v => v !== undefined) as number[]
+          const hrValues = dailyFiltered.map(m => m.heartRate).filter(v => v !== undefined) as number[]
+          
+          // Calculate 7-day and 30-day averages
+          const sevenDaysAgo = Math.floor(Date.now() / 1000) - (7 * 24 * 60 * 60)
+          const thirtyDaysAgo = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60)
+          
+          const last7Days = dailyFiltered.filter(m => m.measured_at >= sevenDaysAgo)
+          const last30Days = dailyFiltered.filter(m => m.measured_at >= thirtyDaysAgo)
+          
+          const spo2Last7 = last7Days.map(m => m.spo2).filter(v => v !== undefined) as number[]
+          const hrLast7 = last7Days.map(m => m.heartRate).filter(v => v !== undefined) as number[]
+          const spo2Last30 = last30Days.map(m => m.spo2).filter(v => v !== undefined) as number[]
+          const hrLast30 = last30Days.map(m => m.heartRate).filter(v => v !== undefined) as number[]
+          
+          const avg = (arr: number[]) => arr.length > 0 ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0
           
           setStats({
             spo2: {
-              current: filteredMeasurements[0].spo2,
-              average7days: Math.round(spo2Values.reduce((a, b) => a + b, 0) / spo2Values.length),
-              average30days: Math.round(spo2Values.reduce((a, b) => a + b, 0) / spo2Values.length),
-              min: Math.min(...spo2Values),
-              max: Math.max(...spo2Values),
+              current: dailyFiltered[0]?.spo2 || 0,
+              average7days: avg(spo2Last7),
+              average30days: avg(spo2Last30),
+              min: spo2Values.length > 0 ? Math.min(...spo2Values) : 0,
+              max: spo2Values.length > 0 ? Math.max(...spo2Values) : 0,
             },
             heartRate: {
-              current: filteredMeasurements[0].heart_rate,
-              average7days: Math.round(hrValues.reduce((a, b) => a + b, 0) / hrValues.length),
-              average30days: Math.round(hrValues.reduce((a, b) => a + b, 0) / hrValues.length),
-              min: Math.min(...hrValues),
-              max: Math.max(...hrValues),
+              current: dailyFiltered[0]?.heartRate || 0,
+              average7days: avg(hrLast7),
+              average30days: avg(hrLast30),
+              min: hrValues.length > 0 ? Math.min(...hrValues) : 0,
+              max: hrValues.length > 0 ? Math.max(...hrValues) : 0,
             },
-            totalMeasurements: filteredMeasurements.length,
+            totalMeasurements: dailyFiltered.length,
             exerciseSessions: filteredMeasurements.filter(m => m.type === 'exercise').length,
           })
+          
+          // Generate chart data grouped by date
+          const groupedByDate: { [date: string]: { spo2: number[], heartRate: number[] } } = {}
+          dailyFiltered.forEach(m => {
+            if (!groupedByDate[m.date]) {
+              groupedByDate[m.date] = { spo2: [], heartRate: [] }
+            }
+            if (m.spo2) groupedByDate[m.date].spo2.push(m.spo2)
+            if (m.heartRate) groupedByDate[m.date].heartRate.push(m.heartRate)
+          })
+          
+          const chartData = Object.keys(groupedByDate)
+            .sort()
+            .map(date => {
+              const data = groupedByDate[date]
+              const avgSpo2 = data.spo2.reduce((a, b) => a + b, 0) / data.spo2.length
+              const avgHR = data.heartRate.reduce((a, b) => a + b, 0) / data.heartRate.length
+              
+              return {
+                date,
+                dateLabel: new Date(date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' }),
+                spo2: Math.round(avgSpo2 * 10) / 10,
+                heartRate: Math.round(avgHR)
+              }
+            })
+          
+          setChartData(chartData)
         } else {
           setStats(demoStats)
+          setChartData([])
         }
         
-        setChartData(generateDailyChartData(filteredMeasurements))
         setLoading(false)
         return
       }
@@ -297,15 +340,6 @@ export default function Statistics() {
         </nav>
 
         <div className="max-w-5xl mx-auto px-4 py-12">
-          {/* Back Button */}
-          <Link
-            href="/dashboard"
-            className="no-print inline-flex items-center gap-2 text-lg text-text-secondary hover:text-primary transition-colors mb-8"
-          >
-            <ArrowLeft className="w-6 h-6" />
-            Takaisin
-          </Link>
-
           {/* Page Title */}
           <div className="mb-12">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">

@@ -34,11 +34,11 @@ const generateHeartRate = (base: number = 72, isExercise: boolean = false): numb
   return Math.round(Math.max(60, Math.min(85, base + variation)))
 }
 
-// Generate demo data: 3 measurements per day for 4 weeks
+// Generate demo data: 3 measurements per day for 3 months (90 days)
 export const generateDemoData = (): DemoMeasurement[] => {
   const measurements: DemoMeasurement[] = []
   const now = new Date()
-  const daysToGenerate = 28 // 4 weeks
+  const daysToGenerate = 90 // 3 months
   
   let idCounter = 1
 

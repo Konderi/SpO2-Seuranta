@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, ArrowLeft, Calendar, Heart, TrendingUp, Printer, FileDown, Download } from 'lucide-react'
+import { Activity, Calendar, Heart, TrendingUp, Printer, FileDown, Download } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -154,15 +154,6 @@ export default function History() {
         </nav>
 
         <div className="max-w-5xl mx-auto px-4 py-12">
-          {/* Back Button */}
-          <Link
-            href="/dashboard"
-            className="no-print inline-flex items-center gap-2 text-lg text-text-secondary hover:text-primary transition-colors mb-8"
-          >
-            <ArrowLeft className="w-6 h-6" />
-            Takaisin
-          </Link>
-
           {/* Page Title */}
           <div className="mb-8">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
