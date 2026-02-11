@@ -28,6 +28,8 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 - **[DEMO_MODE_FIX.md](DEMO_MODE_FIX.md)** - Demo-tilan korjaukset: tilastot, 3kk data, navigointi ✅
 - **[STATISTICS_TIME_RANGES.md](STATISTICS_TIME_RANGES.md)** - Tilastojen aikavälit (7d, 30d, 3m, custom)
 - **[EXPORT_PRINT_FEATURE.md](EXPORT_PRINT_FEATURE.md)** - Vie CSV/JSON ja tulostustoiminto
+- **[PRINT_FORMAT_EXAMPLES.md](PRINT_FORMAT_EXAMPLES.md)** - Tulostusformaatin esimerkit (tilastot & historia) ✅
+- **[NAVIGATION_AND_PRINT_FIX.md](NAVIGATION_AND_PRINT_FIX.md)** - Navigaation palautus & tulostuksen parannus ✅
 
 ### Mobiilioptiimointi
 - **[MOBILE_OPTIMIZATION_COMPLETE.md](MOBILE_OPTIMIZATION_COMPLETE.md)** - Mobiiliresponsiivisuuden parannukset ✅
@@ -68,4 +70,11 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 
 ---
 
-**Viimeksi päivitetty:** 11.2.2026
+**Viimeksi päivitetty:** 12.2.2026
+
+**Viimeisimmät päivitykset:**
+- ✅ Navigaatiovalikko palautettu tilastot- ja historiasivuille
+- ✅ Tulostustoiminto uudistettu: siisti taulukkopohjainen muoto
+- ✅ Mobiilinäkymä korjattu: aikavälinappulat eivät ylitä reunoja
+- ✅ Print-formaatti: 2x suuremmat fontit, parempi luettavuus
+- ✅ Demo-tila: 90 päivän data, realistiset alhaisen SpO2:n jaksot
