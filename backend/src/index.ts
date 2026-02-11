@@ -6,11 +6,6 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { authMiddleware } from './middleware/auth';
-import dailyRoutes from './routes/daily';
-import exerciseRoutes from './routes/exercise';
-import statsRoutes from './routes/stats';
-import userRoutes from './routes/user';
 
 export interface Env {
   DB: D1Database;
@@ -25,7 +20,7 @@ const app = new Hono<{ Bindings: Env }>();
 // Middleware
 app.use('*', logger());
 app.use('*', cors({
-  origin: (origin) => origin,
+  origin: '*',
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
@@ -44,12 +39,28 @@ app.get('/', (c) => {
 // Public routes
 app.get('/health', (c) => c.json({ status: 'ok' }));
 
-// Protected routes (require authentication)
-app.use('/api/*', authMiddleware);
-app.route('/api/daily', dailyRoutes);
-app.route('/api/exercise', exerciseRoutes);
-app.route('/api/stats', statsRoutes);
-app.route('/api/user', userRoutes);
+// TODO: Add authentication middleware and routes
+// For now, we'll add simple test endpoints
+
+// Test database connection
+app.get('/api/test-db', async (c) => {
+  try {
+    const result = await c.env.DB.prepare('SELECT 1 as test').first();
+    return c.json({ success: true, result });
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
+
+// Test database connection
+app.get('/api/test-db', async (c) => {
+  try {
+    const result = await c.env.DB.prepare('SELECT 1 as test').first();
+    return c.json({ success: true, result });
+  } catch (error: any) {
+    return c.json({ success: false, error: error.message }, 500);
+  }
+});
 
 // 404 handler
 app.notFound((c) => {
