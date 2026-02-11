@@ -16,8 +16,7 @@ database_id = "8dc4273c-8663-48ea-af01-7c5ba5a4f1d4"
 [vars]
 ENVIRONMENT = "production"
 CORS_ORIGIN = "https://hapetus.info"
+FIREBASE_PROJECT_ID = "spo2-seuranta"
 
-# Secrets (set via: wrangler secret put <NAME>)
-# FIREBASE_PROJECT_ID
-# FIREBASE_PRIVATE_KEY
-# FIREBASE_CLIENT_EMAIL
+# No secrets needed! The new Firebase Admin SDK implementation
+# uses public key verification which doesn't require private keys.
