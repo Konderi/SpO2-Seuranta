@@ -72,9 +72,9 @@ export default function Home() {
             <div className="text-center animate-slide-up">
               {/* Main Heading */}
               <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight">
-                Seuraa Terveyttäsi
+                Seuraa terveyttäsi
                 <br />
-                <span className="text-white opacity-90">Yksinkertaisesti ja Turvallisesti</span>
+                <span className="text-white opacity-90">yksinkertaisesti ja turvallisesti</span>
               </h1>
               
               {/* Subheading */}
