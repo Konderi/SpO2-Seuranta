@@ -27,13 +27,32 @@ export interface ExerciseMeasurement {
 }
 
 export interface Statistics {
-  avg_spo2: number;
-  avg_heart_rate: number;
-  min_spo2: number;
-  max_spo2: number;
-  min_heart_rate: number;
-  max_heart_rate: number;
-  count: number;
+  // Flat structure for API compatibility
+  avg_spo2?: number;
+  avg_heart_rate?: number;
+  min_spo2?: number;
+  max_spo2?: number;
+  min_heart_rate?: number;
+  max_heart_rate?: number;
+  count?: number;
+  
+  // Nested structure for demo mode compatibility
+  spo2?: {
+    current: number;
+    average7days: number;
+    average30days: number;
+    min: number;
+    max: number;
+  };
+  heartRate?: {
+    current: number;
+    average7days: number;
+    average30days: number;
+    min: number;
+    max: number;
+  };
+  totalMeasurements?: number;
+  exerciseSessions?: number;
 }
 
 export interface UserSettings {
