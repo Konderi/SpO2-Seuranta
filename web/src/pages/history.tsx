@@ -1,11 +1,12 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, ArrowLeft, Calendar, Heart, TrendingUp } from 'lucide-react'
+import { Activity, ArrowLeft, Calendar, Heart, TrendingUp, Printer, FileDown, Download } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
+import { openPrintView, downloadCSV, downloadJSON, formatMeasurementForExport } from '@/lib/exportUtils'
 
 export default function History() {
   const { user } = useAuth()
@@ -83,6 +84,33 @@ export default function History() {
     filter === 'all' || m.type === filter
   )
 
+  // Export functions
+  const handleExportCSV = () => {
+    const exportData = filteredMeasurements.map(m => formatMeasurementForExport(m))
+    downloadCSV(
+      exportData,
+      `hapetus-historia-${new Date().toISOString().split('T')[0]}.csv`,
+      Object.keys(exportData[0] || {})
+    )
+  }
+
+  const handleExportJSON = () => {
+    const exportData = {
+      exported: new Date().toISOString(),
+      filter: filter === 'all' ? 'Kaikki' : filter === 'daily' ? 'Päivittäiset' : 'Liikunta',
+      totalMeasurements: filteredMeasurements.length,
+      measurements: filteredMeasurements
+    }
+    downloadJSON(
+      exportData,
+      `hapetus-historia-${new Date().toISOString().split('T')[0]}.json`
+    )
+  }
+
+  const handlePrint = () => {
+    openPrintView()
+  }
+
   return (
     <ProtectedRoute>
       <Head>
@@ -90,8 +118,31 @@ export default function History() {
       </Head>
 
       <main className="min-h-screen bg-background">
+        {/* Print-only header */}
+        <div className="hidden print-header">
+          <div className="flex items-center gap-3 mb-2">
+            <Activity className="w-10 h-10 text-primary" strokeWidth={2.5} />
+            <span className="text-3xl font-bold text-primary">Hapetus</span>
+          </div>
+          <h1 className="text-2xl font-bold mt-4">Mittaushistoria - Raportti</h1>
+          <div className="print-date">
+            Tulostettu: {new Date().toLocaleString('fi-FI')}
+          </div>
+          <div className="print-date">
+            Suodatin: {filter === 'all' ? 'Kaikki mittaukset' : filter === 'daily' ? 'Päivittäiset mittaukset' : 'Liikuntamittaukset'}
+          </div>
+          <div className="print-date">
+            Mittauksia yhteensä: {filteredMeasurements.length}
+          </div>
+          {isDemoMode && (
+            <div className="print-date">
+              <strong>Demo-tila</strong> - Esimerkkidata
+            </div>
+          )}
+        </div>
+
         {/* Header */}
-        <nav className="w-full bg-white border-b border-border shadow-elevation-1">
+        <nav className="w-full bg-white border-b border-border shadow-elevation-1 no-print">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
               <Link href="/dashboard" className="flex items-center gap-3">
@@ -106,7 +157,7 @@ export default function History() {
           {/* Back Button */}
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-lg text-text-secondary hover:text-primary transition-colors mb-8"
+            className="no-print inline-flex items-center gap-2 text-lg text-text-secondary hover:text-primary transition-colors mb-8"
           >
             <ArrowLeft className="w-6 h-6" />
             Takaisin
@@ -114,12 +165,46 @@ export default function History() {
 
           {/* Page Title */}
           <div className="mb-8">
-            <h1 className="text-h1 font-bold text-text-primary mb-2">Mittaushistoria</h1>
-            <p className="text-xl text-text-secondary">Kaikki tallennetut mittaukset</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <div>
+                <h1 className="text-h1 font-bold text-text-primary mb-2">Mittaushistoria</h1>
+                <p className="text-xl text-text-secondary">Kaikki tallennetut mittaukset</p>
+              </div>
+              
+              {/* Export Buttons */}
+              {filteredMeasurements.length > 0 && (
+                <div className="flex flex-wrap gap-2 no-print">
+                  <button
+                    onClick={handlePrint}
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    title="Tulosta lista"
+                  >
+                    <Printer className="w-5 h-5" />
+                    <span className="hidden sm:inline">Tulosta</span>
+                  </button>
+                  <button
+                    onClick={handleExportCSV}
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    title="Lataa CSV"
+                  >
+                    <FileDown className="w-5 h-5" />
+                    <span className="hidden sm:inline">CSV</span>
+                  </button>
+                  <button
+                    onClick={handleExportJSON}
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    title="Lataa JSON"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span className="hidden sm:inline">JSON</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Filters */}
-          <div className="card p-6 mb-8">
+          <div className="card p-6 mb-8 no-print">
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => setFilter('all')}

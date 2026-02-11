@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, ArrowLeft, TrendingUp, Heart, BarChart3, Calendar } from 'lucide-react'
+import { Activity, ArrowLeft, TrendingUp, Heart, BarChart3, Calendar, Download, Printer, FileDown } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -8,6 +8,7 @@ import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { generateDailyChartData, generateWeeklyChartData } from '@/lib/demoData'
+import { openPrintView, downloadCSV, downloadJSON, formatStatisticsForExport } from '@/lib/exportUtils'
 
 type TimeRange = '7days' | '30days' | '3months' | 'custom'
 
@@ -203,6 +204,62 @@ export default function Statistics() {
     }
   }
 
+  // Export functions
+  const handleExportCSV = () => {
+    const timeRangeText = 
+      timeRange === '7days' ? '7 päivää' :
+      timeRange === '30days' ? '30 päivää' :
+      timeRange === '3months' ? '3 kuukautta' :
+      `${customStartDate} - ${customEndDate}`
+    
+    const exportData = formatStatisticsForExport(stats, timeRangeText)
+    const chartDataForExport = chartData.map(item => ({
+      Päivämäärä: item.dateLabel,
+      'SpO2 (%)': item.spo2,
+      'Syke (bpm)': item.heartRate
+    }))
+    
+    // Export summary
+    downloadCSV(
+      [exportData], 
+      `hapetus-tilastot-yhteenveto-${new Date().toISOString().split('T')[0]}.csv`,
+      Object.keys(exportData)
+    )
+    
+    // Export chart data
+    setTimeout(() => {
+      downloadCSV(
+        chartDataForExport,
+        `hapetus-tilastot-kaavio-${new Date().toISOString().split('T')[0]}.csv`,
+        ['Päivämäärä', 'SpO2 (%)', 'Syke (bpm)']
+      )
+    }, 500)
+  }
+
+  const handleExportJSON = () => {
+    const timeRangeText = 
+      timeRange === '7days' ? '7 päivää' :
+      timeRange === '30days' ? '30 päivää' :
+      timeRange === '3months' ? '3 kuukautta' :
+      `${customStartDate} - ${customEndDate}`
+    
+    const exportData = {
+      exported: new Date().toISOString(),
+      timeRange: timeRangeText,
+      summary: stats,
+      chartData: chartData
+    }
+    
+    downloadJSON(
+      exportData,
+      `hapetus-tilastot-${new Date().toISOString().split('T')[0]}.json`
+    )
+  }
+
+  const handlePrint = () => {
+    openPrintView()
+  }
+
   return (
     <ProtectedRoute>
       <Head>
@@ -210,8 +267,25 @@ export default function Statistics() {
       </Head>
 
       <main className="min-h-screen bg-background">
+        {/* Print-only header */}
+        <div className="hidden print-header">
+          <div className="flex items-center gap-3 mb-2">
+            <Activity className="w-10 h-10 text-primary" strokeWidth={2.5} />
+            <span className="text-3xl font-bold text-primary">Hapetus</span>
+          </div>
+          <h1 className="text-2xl font-bold mt-4">Terveystilastot - Raportti</h1>
+          <div className="print-date">
+            Tulostettu: {new Date().toLocaleString('fi-FI')}
+          </div>
+          {isDemoMode && (
+            <div className="print-date">
+              <strong>Demo-tila</strong> - Esimerkkidata
+            </div>
+          )}
+        </div>
+
         {/* Header */}
-        <nav className="w-full bg-white border-b border-border shadow-elevation-1">
+        <nav className="w-full bg-white border-b border-border shadow-elevation-1 no-print">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
               <Link href="/dashboard" className="flex items-center gap-3">
@@ -226,7 +300,7 @@ export default function Statistics() {
           {/* Back Button */}
           <Link
             href="/dashboard"
-            className="inline-flex items-center gap-2 text-lg text-text-secondary hover:text-primary transition-colors mb-8"
+            className="no-print inline-flex items-center gap-2 text-lg text-text-secondary hover:text-primary transition-colors mb-8"
           >
             <ArrowLeft className="w-6 h-6" />
             Takaisin
@@ -234,8 +308,42 @@ export default function Statistics() {
 
           {/* Page Title */}
           <div className="mb-12">
-            <h1 className="text-h1 font-bold text-text-primary mb-2">Tilastot ja raportit</h1>
-            <p className="text-xl text-text-secondary">Yhteenveto terveystiedoistasi</p>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
+              <div>
+                <h1 className="text-h1 font-bold text-text-primary mb-2">Tilastot ja raportit</h1>
+                <p className="text-xl text-text-secondary">Yhteenveto terveystiedoistasi</p>
+              </div>
+              
+              {/* Export Buttons */}
+              {stats && stats.totalMeasurements > 0 && (
+                <div className="flex flex-wrap gap-2 no-print">
+                  <button
+                    onClick={handlePrint}
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    title="Tulosta raportti"
+                  >
+                    <Printer className="w-5 h-5" />
+                    <span className="hidden sm:inline">Tulosta</span>
+                  </button>
+                  <button
+                    onClick={handleExportCSV}
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    title="Lataa CSV"
+                  >
+                    <FileDown className="w-5 h-5" />
+                    <span className="hidden sm:inline">CSV</span>
+                  </button>
+                  <button
+                    onClick={handleExportJSON}
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    title="Lataa JSON"
+                  >
+                    <Download className="w-5 h-5" />
+                    <span className="hidden sm:inline">JSON</span>
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           {loading ? (
@@ -364,7 +472,7 @@ export default function Statistics() {
               </div>
               
               {/* Time range selector */}
-              <div className="flex flex-wrap gap-2 mb-4">
+              <div className="flex flex-wrap gap-2 mb-4 no-print">
                 <button
                   onClick={() => handleTimeRangeChange('7days')}
                   className={`btn ${timeRange === '7days' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
@@ -541,15 +649,6 @@ export default function Statistics() {
                 </p>
               </div>
             )}
-          </div>
-
-          {/* PDF Export - Coming Soon */}
-          <div className="card p-8 bg-blue-50 border-2 border-primary text-center">
-            <BarChart3 className="w-12 h-12 text-primary mx-auto mb-4" strokeWidth={2} />
-            <h3 className="text-xl font-bold text-text-primary mb-2">Tulossa pian</h3>
-            <p className="text-text-secondary">
-              PDF-raportit ja pidemmän aikavälin kehitysanalyysit
-            </p>
           </div>
           </>
           )}
