@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    namespace = "com.konderi.spo2seuranta"
+    namespace = "com.konderi.hapetus"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.konderi.spo2seuranta"
+        applicationId = "com.konderi.hapetus"
         minSdk = 26
         targetSdk = 34
         versionCode = 1

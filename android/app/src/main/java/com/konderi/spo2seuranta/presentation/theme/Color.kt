@@ -2,10 +2,10 @@ package com.konderi.spo2seuranta.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Primary colors - Modern Medical Blue Theme
-val Primary = Color(0xFF1565C0) // Professional medical blue
-val PrimaryLight = Color(0xFF5E92F3) // Lighter blue for accents
-val PrimaryDark = Color(0xFF003C8F) // Darker blue for depth
+// Primary colors - Hapetus Brand (matching website)
+val Primary = Color(0xFF0070E6) // Darker professional blue - matches website
+val PrimaryLight = Color(0xFFE6F4FF) // Light blue for backgrounds
+val PrimaryDark = Color(0xFF0059B3) // Even darker for hover/pressed states
 val Secondary = Color(0xFF5C6BC0) // Soft indigo for secondary actions
 val SecondaryLight = Color(0xFFE8EAF6) // Very light indigo for containers
 val Tertiary = Color(0xFF00897B) // Teal for positive values
