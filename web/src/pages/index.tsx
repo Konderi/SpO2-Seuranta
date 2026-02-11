@@ -31,14 +31,14 @@ export default function Home() {
                 <a href="#miten-toimii" className="text-lg text-text-secondary hover:text-primary transition-colors font-medium">
                   Miten toimii
                 </a>
-                <Link href="/login" className="btn bg-primary text-white hover:bg-primary-dark transition-all px-8 py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl">
+                <Link href="/login" className="btn bg-primary text-white hover:bg-primary-dark transition-all px-8 py-3 rounded-3xl font-semibold shadow-md hover:shadow-lg">
                   Kirjaudu sisään
                 </Link>
               </div>
 
               {/* Mobile Menu Button */}
               <div className="md:hidden">
-                <Link href="/login" className="btn bg-primary text-white hover:bg-primary-dark transition-all px-6 py-3 rounded-2xl font-semibold shadow-lg">
+                <Link href="/login" className="btn bg-primary text-white hover:bg-primary-dark transition-all px-6 py-3 rounded-3xl font-semibold shadow-md">
                   Kirjaudu
                 </Link>
               </div>
@@ -187,7 +187,7 @@ export default function Home() {
                 },
               ].map((feature, i) => (
                 <div key={i} className="card hover:shadow-elevation-3 transition-all duration-normal">
-                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
+                  <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-6">
                     <feature.icon className="w-9 h-9 text-primary" strokeWidth={2} />
                   </div>
                   <h3 className="text-2xl font-bold mb-4 text-text-primary">{feature.title}</h3>
@@ -249,7 +249,7 @@ export default function Home() {
             <p className="text-xl mb-10 opacity-90 leading-relaxed">
               Liity tuhansien käyttäjien joukkoon, jotka seuraavat terveyttään Hapetuksen avulla
             </p>
-            <Link href="/login" className="inline-flex items-center justify-center gap-3 bg-white text-primary px-12 py-5 rounded-lg text-xl font-semibold hover:bg-gray-50 transition-all shadow-elevation-3 hover:shadow-elevation-4">
+            <Link href="/login" className="inline-flex items-center justify-center gap-3 bg-white text-primary px-12 py-5 rounded-3xl text-xl font-semibold hover:bg-gray-50 transition-all shadow-md hover:shadow-lg">
               Kirjaudu sisään
               <Activity className="w-6 h-6" />
             </Link>
