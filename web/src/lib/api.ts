@@ -49,6 +49,11 @@ export interface UserSettings {
 class ApiClient {
   private getAuthHeader = async (): Promise<Record<string, string>> => {
     const { auth } = await import('./firebase');
+    
+    if (!auth) {
+      throw new Error('Firebase not initialized');
+    }
+    
     const user = auth.currentUser;
     
     if (!user) {

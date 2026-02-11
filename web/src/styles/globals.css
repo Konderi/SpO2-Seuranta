@@ -148,7 +148,7 @@ a:hover {
 @layer components {
   .btn {
     @apply inline-flex items-center justify-center gap-2;
-    @apply px-8 py-4 rounded-lg;
+    @apply px-8 py-4 rounded-2xl;
     @apply font-semibold text-lg;
     @apply transition-all duration-normal;
     @apply focus-visible:outline focus-visible:outline-[3px] focus-visible:outline-primary focus-visible:outline-offset-2;
@@ -161,7 +161,11 @@ a:hover {
     @apply bg-primary text-white;
     @apply hover:bg-primary-dark;
     @apply active:scale-95;
-    @apply shadow-elevation-2 hover:shadow-elevation-3;
+    box-shadow: 0 4px 12px rgba(25, 140, 255, 0.3);
+  }
+  
+  .btn-primary:hover {
+    box-shadow: 0 8px 20px rgba(25, 140, 255, 0.4);
   }
   
   .btn-secondary {
@@ -178,21 +182,26 @@ a:hover {
   
   /* Card Components */
   .card {
-    @apply bg-surface rounded-lg p-6;
-    @apply shadow-elevation-2;
+    @apply bg-surface rounded-2xl p-6;
     @apply border border-border;
     @apply transition-all duration-normal;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  }
+  
+  .card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
   }
   
   .card-interactive {
     @apply card cursor-pointer;
-    @apply hover:shadow-elevation-3 hover:border-primary-light;
+    @apply hover:border-primary;
     @apply active:shadow-elevation-1;
   }
   
   /* Input Components */
   .input {
-    @apply w-full px-4 py-4 rounded-lg;
+    @apply w-full px-4 py-4 rounded-2xl;
     @apply bg-background border-2 border-border;
     @apply text-lg text-text-primary;
     @apply transition-all duration-fast;
