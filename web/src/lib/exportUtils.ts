@@ -60,10 +60,97 @@ export function downloadJSON(data: any, filename: string) {
 }
 
 /**
- * Open print dialog with optimized view
+ * Open print dialog with CSV-style tabular format
+ * @param data Array of objects to print
+ * @param headers Array of header names (keys from data objects)
+ * @param title Title for the print page
  */
-export function openPrintView() {
-  window.print()
+export function openPrintView(data: any[], headers: string[], title: string) {
+  // Generate CSV content
+  const csvContent = convertToCSV(data, headers)
+  
+  // Create HTML for print window with CSV-style formatting
+  const htmlContent = `
+    <!DOCTYPE html>
+    <html lang="fi">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>${title}</title>
+      <style>
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
+        
+        body {
+          font-family: 'Courier New', Courier, monospace;
+          padding: 20px;
+          background: white;
+          color: #000;
+        }
+        
+        h1 {
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 10px;
+          font-family: Arial, sans-serif;
+        }
+        
+        .metadata {
+          font-size: 12px;
+          margin-bottom: 20px;
+          padding-bottom: 10px;
+          border-bottom: 2px solid #333;
+          font-family: Arial, sans-serif;
+        }
+        
+        .data {
+          font-size: 11px;
+          line-height: 1.4;
+          white-space: pre;
+          word-wrap: break-word;
+        }
+        
+        @media print {
+          body {
+            padding: 10mm;
+          }
+          
+          .data {
+            font-size: 10px;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <h1>${title}</h1>
+      <div class="metadata">
+        <div>Tulostettu: ${new Date().toLocaleString('fi-FI')}</div>
+        <div>Rivejä: ${data.length}</div>
+      </div>
+      <div class="data">${csvContent.replace(/\n/g, '<br>')}</div>
+      <script>
+        // Auto-print when loaded
+        window.onload = function() {
+          window.print();
+        }
+      </script>
+    </body>
+    </html>
+  `
+  
+  // Open new window with CSV-style content
+  const printWindow = window.open('', '_blank', 'width=900,height=700')
+  
+  if (!printWindow) {
+    alert('Pop-up ikkuna estettiin. Salli pop-upit tulostaaksesi.')
+    return
+  }
+  
+  printWindow.document.write(htmlContent)
+  printWindow.document.close()
 }
 
 /**

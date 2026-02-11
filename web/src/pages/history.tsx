@@ -109,7 +109,19 @@ export default function History() {
   }
 
   const handlePrint = () => {
-    openPrintView()
+    const filterText = 
+      filter === 'all' ? 'Kaikki mittaukset' : 
+      filter === 'daily' ? 'Päivittäiset mittaukset' : 
+      'Liikuntamittaukset'
+    
+    const exportData = filteredMeasurements.map(m => formatMeasurementForExport(m))
+    const headers = Object.keys(exportData[0] || {})
+    
+    openPrintView(
+      exportData,
+      headers,
+      `Hapetus Mittaushistoria - ${filterText}`
+    )
   }
 
   return (

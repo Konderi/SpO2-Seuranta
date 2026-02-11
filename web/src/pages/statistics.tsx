@@ -301,7 +301,31 @@ export default function Statistics() {
   }
 
   const handlePrint = () => {
-    openPrintView()
+    const timeRangeText = 
+      timeRange === '7days' ? '7 päivää' :
+      timeRange === '30days' ? '30 päivää' :
+      timeRange === '3months' ? '3 kuukautta' :
+      `${customStartDate} - ${customEndDate}`
+    
+    // Prepare summary statistics
+    const summaryData = [formatStatisticsForExport(stats, timeRangeText)]
+    
+    // Prepare chart data
+    const chartDataForPrint = chartData.map(item => ({
+      Päivämäärä: item.dateLabel,
+      'SpO2 (%)': item.spo2 || '-',
+      'Syke (bpm)': item.heartRate || '-'
+    }))
+    
+    // Combine summary and chart data
+    const allData = [...summaryData, ...chartDataForPrint]
+    const headers = Object.keys(allData[0] || {})
+    
+    openPrintView(
+      allData,
+      headers,
+      `Hapetus Tilastot - ${timeRangeText}`
+    )
   }
 
   return (
