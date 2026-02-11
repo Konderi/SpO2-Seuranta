@@ -46,53 +46,62 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Hero Section */}
-        <section className="pt-16 md:pt-24 pb-20 px-4">
-          <div className="max-w-7xl mx-auto">
+        {/* Hero Section with Blue Banner */}
+        <section className="relative pt-16 md:pt-24 pb-20 px-4 bg-gradient-to-br from-primary via-primary to-primary-dark overflow-hidden">
+          {/* Decorative Graphics */}
+          <div className="absolute inset-0 opacity-10">
+            <div className="absolute top-10 right-10 w-64 h-64 rounded-full border-4 border-white"></div>
+            <div className="absolute bottom-10 left-10 w-48 h-48 rounded-full border-4 border-white"></div>
+            <div className="absolute top-1/2 left-1/4 w-32 h-32 rounded-full border-4 border-white"></div>
+            <Activity className="absolute top-20 left-20 w-24 h-24 text-white opacity-20" strokeWidth={1.5} />
+            <Heart className="absolute bottom-32 right-32 w-32 h-32 text-white opacity-20" strokeWidth={1.5} />
+            <TrendingUp className="absolute top-1/3 right-1/4 w-20 h-20 text-white opacity-20" strokeWidth={1.5} />
+          </div>
+
+          <div className="max-w-7xl mx-auto relative z-10">
             <div className="text-center animate-slide-up">
               {/* Main Heading */}
-              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-text-primary leading-tight">
+              <h1 className="text-4xl md:text-6xl font-bold mb-6 text-white leading-tight">
                 Seuraa Terveyttäsi
                 <br />
-                <span className="text-primary">Yksinkertaisesti ja Turvallisesti</span>
+                <span className="text-white opacity-90">Yksinkertaisesti ja Turvallisesti</span>
               </h1>
               
               {/* Subheading */}
-              <p className="text-xl md:text-2xl text-text-secondary mb-12 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
                 Hapetus auttaa sinua seuraamaan happisaturaatiota ja sykettä. 
                 Suunniteltu erityisesti ikäihmisille – helppo käyttää, selkeä ja luotettava.
               </p>
 
               {/* CTA Buttons */}
               <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-                <Link href="/login" className="btn btn-large btn-primary">
+                <Link href="/login" className="btn btn-large bg-white text-primary hover:bg-gray-50 shadow-elevation-3 hover:shadow-elevation-4">
                   Aloita käyttö
                 </Link>
-                <a href="#ominaisuudet" className="btn btn-large btn-secondary">
+                <a href="#ominaisuudet" className="btn btn-large border-2 border-white text-white hover:bg-white/10">
                   Lue lisää
                 </a>
               </div>
 
               {/* Trust Signals */}
-              <div className="flex flex-wrap items-center justify-center gap-8 text-text-secondary">
+              <div className="flex flex-wrap items-center justify-center gap-8 text-white">
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-6 h-6 text-success" />
+                  <CheckCircle2 className="w-6 h-6 text-white" />
                   <span className="text-lg">Turvallinen</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-6 h-6 text-success" />
+                  <CheckCircle2 className="w-6 h-6 text-white" />
                   <span className="text-lg">Helppo käyttää</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-6 h-6 text-success" />
+                  <CheckCircle2 className="w-6 h-6 text-white" />
                   <span className="text-lg">Suomeksi</span>
                 </div>
               </div>
             </div>
 
             {/* Preview Cards */}
-            <div className="mt-20 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-              {[
+            <div className="mt-20 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">{[
                 { 
                   icon: Heart, 
                   value: '96%', 
