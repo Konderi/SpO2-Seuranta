@@ -2,7 +2,7 @@
 
 **Last Updated**: February 11, 2026  
 **Phase**: 2 - Backend & Website Development  
-**Status**: Backend Deployed ✅ | Secrets Configuration Pending ⏳
+**Status**: Backend Deployed with Security Fixes ✅ | Website Deployment Next 🔄
 
 ---
 
@@ -10,44 +10,66 @@
 
 ### ✅ Completed Today
 
-1. **Backend API Fully Deployed**
-   - Live at: https://hapetus-api.toni-joronen.workers.dev
-   - Custom domain ready: api.hapetus.info (pending DNS)
-   - Version: db16ced7-7372-4023-b6f6-b1fbf7706b77
+1. **Backend API Fully Deployed & Secured**
+   - Live at: https://api.hapetus.info ✅
+   - Workers URL: https://hapetus-api.toni-joronen.workers.dev
+   - Version: e283afb6-4f11-41bb-80ab-952f2404b7f2
+   - Custom domain configured and working
    - 15 endpoints operational
    - D1 database connected and migrated
+   - **Critical security fixes applied** ✅
 
-2. **Testing Verified**
-   - ✅ Health check: Working (`/health`)
-   - ✅ Root endpoint: Working (`/`)
-   - ⏳ Protected routes: Need Firebase secrets
+2. **Security Hardening Complete**
+   - ✅ Removed public `/api/test-db` endpoint
+   - ✅ Restricted CORS to whitelist (no more `origin: '*'`)
+   - ✅ Added comprehensive input validation (SpO2, heart rate, duration)
+   - ✅ Improved error handling (no internal details exposed)
+   - ✅ All endpoints require authentication
+   - ✅ Firebase JWT token verification working
+   - 📄 See: `backend/SECURITY_FIXES_APPLIED.md`
 
-3. **Documentation Complete**
+3. **Testing Verified**
+   - ✅ Health check: `https://api.hapetus.info/health`
+   - ✅ Root endpoint: `https://api.hapetus.info/`
+   - ✅ Test endpoint removed: Returns 404
+   - ✅ Protected routes: Require valid Firebase token
+
+4. **Documentation Complete**
    - ✅ API.md - Complete API reference
-   - ✅ COMPLETION.md - Achievement summary
-   - ✅ DEPLOYMENT_GUIDE.md - Step-by-step deployment instructions
-   - ✅ STATUS.md - Backend status
+   - ✅ SECURITY_ANALYSIS.md - Security audit
+   - ✅ SECURITY_FIXES_APPLIED.md - Applied fixes
+   - ✅ CUSTOM_DOMAIN_SUCCESS.md - Domain setup results
+   - ✅ DEPLOYMENT_GUIDE.md - Deployment instructions
+   - ✅ README.md (Finnish) - User documentation
+   - ✅ README_EN.md (English) - Technical documentation
 
 ---
 
 ## 📋 Immediate Next Steps
 
-### Step 1: Configure Firebase Authentication (HIGH PRIORITY) 🔥
+### Step 1: Deploy Website to Cloudflare Pages (NEXT PRIORITY) 🔥
 
-**Why**: Required for all protected API endpoints to work
+**Why**: Backend is secure and ready, now users need the web interface
 
 **What to do**:
 
 ```bash
-cd backend
-
-# Set Firebase service account credentials
-wrangler secret put FIREBASE_PROJECT_ID
-wrangler secret put FIREBASE_CLIENT_EMAIL
-wrangler secret put FIREBASE_PRIVATE_KEY
+# From the website directory
+cd website
 ```
 
-**Where to get credentials**:
+**Website Setup**:
+1. Connect to Cloudflare Pages
+2. Configure build settings:
+   - Build command: `npm run build`
+   - Build output: `.next`
+   - Framework: Next.js
+3. Set environment variables:
+   - `NEXT_PUBLIC_API_URL=https://api.hapetus.info`
+   - `NEXT_PUBLIC_FIREBASE_*` (all Firebase config)
+4. Deploy to hapetus.info
+
+**Expected Timeline**: 30-45 minutes
 - Firebase Console → Project Settings → Service Accounts
 - Click "Generate New Private Key"
 - Extract values from downloaded JSON
