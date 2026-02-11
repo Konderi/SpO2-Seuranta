@@ -6,7 +6,37 @@
 
 ## 🎯 Overview
 
-Fixed critical demo mode statistics bugs, extended demo data to 3 months, and improved navigation UX by removing redundant back buttons.
+Fixed critical demo mode statistics bugs, extended demo data to 3 months, and improved na**Data Generation
+
+**90 Days Structure:**
+- **Daily measurements:** 3 per day × 90 days = 270 measurements
+- **Exercise sessions:** ~40% of days = ~36 sessions
+- **Total measurements:** ~306 total
+- **Date range:** Today - 90 days to today
+- **Health episodes:** 4 periods with low SpO2 values (10 total days affected)
+
+**Low SpO2 Episodes:**
+- **Days 15-17:** Mild issue (SpO2: 85-91%, HR: 82-88 bpm)
+- **Days 35-36:** Brief episode (SpO2: 87-93%, HR: 79-85 bpm)
+- **Day 60:** Single low reading (SpO2: 83-89%, HR: 85-91 bpm)
+- **Days 75-78:** Significant episode (SpO2: 80-86%, HR: 89-95 bpm)
+
+**Measurement Times:**
+- Morning: 8:00-9:00 (high energy)
+- Afternoon: 14:00-15:00 (exercise or regular)
+- Evening: 20:00-21:00 (rest period)
+
+**Realistic Values:**
+- **Normal periods:** SpO2: 92-99%, Heart Rate: 60-85 bpm
+- **Low periods:** SpO2: 75-90%, Heart Rate: 80-95 bpm
+- **Exercise:** Heart Rate: 90-120 bpm during activity
+- Random variation to simulate real measurements
+
+**Contextual Notes:**
+- Normal: "Viikonloppu, tunsin oloni virkeäksi"
+- Low period: "Tunsin oloni hieman väsyneeksi"
+- Low period evening: "Lepäsin tänään, toivottavasti huomenna parempi"
+- Exercise low period: "Harjoitus rasitti enemmän kuin tavallisesti"moving redundant back buttons.
 
 ## ✅ Issues Fixed
 
@@ -55,23 +85,42 @@ const hrValues = dailyFiltered.map(m => m.heartRate).filter(v => v !== undefined
 - Demo data only generated 4 weeks (28 days) of measurements
 - 3-month time range option showed limited data
 - Couldn't properly test quarterly graphs
+- All data showed normal/healthy values (unrealistic for COPD patients)
 
 **Solution:**
 - Extended demo data generation from 28 to 90 days (3 months)
 - Maintains same quality: 3 measurements per day
 - ~40% chance of exercise measurements
 - Realistic SpO2 (92-99%) and heart rate (60-85 bpm) values
+- **Added health episodes with low SpO2 values:**
+  - **Day 15-17:** Mild respiratory issue (SpO2: ~88%, HR: ~85 bpm)
+  - **Day 35-36:** Brief episode (SpO2: ~90%, HR: ~82 bpm)
+  - **Day 60:** Single concerning reading (SpO2: ~86%, HR: ~88 bpm)
+  - **Day 75-78:** Significant episode (SpO2: ~83%, HR: ~92 bpm)
+- During low periods:
+  - Reduced exercise probability (10% vs 40%)
+  - Contextual notes ("Tunsin oloni hieman väsyneeksi")
+  - Higher heart rate to reflect body compensation
 
 **File Modified:** `web/src/lib/demoData.ts`
 
 **Before:**
 ```tsx
 const daysToGenerate = 28 // 4 weeks
+// All values in normal range
 ```
 
 **After:**
 ```tsx
 const daysToGenerate = 90 // 3 months
+
+// Define health episodes with low SpO2
+const lowSpo2Periods = [
+  { start: 15, end: 17, baseSpo2: 88, baseHR: 85 },  // Mild
+  { start: 35, end: 36, baseSpo2: 90, baseHR: 82 },  // Brief
+  { start: 60, end: 60, baseSpo2: 86, baseHR: 88 },  // Single event
+  { start: 75, end: 78, baseSpo2: 83, baseHR: 92 }   // Significant
+]
 ```
 
 **Result:**
@@ -80,6 +129,10 @@ const daysToGenerate = 90 // 3 months
 - ✅ ~108 exercise sessions (40% of days)
 - ✅ Realistic data distribution over 3 months
 - ✅ Properly tests all time ranges (7d, 30d, 3m, custom)
+- ✅ **Demonstrates app handling of concerning values**
+- ✅ **Shows SpO2 range: 75-99% (realistic for respiratory conditions)**
+- ✅ **Elevated heart rate during low SpO2 periods**
+- ✅ **Min values now meaningful (75-90 range)**
 
 ### 3. Redundant Navigation (Back Buttons)
 

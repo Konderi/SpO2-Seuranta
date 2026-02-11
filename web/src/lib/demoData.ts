@@ -42,10 +42,32 @@ export const generateDemoData = (): DemoMeasurement[] => {
   
   let idCounter = 1
 
+  // Define some periods with lower SpO2 values (health events)
+  // Day 15-17: Mild respiratory issue
+  // Day 35-36: Brief episode  
+  // Day 60: Single low reading
+  // Day 75-78: More significant episode
+  const lowSpo2Periods = [
+    { start: 15, end: 17, baseSpo2: 88, baseHR: 85 },  // 3-day mild episode
+    { start: 35, end: 36, baseSpo2: 90, baseHR: 82 },  // 2-day brief episode
+    { start: 60, end: 60, baseSpo2: 86, baseHR: 88 },  // Single concerning reading
+    { start: 75, end: 78, baseSpo2: 83, baseHR: 92 }   // 4-day significant episode
+  ]
+
+  const isLowPeriod = (day: number) => {
+    const period = lowSpo2Periods.find(p => day >= p.start && day <= p.end)
+    return period || null
+  }
+
   for (let day = 0; day < daysToGenerate; day++) {
     const date = new Date(now)
     date.setDate(date.getDate() - (daysToGenerate - day - 1))
     date.setHours(0, 0, 0, 0)
+
+    // Check if this day is in a low SpO2 period
+    const lowPeriod = isLowPeriod(day)
+    const baseSpo2 = lowPeriod ? lowPeriod.baseSpo2 : 96
+    const baseHR = lowPeriod ? lowPeriod.baseHR : 70
 
     // Morning measurement (8:00-9:00)
     const morningHour = 8
@@ -58,9 +80,9 @@ export const generateDemoData = (): DemoMeasurement[] => {
       type: 'daily',
       date: date.toISOString().split('T')[0],
       time: `${String(morningHour).padStart(2, '0')}:${String(morningMinute).padStart(2, '0')}`,
-      spo2: generateSpo2(96.5),
-      heartRate: generateHeartRate(68),
-      notes: day % 7 === 0 ? 'Viikonloppu, tunsin oloni virkeäksi' : undefined,
+      spo2: generateSpo2(baseSpo2),
+      heartRate: generateHeartRate(baseHR),
+      notes: lowPeriod ? 'Tunsin oloni hieman väsyneeksi' : (day % 7 === 0 ? 'Viikonloppu, tunsin oloni virkeäksi' : undefined),
       measured_at: Math.floor(morningTime.getTime() / 1000)
     })
 
@@ -70,8 +92,11 @@ export const generateDemoData = (): DemoMeasurement[] => {
     const afternoonTime = new Date(date)
     afternoonTime.setHours(afternoonHour, afternoonMinute)
 
-    // 40% chance of exercise measurement
-    if (Math.random() < 0.4) {
+    // During low periods, reduce exercise probability
+    const exerciseChance = lowPeriod ? 0.1 : 0.4
+    
+    // 40% chance of exercise measurement (10% during low periods)
+    if (Math.random() < exerciseChance) {
       const exercises = ['Kävely', 'Hiihto', 'Pyöräily', 'Jumppa', 'Uinti']
       const exercise = exercises[Math.floor(Math.random() * exercises.length)]
       const duration = 20 + Math.floor(Math.random() * 40) // 20-60 min
@@ -82,12 +107,12 @@ export const generateDemoData = (): DemoMeasurement[] => {
         date: date.toISOString().split('T')[0],
         time: `${String(afternoonHour).padStart(2, '0')}:${String(afternoonMinute).padStart(2, '0')}`,
         exerciseType: exercise,
-        spo2Before: generateSpo2(96),
-        heartRateBefore: generateHeartRate(70),
-        spo2After: generateSpo2(95),
-        heartRateAfter: generateHeartRate(72, true),
+        spo2Before: generateSpo2(lowPeriod ? baseSpo2 - 2 : 96),
+        heartRateBefore: generateHeartRate(baseHR),
+        spo2After: generateSpo2(lowPeriod ? baseSpo2 - 4 : 95),
+        heartRateAfter: generateHeartRate(baseHR + 5, true),
         duration,
-        notes: duration > 45 ? 'Hyvä harjoitus, jakson olo' : undefined,
+        notes: lowPeriod ? 'Harjoitus rasitti enemmän kuin tavallisesti' : (duration > 45 ? 'Hyvä harjoitus, jakson olo' : undefined),
         measured_at: Math.floor(afternoonTime.getTime() / 1000)
       })
     } else {
@@ -96,8 +121,8 @@ export const generateDemoData = (): DemoMeasurement[] => {
         type: 'daily',
         date: date.toISOString().split('T')[0],
         time: `${String(afternoonHour).padStart(2, '0')}:${String(afternoonMinute).padStart(2, '0')}`,
-        spo2: generateSpo2(95.5),
-        heartRate: generateHeartRate(74),
+        spo2: generateSpo2(lowPeriod ? baseSpo2 - 1 : 95.5),
+        heartRate: generateHeartRate(baseHR + 2),
         measured_at: Math.floor(afternoonTime.getTime() / 1000)
       })
     }
@@ -113,9 +138,9 @@ export const generateDemoData = (): DemoMeasurement[] => {
       type: 'daily',
       date: date.toISOString().split('T')[0],
       time: `${String(eveningHour).padStart(2, '0')}:${String(eveningMinute).padStart(2, '0')}`,
-      spo2: generateSpo2(96),
-      heartRate: generateHeartRate(70),
-      notes: day % 5 === 4 ? 'Iltamittaus ennen nukkumaanmenoa' : undefined,
+      spo2: generateSpo2(lowPeriod ? baseSpo2 : 96),
+      heartRate: generateHeartRate(baseHR),
+      notes: lowPeriod ? 'Lepäsin tänään, toivottavasti huomenna parempi' : (day % 5 === 4 ? 'Iltamittaus ennen nukkumaanmenoa' : undefined),
       measured_at: Math.floor(eveningTime.getTime() / 1000)
     })
   }
