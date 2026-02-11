@@ -3,29 +3,69 @@ import Link from 'next/link'
 import { Activity, ArrowLeft, TrendingUp, Heart, BarChart3 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
+import { useState, useEffect } from 'react'
+import { apiClient } from '@/lib/api'
 
 export default function Statistics() {
   const { user } = useAuth()
+  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<any>(null)
 
-  // Mock statistics data
-  const stats = {
-    spo2: {
-      current: 96,
-      average7days: 95,
-      average30days: 94,
-      min: 92,
-      max: 98,
-    },
-    heartRate: {
-      current: 72,
-      average7days: 74,
-      average30days: 75,
-      min: 68,
-      max: 88,
-    },
-    totalMeasurements: 45,
-    exerciseSessions: 12,
-  }
+  useEffect(() => {
+    const fetchStatistics = async () => {
+      try {
+        const [weeklyStats, dailyStats, dailyData, exerciseData] = await Promise.all([
+          apiClient.getWeeklyStats(),
+          apiClient.getDailyStats(30), // Get 30 days for monthly stats
+          apiClient.getDailyMeasurements(),
+          apiClient.getExerciseMeasurements()
+        ])
+
+        // Calculate monthly stats from daily stats
+        const monthlyAvgSpo2 = dailyStats.length > 0
+          ? Math.round(dailyStats.reduce((sum, s) => sum + s.avg_spo2, 0) / dailyStats.length)
+          : 0
+        const monthlyAvgHR = dailyStats.length > 0
+          ? Math.round(dailyStats.reduce((sum, s) => sum + s.avg_heart_rate, 0) / dailyStats.length)
+          : 0
+
+        // Get latest measurement from daily data
+        const latestDaily = dailyData.length > 0 ? dailyData[0] : null
+
+        setStats({
+          spo2: {
+            current: latestDaily?.spo2 || 0,
+            average7days: weeklyStats.avg_spo2 ? Math.round(weeklyStats.avg_spo2) : 0,
+            average30days: monthlyAvgSpo2,
+            min: weeklyStats.min_spo2 || 0,
+            max: weeklyStats.max_spo2 || 0,
+          },
+          heartRate: {
+            current: latestDaily?.heart_rate || 0,
+            average7days: weeklyStats.avg_heart_rate ? Math.round(weeklyStats.avg_heart_rate) : 0,
+            average30days: monthlyAvgHR,
+            min: weeklyStats.min_heart_rate || 0,
+            max: weeklyStats.max_heart_rate || 0,
+          },
+          totalMeasurements: dailyData.length,
+          exerciseSessions: exerciseData.length,
+        })
+      } catch (error) {
+        console.error('Failed to fetch statistics:', error)
+        // Set empty stats on error
+        setStats({
+          spo2: { current: 0, average7days: 0, average30days: 0, min: 0, max: 0 },
+          heartRate: { current: 0, average7days: 0, average30days: 0, min: 0, max: 0 },
+          totalMeasurements: 0,
+          exerciseSessions: 0,
+        })
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    fetchStatistics()
+  }, [])
 
   return (
     <ProtectedRoute>
@@ -62,6 +102,23 @@ export default function Statistics() {
             <p className="text-xl text-text-secondary">Yhteenveto terveystiedoistasi</p>
           </div>
 
+          {loading ? (
+            <div className="card p-12 text-center">
+              <div className="inline-block animate-spin rounded-full h-16 w-16 border-b-2 border-primary mb-4"></div>
+              <p className="text-xl text-text-secondary">Ladataan tilastoja...</p>
+            </div>
+          ) : !stats || stats.totalMeasurements === 0 ? (
+            <div className="card p-12 text-center">
+              <BarChart3 className="w-16 h-16 text-text-secondary mx-auto mb-4" />
+              <p className="text-xl text-text-secondary mb-6">
+                Ei tarpeeksi mittauksia tilastojen laskentaan
+              </p>
+              <Link href="/add-daily" className="btn btn-primary">
+                Lisää ensimmäinen mittaus
+              </Link>
+            </div>
+          ) : (
+            <>
           {/* Summary Cards */}
           <div className="grid md:grid-cols-2 gap-6 mb-12">
             <div className="card p-8 bg-green-50 border-2">
@@ -169,6 +226,8 @@ export default function Statistics() {
               Työn alla: Interaktiiviset kaaviot happisaturaation ja sykkeen kehityksestä
             </p>
           </div>
+          </>
+          )}
         </div>
       </main>
     </ProtectedRoute>

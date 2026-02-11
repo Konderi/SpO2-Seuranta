@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { apiClient } from '@/lib/api'
 
 export default function AddDaily() {
   const { user } = useAuth()
@@ -42,29 +43,27 @@ export default function AddDaily() {
     setError(null)
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/measurements/daily`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add Firebase ID token here
-        },
-        body: JSON.stringify({
-          ...formData,
-          spo2: spo2Value,
-          heartRate: heartRateValue,
-          userId: user?.uid,
-        }),
+      // Create timestamp from date and time
+      const dateTime = new Date(`${formData.date}T${formData.time}`)
+      const measured_at = Math.floor(dateTime.getTime() / 1000) // Unix timestamp in seconds
+      
+      // Save to backend API - Compatible with Android/iOS format
+      await apiClient.createDailyMeasurement({
+        spo2: spo2Value,
+        heart_rate: heartRateValue,
+        notes: formData.notes,
+        measured_at,
+        created_at: Math.floor(Date.now() / 1000),
+        updated_at: Math.floor(Date.now() / 1000),
       })
-
-      if (!response.ok) throw new Error('Tallennus epäonnistui')
 
       setSuccess(true)
       setTimeout(() => {
         router.push('/dashboard')
       }, 1500)
-    } catch (err) {
-      setError('Mittauksen tallennus epäonnistui. Yritä uudelleen.')
+    } catch (err: any) {
+      console.error('Failed to save measurement:', err)
+      setError(err.message || 'Mittauksen tallennus epäonnistui. Yritä uudelleen.')
       setSaving(false)
     }
   }

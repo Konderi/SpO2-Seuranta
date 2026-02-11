@@ -3,23 +3,59 @@ import Link from 'next/link'
 import { Activity, Heart, TrendingUp, Plus, LogOut, User, Menu, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { apiClient } from '@/lib/api'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [measurements, setMeasurements] = useState<any[]>([])
+  const [stats, setStats] = useState<any>(null)
 
-  // Mock data - will be replaced with real data from API
-  const latestMeasurements = {
-    spo2: 96,
-    heartRate: 72,
-    trend: '+2%',
+  // Fetch real data from API
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true)
+        // Fetch latest measurements
+        const dailyData = await apiClient.getDailyMeasurements()
+        setMeasurements(dailyData)
+        
+        // Fetch weekly statistics
+        const weeklyStats = await apiClient.getWeeklyStats()
+        setStats(weeklyStats)
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    fetchData()
+  }, [])
+
+  // Calculate latest measurements and trend from real data
+  const latestMeasurements = measurements.length > 0 ? {
+    spo2: measurements[0].spo2,
+    heartRate: measurements[0].heart_rate,
+    trend: measurements.length > 1 
+      ? `${measurements[0].spo2 > measurements[1].spo2 ? '+' : ''}${measurements[0].spo2 - measurements[1].spo2}%`
+      : '0%',
+    date: new Date(measurements[0].measured_at).toLocaleDateString('fi-FI'),
+  } : {
+    spo2: 0,
+    heartRate: 0,
+    trend: '0%',
     date: new Date().toLocaleDateString('fi-FI'),
   }
 
-  const weeklyAverage = {
-    spo2: 95,
-    heartRate: 74,
+  const weeklyAverage = stats ? {
+    spo2: Math.round(stats.avg_spo2),
+    heartRate: Math.round(stats.avg_heart_rate),
+  } : {
+    spo2: 0,
+    heartRate: 0,
   }
 
   return (
@@ -164,54 +200,80 @@ export default function Dashboard() {
           {/* Latest Measurements */}
           <div className="mb-12">
             <h2 className="text-h2 font-bold text-text-primary mb-6">Viimeisin mittaus</h2>
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="card bg-green-50 border-2 p-8">
-                <Heart className="w-12 h-12 text-success mb-4" strokeWidth={2} />
-                <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.spo2}%</div>
-                <div className="text-lg text-text-secondary font-medium">Happisaturaatio</div>
-                <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
+            {loading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+                <p className="text-text-secondary mt-4">Ladataan mittauksia...</p>
               </div>
+            ) : measurements.length === 0 ? (
+              <div className="card p-12 text-center">
+                <Activity className="w-16 h-16 text-text-secondary mx-auto mb-4 opacity-50" />
+                <p className="text-xl text-text-secondary mb-4">Ei mittauksia vielä</p>
+                <p className="text-text-secondary mb-6">Aloita lisäämällä ensimmäinen mittauksesi</p>
+                <Link href="/add-daily" className="btn bg-primary text-white hover:bg-primary-dark">
+                  Lisää mittaus
+                </Link>
+              </div>
+            ) : (
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="card bg-green-50 border-2 p-8">
+                  <Heart className="w-12 h-12 text-success mb-4" strokeWidth={2} />
+                  <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.spo2}%</div>
+                  <div className="text-lg text-text-secondary font-medium">Happisaturaatio</div>
+                  <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
+                </div>
 
-              <div className="card bg-red-50 border-2 p-8">
-                <Activity className="w-12 h-12 text-error mb-4" strokeWidth={2} />
-                <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.heartRate}</div>
-                <div className="text-lg text-text-secondary font-medium">Syke (bpm)</div>
-                <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
-              </div>
+                <div className="card bg-red-50 border-2 p-8">
+                  <Activity className="w-12 h-12 text-error mb-4" strokeWidth={2} />
+                  <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.heartRate}</div>
+                  <div className="text-lg text-text-secondary font-medium">Syke (bpm)</div>
+                  <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
+                </div>
 
-              <div className="card bg-blue-50 border-2 p-8">
-                <TrendingUp className="w-12 h-12 text-primary mb-4" strokeWidth={2} />
-                <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.trend}</div>
-                <div className="text-lg text-text-secondary font-medium">Kehitys</div>
-                <div className="text-sm text-text-secondary mt-2">7 päivää</div>
+                <div className="card bg-blue-50 border-2 p-8">
+                  <TrendingUp className="w-12 h-12 text-primary mb-4" strokeWidth={2} />
+                  <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.trend}</div>
+                  <div className="text-lg text-text-secondary font-medium">Kehitys</div>
+                  <div className="text-sm text-text-secondary mt-2">Edelliseen mittaukseen</div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           {/* Weekly Averages */}
           <div className="mb-12">
             <h2 className="text-h2 font-bold text-text-primary mb-6">Viikon keskiarvot</h2>
-            <div className="card p-8">
-              <div className="grid md:grid-cols-2 gap-8">
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <Heart className="w-8 h-8 text-success" strokeWidth={2} />
-                    <h3 className="text-xl font-bold text-text-primary">Happisaturaatio</h3>
+            {loading ? (
+              <div className="card p-12 text-center">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+              </div>
+            ) : stats && measurements.length > 0 ? (
+              <div className="card p-8">
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Heart className="w-8 h-8 text-success" strokeWidth={2} />
+                      <h3 className="text-xl font-bold text-text-primary">Happisaturaatio</h3>
+                    </div>
+                    <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.spo2}%</div>
+                    <p className="text-text-secondary">Normaali alue: 95-100%</p>
                   </div>
-                  <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.spo2}%</div>
-                  <p className="text-text-secondary">Normaali alue: 95-100%</p>
-                </div>
 
-                <div>
-                  <div className="flex items-center gap-3 mb-4">
-                    <Activity className="w-8 h-8 text-error" strokeWidth={2} />
-                    <h3 className="text-xl font-bold text-text-primary">Syke</h3>
+                  <div>
+                    <div className="flex items-center gap-3 mb-4">
+                      <Activity className="w-8 h-8 text-error" strokeWidth={2} />
+                      <h3 className="text-xl font-bold text-text-primary">Syke</h3>
+                    </div>
+                    <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.heartRate} bpm</div>
+                    <p className="text-text-secondary">Normaali alue: 60-100 bpm</p>
                   </div>
-                  <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.heartRate} bpm</div>
-                  <p className="text-text-secondary">Normaali alue: 60-100 bpm</p>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="card p-8 text-center">
+                <p className="text-text-secondary">Ei tarpeeksi mittauksia keskiarvojen laskentaan</p>
+              </div>
+            )}
           </div>
 
           {/* Quick Links */}

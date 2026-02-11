@@ -5,6 +5,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useState } from 'react'
 import { useRouter } from 'next/router'
+import { apiClient } from '@/lib/api'
 
 export default function AddExercise() {
   const { user } = useAuth()
@@ -67,30 +68,31 @@ export default function AddExercise() {
     setError(null)
 
     try {
-      // TODO: Replace with actual API call
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/measurements/exercise`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          spo2Before: spo2BeforeValue,
-          heartRateBefore: heartRateBeforeValue,
-          spo2After: spo2AfterValue,
-          heartRateAfter: heartRateAfterValue,
-          userId: user?.uid,
-        }),
+      // Create timestamp from date and time
+      const dateTime = new Date(`${formData.date}T${formData.time}`)
+      const measured_at = Math.floor(dateTime.getTime() / 1000) // Unix timestamp in seconds
+      
+      // Save to backend API - Compatible with Android/iOS format
+      await apiClient.createExerciseMeasurement({
+        exercise_type: formData.exerciseType,
+        exercise_duration: formData.duration ? parseInt(formData.duration) : undefined,
+        spo2_before: spo2BeforeValue,
+        heart_rate_before: heartRateBeforeValue,
+        spo2_after: spo2AfterValue,
+        heart_rate_after: heartRateAfterValue,
+        notes: formData.notes,
+        measured_at,
+        created_at: Math.floor(Date.now() / 1000),
+        updated_at: Math.floor(Date.now() / 1000),
       })
-
-      if (!response.ok) throw new Error('Tallennus epäonnistui')
 
       setSuccess(true)
       setTimeout(() => {
         router.push('/dashboard')
       }, 1500)
-    } catch (err) {
-      setError('Mittauksen tallennus epäonnistui. Yritä uudelleen.')
+    } catch (err: any) {
+      console.error('Failed to save exercise measurement:', err)
+      setError(err.message || 'Mittauksen tallennus epäonnistui. Yritä uudelleen.')
       setSaving(false)
     }
   }
