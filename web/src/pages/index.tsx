@@ -31,14 +31,14 @@ export default function Home() {
                 <a href="#miten-toimii" className="text-lg text-text-secondary hover:text-primary transition-colors font-medium">
                   Miten toimii
                 </a>
-                <Link href="/login" className="btn btn-primary">
+                <Link href="/login" className="btn bg-primary text-white hover:bg-primary-dark transition-all px-8 py-3 rounded-2xl font-semibold shadow-lg hover:shadow-xl">
                   Kirjaudu sisään
                 </Link>
               </div>
 
               {/* Mobile Menu Button */}
               <div className="md:hidden">
-                <Link href="/login" className="btn btn-primary text-base px-6 py-3">
+                <Link href="/login" className="btn bg-primary text-white hover:bg-primary-dark transition-all px-6 py-3 rounded-2xl font-semibold shadow-lg">
                   Kirjaudu
                 </Link>
               </div>
