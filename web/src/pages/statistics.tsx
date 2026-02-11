@@ -316,30 +316,30 @@ export default function Statistics() {
               
               {/* Export Buttons */}
               {stats && stats.totalMeasurements > 0 && (
-                <div className="flex flex-wrap gap-2 no-print">
+                <div className="flex flex-col sm:flex-row gap-2 no-print">
                   <button
                     onClick={handlePrint}
-                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px] flex items-center justify-center gap-2"
                     title="Tulosta raportti"
                   >
                     <Printer className="w-5 h-5" />
-                    <span className="hidden sm:inline">Tulosta</span>
+                    <span>Tulosta</span>
                   </button>
                   <button
                     onClick={handleExportCSV}
-                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px] flex items-center justify-center gap-2"
                     title="Lataa CSV"
                   >
                     <FileDown className="w-5 h-5" />
-                    <span className="hidden sm:inline">CSV</span>
+                    <span>CSV</span>
                   </button>
                   <button
                     onClick={handleExportJSON}
-                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px] flex items-center justify-center gap-2"
                     title="Lataa JSON"
                   >
                     <Download className="w-5 h-5" />
-                    <span className="hidden sm:inline">JSON</span>
+                    <span>JSON</span>
                   </button>
                 </div>
               )}
@@ -503,8 +503,8 @@ export default function Statistics() {
               {/* Custom date picker */}
               {showCustomDatePicker && (
                 <div className="bg-surface p-4 rounded-xl border-2 border-primary mb-4">
-                  <div className="flex flex-wrap items-end gap-4">
-                    <div className="flex-1 min-w-[200px]">
+                  <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+                    <div className="flex-1 sm:min-w-[200px]">
                       <label className="block text-sm font-medium text-text-secondary mb-2">
                         Alkupäivä
                       </label>
@@ -516,7 +516,7 @@ export default function Statistics() {
                         max={customEndDate || new Date().toISOString().split('T')[0]}
                       />
                     </div>
-                    <div className="flex-1 min-w-[200px]">
+                    <div className="flex-1 sm:min-w-[200px]">
                       <label className="block text-sm font-medium text-text-secondary mb-2">
                         Loppupäivä
                       </label>
@@ -532,7 +532,7 @@ export default function Statistics() {
                     <button
                       onClick={applyCustomDateRange}
                       disabled={!customStartDate || !customEndDate}
-                      className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
                     >
                       Näytä
                     </button>

@@ -173,30 +173,30 @@ export default function History() {
               
               {/* Export Buttons */}
               {filteredMeasurements.length > 0 && (
-                <div className="flex flex-wrap gap-2 no-print">
+                <div className="flex flex-col sm:flex-row gap-2 no-print">
                   <button
                     onClick={handlePrint}
-                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px] flex items-center justify-center gap-2"
                     title="Tulosta lista"
                   >
                     <Printer className="w-5 h-5" />
-                    <span className="hidden sm:inline">Tulosta</span>
+                    <span>Tulosta</span>
                   </button>
                   <button
                     onClick={handleExportCSV}
-                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px] flex items-center justify-center gap-2"
                     title="Lataa CSV"
                   >
                     <FileDown className="w-5 h-5" />
-                    <span className="hidden sm:inline">CSV</span>
+                    <span>CSV</span>
                   </button>
                   <button
                     onClick={handleExportJSON}
-                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px]"
+                    className="btn btn-secondary text-base py-3 px-5 min-h-[48px] flex items-center justify-center gap-2"
                     title="Lataa JSON"
                   >
                     <Download className="w-5 h-5" />
-                    <span className="hidden sm:inline">JSON</span>
+                    <span>JSON</span>
                   </button>
                 </div>
               )}
