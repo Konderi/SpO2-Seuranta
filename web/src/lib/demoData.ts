@@ -177,6 +177,11 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
   const min = (arr: number[]) => arr.length > 0 ? Math.min(...arr) : 0
   const max = (arr: number[]) => arr.length > 0 ? Math.max(...arr) : 0
 
+  // Calculate warning count (measurements below 90%)
+  const DEFAULT_SPO2_THRESHOLD = 90
+  const warningCount = allSpo2.filter(v => v < DEFAULT_SPO2_THRESHOLD).length
+  const warningPercentage = allSpo2.length > 0 ? Math.round((warningCount / allSpo2.length) * 100) : 0
+
   return {
     spo2: {
       current: allSpo2[0] || 0,
@@ -194,6 +199,9 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
     },
     totalMeasurements: dailyMeasurements.length,
     exerciseSessions: exerciseMeasurements.length,
+    warningCount,
+    warningPercentage,
+    warningThreshold: DEFAULT_SPO2_THRESHOLD,
   }
 }
 

@@ -267,3 +267,11 @@ export function formatStatisticsForExport(stats: any, timeRange: string) {
     Liikuntakertoja: stats.exerciseSessions
   }
 }
+
+/**
+ * Print current page graphically using browser's native print
+ * This will print the actual page with all charts and styling
+ */
+export function printCurrentPage() {
+  window.print()
+}

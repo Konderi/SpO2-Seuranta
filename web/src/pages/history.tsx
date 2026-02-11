@@ -6,7 +6,7 @@ import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
-import { openPrintView, downloadCSV, downloadJSON, formatMeasurementForExport } from '@/lib/exportUtils'
+import { openPrintView, downloadCSV, downloadJSON, formatMeasurementForExport, printCurrentPage } from '@/lib/exportUtils'
 
 export default function History() {
   const { user, signOut } = useAuth()
@@ -109,19 +109,8 @@ export default function History() {
   }
 
   const handlePrint = () => {
-    const filterText = 
-      filter === 'all' ? 'Kaikki mittaukset' : 
-      filter === 'daily' ? 'Päivittäiset mittaukset' : 
-      'Liikuntamittaukset'
-    
-    const exportData = filteredMeasurements.map(m => formatMeasurementForExport(m))
-    const headers = Object.keys(exportData[0] || {})
-    
-    openPrintView(
-      exportData,
-      headers,
-      `Hapetus Mittaushistoria - ${filterText}`
-    )
+    // Use native browser print to print the page with all measurements
+    printCurrentPage()
   }
 
   return (

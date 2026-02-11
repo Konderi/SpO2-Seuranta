@@ -8,9 +8,12 @@ import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { generateDailyChartData, generateWeeklyChartData } from '@/lib/demoData'
-import { openPrintView, downloadCSV, downloadJSON, formatStatisticsForExport } from '@/lib/exportUtils'
+import { openPrintView, downloadCSV, downloadJSON, formatStatisticsForExport, printCurrentPage } from '@/lib/exportUtils'
 
 type TimeRange = '7days' | '30days' | '3months' | 'custom'
+
+// Default SpO2 warning threshold (can be made configurable later)
+const DEFAULT_SPO2_THRESHOLD = 90
 
 export default function Statistics() {
   const { user, signOut } = useAuth()
@@ -84,6 +87,10 @@ export default function Statistics() {
           
           const avg = (arr: number[]) => arr.length > 0 ? Math.round(arr.reduce((a, b) => a + b, 0) / arr.length) : 0
           
+          // Calculate warning count (measurements below threshold)
+          const warningCount = spo2Values.filter(v => v < DEFAULT_SPO2_THRESHOLD).length
+          const warningPercentage = spo2Values.length > 0 ? Math.round((warningCount / spo2Values.length) * 100) : 0
+          
           setStats({
             spo2: {
               current: dailyFiltered[0]?.spo2 || 0,
@@ -101,6 +108,9 @@ export default function Statistics() {
             },
             totalMeasurements: dailyFiltered.length,
             exerciseSessions: filteredMeasurements.filter(m => m.type === 'exercise').length,
+            warningCount,
+            warningPercentage,
+            warningThreshold: DEFAULT_SPO2_THRESHOLD,
           })
           
           // Generate chart data grouped by date
@@ -174,6 +184,10 @@ export default function Statistics() {
         // Get latest measurement from daily data
         const latestDaily = dailyData.length > 0 ? dailyData[0] : null
 
+        // Calculate warning count from daily data
+        const warningCount = dailyData.filter((m: any) => m.spo2 < DEFAULT_SPO2_THRESHOLD).length
+        const warningPercentage = dailyData.length > 0 ? Math.round((warningCount / dailyData.length) * 100) : 0
+
         setStats({
           spo2: {
             current: latestDaily?.spo2 || 0,
@@ -191,6 +205,9 @@ export default function Statistics() {
           },
           totalMeasurements: dailyData.length,
           exerciseSessions: exerciseData.length,
+          warningCount,
+          warningPercentage,
+          warningThreshold: DEFAULT_SPO2_THRESHOLD,
         })
 
         // Generate chart data from filtered daily stats
@@ -209,6 +226,9 @@ export default function Statistics() {
           heartRate: { current: 0, average7days: 0, average30days: 0, min: 0, max: 0 },
           totalMeasurements: 0,
           exerciseSessions: 0,
+          warningCount: 0,
+          warningPercentage: 0,
+          warningThreshold: DEFAULT_SPO2_THRESHOLD,
         })
         setChartData([])
       } finally {
@@ -301,20 +321,8 @@ export default function Statistics() {
   }
 
   const handlePrint = () => {
-    const timeRangeText = 
-      timeRange === '7days' ? '7 päivää' :
-      timeRange === '30days' ? '30 päivää' :
-      timeRange === '3months' ? '3 kuukautta' :
-      `${customStartDate} - ${customEndDate}`
-    
-    // Prepare summary statistics only (no undefined chart data)
-    const summaryData = [formatStatisticsForExport(stats, timeRangeText)]
-    
-    openPrintView(
-      summaryData,
-      Object.keys(summaryData[0] || {}),
-      `Hapetus Tilastot - ${timeRangeText}`
-    )
+    // Use native browser print to print the page with all charts and styling
+    printCurrentPage()
   }
 
   return (
@@ -615,6 +623,58 @@ export default function Statistics() {
               </div>
             </div>
           </div>
+
+          {/* Warning Statistics */}
+          {stats.warningCount !== undefined && (
+            <div className={`card p-8 mb-12 ${stats.warningCount > 0 ? 'border-2 border-yellow-500' : ''}`}>
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
+                  stats.warningCount > 0 ? 'bg-yellow-100' : 'bg-green-100'
+                }`}>
+                  <Activity className={`w-8 h-8 ${
+                    stats.warningCount > 0 ? 'text-yellow-600' : 'text-green-600'
+                  }`} strokeWidth={2} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-text-primary">Varoitusmittaukset</h2>
+                  <p className="text-text-secondary text-sm mt-1">
+                    SpO2 alle {stats.warningThreshold}%
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="p-6 bg-surface rounded-xl">
+                  <p className="text-text-secondary mb-2">Varoitusmittauksia</p>
+                  <p className={`text-4xl font-bold ${
+                    stats.warningCount > 0 ? 'text-yellow-600' : 'text-green-600'
+                  }`}>
+                    {stats.warningCount}
+                  </p>
+                </div>
+                <div className="p-6 bg-surface rounded-xl">
+                  <p className="text-text-secondary mb-2">Osuus mittauksista</p>
+                  <p className={`text-4xl font-bold ${
+                    stats.warningPercentage > 20 ? 'text-red-600' : 
+                    stats.warningPercentage > 10 ? 'text-yellow-600' : 
+                    'text-green-600'
+                  }`}>
+                    {stats.warningPercentage}%
+                  </p>
+                </div>
+              </div>
+              
+              {stats.warningCount > 0 && (
+                <div className="mt-4 p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <p className="text-sm text-yellow-800">
+                    <strong>Huomio:</strong> Sinulla on {stats.warningCount} mittausta, joissa happisaturaatio 
+                    on ollut alle {stats.warningThreshold}%. Jos matalia arvoja esiintyy usein, 
+                    ota yhteyttä terveydenhuollon ammattilaiseen.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
 
           {/* Trend Charts */}
           <div className="card p-8 mb-12">
