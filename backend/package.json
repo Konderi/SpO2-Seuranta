@@ -1,0 +1,27 @@
+{
+  "name": "hapetus-backend",
+  "version": "1.0.0",
+  "description": "Hapetus API Backend - Cloudflare Workers",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "db:create": "wrangler d1 create hapetus-db",
+    "db:migrations:create": "wrangler d1 migrations create hapetus-db",
+    "db:migrations:apply": "wrangler d1 migrations apply hapetus-db --local",
+    "db:migrations:apply:remote": "wrangler d1 migrations apply hapetus-db --remote"
+  },
+  "keywords": ["cloudflare", "workers", "hapetus", "spo2", "health"],
+  "author": "Konderi",
+  "license": "MIT",
+  "dependencies": {
+    "hono": "^4.0.0",
+    "firebase-admin": "^12.0.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20240129.0",
+    "wrangler": "^3.25.0",
+    "typescript": "^5.3.3"
+  }
+}

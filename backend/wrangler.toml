@@ -1,0 +1,23 @@
+name = "hapetus-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+
+# Workers configuration
+workers_dev = true
+route = "api.hapetus.info/*"
+
+# D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "hapetus-db"
+database_id = "" # Will be filled after creation
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+CORS_ORIGIN = "https://hapetus.info"
+
+# Secrets (set via: wrangler secret put <NAME>)
+# FIREBASE_PROJECT_ID
+# FIREBASE_PRIVATE_KEY
+# FIREBASE_CLIENT_EMAIL

@@ -1,12 +1,157 @@
-# Hapetus Backend
+# Hapetus API Backend
 
-**Cloudflare Workers & D1 Database (Optional)**
+**Cloudflare Workers** backend for the Hapetus SpO2 monitoring application.
 
-## 📋 Status: Optional / Not Currently Needed
+## 🚀 Tech Stack
 
-This directory is reserved for potential Cloudflare Workers backend if we decide to migrate away from Firebase in the future.
+- **Cloudflare Workers**: Serverless API
+- **Cloudflare D1**: SQL Database
+- **Hono**: Fast web framework
+- **TypeScript**: Type-safe development
+- **Firebase Auth**: Authentication
 
----
+## 📋 Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Cloudflare account
+- Wrangler CLI (`npm install -g wrangler`)
+
+## 🛠️ Setup
+
+### 1. Install Dependencies
+
+```bash
+cd backend
+npm install
+```
+
+### 2. Login to Cloudflare
+
+```bash
+wrangler login
+```
+
+### 3. Create D1 Database
+
+```bash
+wrangler d1 create hapetus-db
+```
+
+Copy the database ID from the output and update `wrangler.toml`:
+
+```toml
+[[d1_databases]]
+binding = "DB"
+database_name = "hapetus-db"
+database_id = "YOUR_DATABASE_ID_HERE"
+```
+
+### 4. Run Migrations
+
+```bash
+# Local development
+npm run db:migrations:apply
+
+# Production
+npm run db:migrations:apply:remote
+```
+
+### 5. Set Environment Variables
+
+Create `.dev.vars` file (for local development):
+
+```bash
+cp .dev.vars.example .dev.vars
+```
+
+Edit `.dev.vars` and add your Firebase credentials.
+
+For production, use Wrangler secrets:
+
+```bash
+wrangler secret put FIREBASE_PROJECT_ID
+wrangler secret put FIREBASE_PRIVATE_KEY
+wrangler secret put FIREBASE_CLIENT_EMAIL
+```
+
+## 🏃 Development
+
+```bash
+# Start local development server
+npm run dev
+```
+
+API will be available at `http://localhost:8787`
+
+## 🚀 Deployment
+
+```bash
+# Deploy to Cloudflare Workers
+npm run deploy
+```
+
+## 📡 API Endpoints
+
+### Public
+
+- `GET /` - API info
+- `GET /health` - Health check
+
+### Authentication Required
+
+**Daily Measurements**
+- `GET /api/daily` - Get all daily measurements
+- `GET /api/daily/range?start=&end=` - Get measurements by date range
+- `POST /api/daily` - Create new measurement
+- `PUT /api/daily/:id` - Update measurement
+- `DELETE /api/daily/:id` - Delete measurement
+
+**Exercise Measurements**
+- `GET /api/exercise` - Get all exercise measurements
+- `POST /api/exercise` - Create new measurement
+- `DELETE /api/exercise/:id` - Delete measurement
+
+**Statistics**
+- `GET /api/stats/week` - 7-day averages
+- `GET /api/stats/range?start=&end=` - Custom range statistics
+- `GET /api/stats/daily?days=30` - Daily aggregates for charting
+
+**User**
+- `GET /api/user/profile` - Get or create user profile
+- `GET /api/user/settings` - Get user settings
+- `PUT /api/user/settings` - Update user settings
+
+## 🔒 Authentication
+
+All `/api/*` endpoints require Firebase authentication token in the `Authorization` header:
+
+```
+Authorization: Bearer <firebase-id-token>
+```
+
+## 📊 Database Schema
+
+See `migrations/0001_initial_schema.sql` for the complete database schema.
+
+**Tables:**
+- `users` - User profiles
+- `user_settings` - User preferences and thresholds
+- `daily_measurements` - Daily SpO2 and heart rate measurements
+- `exercise_measurements` - Before/after exercise measurements
+
+## 🔧 Configuration
+
+Edit `wrangler.toml` to configure:
+- Routes
+- Environment variables
+- Database bindings
+- Workers settings
+
+## 📝 License
+
+MIT
+
 
 ## 🎯 Current Architecture
 
