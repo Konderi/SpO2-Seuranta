@@ -13,6 +13,7 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 ### Kehitysympäristö
 - **[ANDROID_STUDIO_IMPORT.md](ANDROID_STUDIO_IMPORT.md)** - Projektin avaaminen Android Studiossa
 - **[ANDROID_STUDIO_SYNC_GUIDE.md](ANDROID_STUDIO_SYNC_GUIDE.md)** - Gradle-synkronoinnin korjaaminen
+- **[JAVA_JDK_SETUP.md](JAVA_JDK_SETUP.md)** - Java JDK 17+ asennus VS Codelle ✅
 
 ### Ongelmanratkaisu
 - **[SHA1_SETUP.md](SHA1_SETUP.md)** - Google Sign-In: SHA-1 fingerprint -asennus
