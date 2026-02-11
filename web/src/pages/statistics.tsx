@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, ArrowLeft, TrendingUp, Heart, BarChart3 } from 'lucide-react'
+import { Activity, ArrowLeft, TrendingUp, Heart, BarChart3, Calendar } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -9,20 +9,86 @@ import { apiClient } from '@/lib/api'
 import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts'
 import { generateDailyChartData, generateWeeklyChartData } from '@/lib/demoData'
 
+type TimeRange = '7days' | '30days' | '3months' | 'custom'
+
 export default function Statistics() {
   const { user } = useAuth()
   const { isDemoMode, demoMeasurements, demoStats } = useDemo()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<any>(null)
-  const [chartPeriod, setChartPeriod] = useState<'daily' | 'weekly'>('daily')
+  const [timeRange, setTimeRange] = useState<TimeRange>('30days')
   const [chartData, setChartData] = useState<any[]>([])
+  const [customStartDate, setCustomStartDate] = useState('')
+  const [customEndDate, setCustomEndDate] = useState('')
+  const [showCustomDatePicker, setShowCustomDatePicker] = useState(false)
+
+  // Helper function to filter data by date range
+  const filterDataByRange = (data: any[], range: TimeRange, startDate?: string, endDate?: string) => {
+    const now = new Date()
+    let cutoffDate = new Date()
+    
+    switch (range) {
+      case '7days':
+        cutoffDate.setDate(now.getDate() - 7)
+        break
+      case '30days':
+        cutoffDate.setDate(now.getDate() - 30)
+        break
+      case '3months':
+        cutoffDate.setMonth(now.getMonth() - 3)
+        break
+      case 'custom':
+        if (startDate && endDate) {
+          return data.filter((item: any) => {
+            const itemDate = new Date(item.measured_at * 1000)
+            return itemDate >= new Date(startDate) && itemDate <= new Date(endDate + 'T23:59:59')
+          })
+        }
+        return data
+      default:
+        cutoffDate.setDate(now.getDate() - 30)
+    }
+    
+    return data.filter((item: any) => {
+      const itemDate = new Date(item.measured_at * 1000)
+      return itemDate >= cutoffDate
+    })
+  }
 
   useEffect(() => {
     const fetchStatistics = async () => {
       if (isDemoMode) {
-        // Use demo data
-        setStats(demoStats)
-        setChartData(generateDailyChartData(demoMeasurements))
+        // Use demo data - filter by time range
+        const filteredMeasurements = filterDataByRange(demoMeasurements, timeRange, customStartDate, customEndDate)
+        
+        // Recalculate stats for filtered data
+        if (filteredMeasurements.length > 0) {
+          const spo2Values = filteredMeasurements.map(m => m.spo2)
+          const hrValues = filteredMeasurements.map(m => m.heart_rate)
+          
+          setStats({
+            spo2: {
+              current: filteredMeasurements[0].spo2,
+              average7days: Math.round(spo2Values.reduce((a, b) => a + b, 0) / spo2Values.length),
+              average30days: Math.round(spo2Values.reduce((a, b) => a + b, 0) / spo2Values.length),
+              min: Math.min(...spo2Values),
+              max: Math.max(...spo2Values),
+            },
+            heartRate: {
+              current: filteredMeasurements[0].heart_rate,
+              average7days: Math.round(hrValues.reduce((a, b) => a + b, 0) / hrValues.length),
+              average30days: Math.round(hrValues.reduce((a, b) => a + b, 0) / hrValues.length),
+              min: Math.min(...hrValues),
+              max: Math.max(...hrValues),
+            },
+            totalMeasurements: filteredMeasurements.length,
+            exerciseSessions: filteredMeasurements.filter(m => m.type === 'exercise').length,
+          })
+        } else {
+          setStats(demoStats)
+        }
+        
+        setChartData(generateDailyChartData(filteredMeasurements))
         setLoading(false)
         return
       }
@@ -30,17 +96,34 @@ export default function Statistics() {
       try {
         const [weeklyStats, dailyStats, dailyData, exerciseData] = await Promise.all([
           apiClient.getWeeklyStats(),
-          apiClient.getDailyStats(30), // Get 30 days for monthly stats
+          apiClient.getDailyStats(90), // Get 90 days to support 3 months
           apiClient.getDailyMeasurements(),
           apiClient.getExerciseMeasurements()
         ])
 
-        // Calculate monthly stats from daily stats
-        const monthlyAvgSpo2 = dailyStats.length > 0
-          ? Math.round(dailyStats.reduce((sum: any, s: any) => sum + s.avg_spo2, 0) / dailyStats.length)
+        // Filter daily stats based on time range
+        let filteredDailyStats = dailyStats
+        if (timeRange === '7days') {
+          filteredDailyStats = dailyStats.slice(0, 7)
+        } else if (timeRange === '30days') {
+          filteredDailyStats = dailyStats.slice(0, 30)
+        } else if (timeRange === '3months') {
+          filteredDailyStats = dailyStats.slice(0, 90)
+        } else if (timeRange === 'custom' && customStartDate && customEndDate) {
+          const start = new Date(customStartDate).getTime()
+          const end = new Date(customEndDate + 'T23:59:59').getTime()
+          filteredDailyStats = dailyStats.filter((day: any) => {
+            const dayTime = new Date(day.date).getTime()
+            return dayTime >= start && dayTime <= end
+          })
+        }
+
+        // Calculate stats from filtered data
+        const avgSpo2 = filteredDailyStats.length > 0
+          ? Math.round(filteredDailyStats.reduce((sum: any, s: any) => sum + s.avg_spo2, 0) / filteredDailyStats.length)
           : 0
-        const monthlyAvgHR = dailyStats.length > 0
-          ? Math.round(dailyStats.reduce((sum: any, s: any) => sum + s.avg_heart_rate, 0) / dailyStats.length)
+        const avgHR = filteredDailyStats.length > 0
+          ? Math.round(filteredDailyStats.reduce((sum: any, s: any) => sum + s.avg_heart_rate, 0) / filteredDailyStats.length)
           : 0
 
         // Get latest measurement from daily data
@@ -50,14 +133,14 @@ export default function Statistics() {
           spo2: {
             current: latestDaily?.spo2 || 0,
             average7days: weeklyStats.avg_spo2 ? Math.round(weeklyStats.avg_spo2) : 0,
-            average30days: monthlyAvgSpo2,
+            average30days: avgSpo2,
             min: weeklyStats.min_spo2 || 0,
             max: weeklyStats.max_spo2 || 0,
           },
           heartRate: {
             current: latestDaily?.heart_rate || 0,
             average7days: weeklyStats.avg_heart_rate ? Math.round(weeklyStats.avg_heart_rate) : 0,
-            average30days: monthlyAvgHR,
+            average30days: avgHR,
             min: weeklyStats.min_heart_rate || 0,
             max: weeklyStats.max_heart_rate || 0,
           },
@@ -65,8 +148,8 @@ export default function Statistics() {
           exerciseSessions: exerciseData.length,
         })
 
-        // Generate chart data from daily stats
-        const formattedChartData = dailyStats.map((day: any) => ({
+        // Generate chart data from filtered daily stats
+        const formattedChartData = filteredDailyStats.map((day: any) => ({
           date: new Date(day.date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' }),
           dateLabel: new Date(day.date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' }),
           spo2: Math.round(day.avg_spo2 * 10) / 10,
@@ -89,17 +172,34 @@ export default function Statistics() {
     }
 
     fetchStatistics()
-  }, [isDemoMode, demoMeasurements, demoStats])
+  }, [isDemoMode, demoMeasurements, demoStats, timeRange, customStartDate, customEndDate])
 
-  // Toggle chart period
-  const handleChartPeriodChange = (period: 'daily' | 'weekly') => {
-    setChartPeriod(period)
-    if (isDemoMode) {
-      if (period === 'daily') {
-        setChartData(generateDailyChartData(demoMeasurements))
-      } else {
-        setChartData(generateWeeklyChartData(demoMeasurements))
+  // Handle time range change
+  const handleTimeRangeChange = (range: TimeRange) => {
+    setTimeRange(range)
+    if (range === 'custom') {
+      setShowCustomDatePicker(true)
+      // Set default dates if not set
+      if (!customEndDate) {
+        const today = new Date().toISOString().split('T')[0]
+        setCustomEndDate(today)
       }
+      if (!customStartDate) {
+        const thirtyDaysAgo = new Date()
+        thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30)
+        setCustomStartDate(thirtyDaysAgo.toISOString().split('T')[0])
+      }
+    } else {
+      setShowCustomDatePicker(false)
+    }
+  }
+
+  // Apply custom date range
+  const applyCustomDateRange = () => {
+    if (customStartDate && customEndDate) {
+      setShowCustomDatePicker(false)
+      // Trigger re-fetch by updating state
+      setTimeRange('custom')
     }
   }
 
@@ -253,29 +353,93 @@ export default function Statistics() {
 
           {/* Trend Charts */}
           <div className="card p-8 mb-12">
-            <div className="flex items-center justify-between mb-6">
-              <div className="flex items-center gap-4">
-                <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="w-8 h-8 text-primary" strokeWidth={2} />
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
+                    <TrendingUp className="w-8 h-8 text-primary" strokeWidth={2} />
+                  </div>
+                  <h2 className="text-2xl font-bold text-text-primary">Kehitys</h2>
                 </div>
-                <h2 className="text-2xl font-bold text-text-primary">Kehitys</h2>
               </div>
               
-              {/* Period selector */}
-              <div className="flex gap-2">
+              {/* Time range selector */}
+              <div className="flex flex-wrap gap-2 mb-4">
                 <button
-                  onClick={() => handleChartPeriodChange('daily')}
-                  className={`btn ${chartPeriod === 'daily' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
+                  onClick={() => handleTimeRangeChange('7days')}
+                  className={`btn ${timeRange === '7days' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
+                >
+                  7 päivää
+                </button>
+                <button
+                  onClick={() => handleTimeRangeChange('30days')}
+                  className={`btn ${timeRange === '30days' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
                 >
                   30 päivää
                 </button>
                 <button
-                  onClick={() => handleChartPeriodChange('weekly')}
-                  className={`btn ${chartPeriod === 'weekly' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
+                  onClick={() => handleTimeRangeChange('3months')}
+                  className={`btn ${timeRange === '3months' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
                 >
-                  Viikot
+                  3 kuukautta
+                </button>
+                <button
+                  onClick={() => handleTimeRangeChange('custom')}
+                  className={`btn ${timeRange === 'custom' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'} flex items-center gap-2`}
+                >
+                  <Calendar className="w-4 h-4" />
+                  Valitse aikaväli
                 </button>
               </div>
+
+              {/* Custom date picker */}
+              {showCustomDatePicker && (
+                <div className="bg-surface p-4 rounded-xl border-2 border-primary mb-4">
+                  <div className="flex flex-wrap items-end gap-4">
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-sm font-medium text-text-secondary mb-2">
+                        Alkupäivä
+                      </label>
+                      <input
+                        type="date"
+                        value={customStartDate}
+                        onChange={(e) => setCustomStartDate(e.target.value)}
+                        className="input w-full"
+                        max={customEndDate || new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                    <div className="flex-1 min-w-[200px]">
+                      <label className="block text-sm font-medium text-text-secondary mb-2">
+                        Loppupäivä
+                      </label>
+                      <input
+                        type="date"
+                        value={customEndDate}
+                        onChange={(e) => setCustomEndDate(e.target.value)}
+                        className="input w-full"
+                        min={customStartDate}
+                        max={new Date().toISOString().split('T')[0]}
+                      />
+                    </div>
+                    <button
+                      onClick={applyCustomDateRange}
+                      disabled={!customStartDate || !customEndDate}
+                      className="btn btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      Näytä
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Display current range info */}
+              <p className="text-sm text-text-secondary">
+                {timeRange === '7days' && 'Näytetään viimeisten 7 päivän mittaukset'}
+                {timeRange === '30days' && 'Näytetään viimeisten 30 päivän mittaukset'}
+                {timeRange === '3months' && 'Näytetään viimeisten 3 kuukauden mittaukset'}
+                {timeRange === 'custom' && customStartDate && customEndDate && 
+                  `Näytetään mittaukset ${new Date(customStartDate).toLocaleDateString('fi-FI')} - ${new Date(customEndDate).toLocaleDateString('fi-FI')}`}
+              </p>
             </div>
 
             {chartData.length > 0 ? (
@@ -296,7 +460,7 @@ export default function Statistics() {
                       </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis 
-                        dataKey={chartPeriod === 'daily' ? 'dateLabel' : 'weekLabel'}
+                        dataKey="dateLabel"
                         stroke="#6b7280"
                         style={{ fontSize: '14px' }}
                       />
@@ -337,7 +501,7 @@ export default function Statistics() {
                     <LineChart data={chartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                       <XAxis 
-                        dataKey={chartPeriod === 'daily' ? 'dateLabel' : 'weekLabel'}
+                        dataKey="dateLabel"
                         stroke="#6b7280"
                         style={{ fontSize: '14px' }}
                       />
