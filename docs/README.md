@@ -31,6 +31,7 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 - **[EXPORT_PRINT_FEATURE.md](EXPORT_PRINT_FEATURE.md)** - Vie CSV/JSON ja tulostustoiminto
 - **[PRINT_FORMAT_EXAMPLES.md](PRINT_FORMAT_EXAMPLES.md)** - Tulostusformaatin esimerkit (tilastot & historia) ✅
 - **[NAVIGATION_AND_PRINT_FIX.md](NAVIGATION_AND_PRINT_FIX.md)** - Navigaation palautus & tulostuksen parannus ✅
+- **[GRAPHICAL_PRINT_AND_WARNINGS.md](GRAPHICAL_PRINT_AND_WARNINGS.md)** - Graafinen tulostus & varoitusmittaukset ✅
 
 ### Mobiilioptiimointi
 - **[MOBILE_OPTIMIZATION_COMPLETE.md](MOBILE_OPTIMIZATION_COMPLETE.md)** - Mobiiliresponsiivisuuden parannukset ✅
@@ -74,8 +75,9 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 **Viimeksi päivitetty:** 12.2.2026
 
 **Viimeisimmät päivitykset:**
+- ✅ Graafinen tulostus: Tilastot ja historia tulostetaan kaavioiden kanssa
+- ✅ Varoitusmittaukset: Seuranta SpO2-arvoille alle 90%
+- ✅ Värikoodatut varoitukset: Vihreä/keltainen/punainen indikaattorit
 - ✅ Navigaatiovalikko palautettu tilastot- ja historiasivuille
-- ✅ Tulostustoiminto uudistettu: siisti taulukkopohjainen muoto
-- ✅ Mobiilinäkymä korjattu: aikavälinappulat eivät ylitä reunoja
-- ✅ Print-formaatti: 2x suuremmat fontit, parempi luettavuus
-- ✅ Demo-tila: 90 päivän data, realistiset alhaisen SpO2:n jaksot
+- ✅ Tulostustoiminto: Käyttää natiivitulostusta kaavioiden kanssa
+- ✅ Demo-tila: Varoituslaskenta automaattisesti mukana

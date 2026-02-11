@@ -689,28 +689,28 @@ export default function Statistics() {
               </div>
               
               {/* Time range selector */}
-              <div className="flex flex-wrap gap-2 mb-4 no-print -mx-1 px-1">
+              <div className="flex flex-wrap gap-2 mb-4 no-print">
                 <button
                   onClick={() => handleTimeRangeChange('7days')}
-                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap ${timeRange === '7days' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
+                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 ${timeRange === '7days' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
                 >
                   7 päivää
                 </button>
                 <button
                   onClick={() => handleTimeRangeChange('30days')}
-                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap ${timeRange === '30days' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
+                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 ${timeRange === '30days' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
                 >
                   30 päivää
                 </button>
                 <button
                   onClick={() => handleTimeRangeChange('3months')}
-                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap ${timeRange === '3months' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
+                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 ${timeRange === '3months' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
                 >
                   3 kuukautta
                 </button>
                 <button
                   onClick={() => handleTimeRangeChange('custom')}
-                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 whitespace-nowrap ${timeRange === 'custom' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'} flex items-center gap-1 sm:gap-2`}
+                  className={`btn text-sm sm:text-base px-3 sm:px-4 py-2 sm:py-3 ${timeRange === 'custom' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'} flex items-center gap-1 sm:gap-2`}
                 >
                   <Calendar className="w-4 h-4" />
                   <span className="hidden xs:inline">Valitse aikaväli</span>
