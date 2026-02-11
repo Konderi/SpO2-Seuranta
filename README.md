@@ -1,246 +1,305 @@
-# SpO2 Seuranta - Happisaturaatio ja Sykkeen Seurantasovellus
-
-**[🇬🇧 Read in English](README_EN.md)** | **[📖 Technical Documentation](README_EN.md)**
+# Hapetus - Professional Health Monitoring Platform
 
 <div align="center">
   
-  **Ammattilaistason natiivi Android-sovellus happisaturaation ja sykkeen seurantaan**
+  **🫁 Professional SpO2 and Heart Rate Monitoring**
   
-  [![Android](https://img.shields.io/badge/Alusta-Android-green.svg)](https://www.android.com/)
-  [![Kotlin](https://img.shields.io/badge/Kieli-Kotlin-blue.svg)](https://kotlinlang.org/)
-  [![Jetpack Compose](https://img.shields.io/badge/UI-Jetpack%20Compose-4285F4.svg)](https://developer.android.com/jetpack/compose)
-  [![Material Design 3](https://img.shields.io/badge/Muotoilu-Material%203-757575.svg)](https://m3.material.io/)
+  [![Android](https://img.shields.io/badge/Platform-Android-green.svg)](https://www.android.com/)
+  [![Website](https://img.shields.io/badge/Platform-Web-blue.svg)](https://hapetus.info)
+  [![iOS](https://img.shields.io/badge/Platform-iOS-lightgrey.svg?logo=apple)](https://www.apple.com/ios/)
+  [![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+  
+  [🌐 Website](https://hapetus.info) • [📱 Android App](android/) • [📖 Documentation](shared/docs/) • [🎨 Design System](shared/design/)
   
 </div>
 
-## 📋 Yleiskuvaus
+---
 
-SpO2 Seuranta on ammattilaistason Android-sovellus veren happisaturaation (SpO2) ja sykkeen seurantaan. Sovellus on suunniteltu erityisesti iäkkäille käyttäjille, joilla on hengityselinsairauksia (COPD yms.). Sovellus tarjoaa helppokäyttöisen käyttöliittymän, jossa on suuret painikkeet ja selkeä typografia.
+## 🎯 Project Overview
 
-### Keskeiset ominaisuudet
+**Hapetus** (Finnish: Oxygenation) is a professional, multi-platform health monitoring system for tracking blood oxygen saturation (SpO2) and heart rate. Designed specifically for individuals with respiratory conditions (COPD, asthma) and elderly users who need simple, reliable health monitoring.
 
-- **📊 Päivittäiset mittaukset** - Nopea SpO2 (50-100%) ja sykkeen tallentaminen automaattisella aikaleimalla
-- **🏃 Liikunnan seuranta** - Ennen/jälkeen mittaukset liikunnan yhteydessä
-- **📈 Raportit ja tilastot** - 7 päivän keskiarvot, trendianalyysi ja graafiset kuvaajat
-- **⚠️ Älykäs hälytysjärjestelmä** - Säädettävät matalan hapen hälytykset
-- **🔐 Google-kirjautuminen** - Turvallinen tunnistautuminen ja monilaitesynkronointi
-- **♿ Esteettömyys** - Suuri fontti -vaihtoehto, korkea kontrasti, yksinkertainen navigointi
-- **🎨 Ammattimainen ulkoasu** - Moderni Material Design 3 lääketieteellisellä ilmeellä
-- **📊 Visuaaliset kuvaajat** - Trendigraafit Vico Charts -kirjastolla
-- **🇫🇮 Suomen kieli** - Täysin suomenkielinen käyttöliittymä
+### 🌟 Core Values
 
-## 🎯 Käyttötarkoitus
-
-Sovellus on suunniteltu henkilöille, jotka tarvitsevat säännöllistä happisaturaation ja sykkeen seurantaa. Tyypillisiä käyttäjiä ovat:
-
-- **COPD-potilaat** - Kroonisen keuhkoahtaumataudin seuranta
-- **Astmaatikot** - Hengitystoiminnan tarkkailu
-- **Sydänpotilaat** - Sykkeen ja hapen seuranta
-- **Liikunta-aktiiviset** - Suorituskyvyn mittaaminen ennen ja jälkeen liikunnan
-- **Ikääntyneet** - Yleinen terveydentilan seuranta
-
-## 📱 Ominaisuudet yksityiskohtaisesti
-
-### Päivittäinen mittaus
-
-- **Nopea syöttö**: Yksinkertainen lomake SpO2:lle ja sykkeelle
-- **Automaattinen aikaleima**: Päivämäärä ja kellonaika tallentuvat automaattisesti
-- **Muistiinpanot**: Valinnainen kenttä huomioille (esim. "Väsynyt olo")
-- **Vahvistus**: Reaaliaikainen syötteen tarkistus (SpO2: 50-100%, Syke: 30-220)
-- **Historia**: Viimeisimmät mittaukset näkyvissä lomakkeen alapuolella
-- **Matalan hapen hälytys**: Automaattinen varoitus, kun SpO2 laskee alle raja-arvon
-- **Värillinen käyttöliittymä**: Kevyt indigonsininen kortti selkeään erotteluun
-
-### Liikunnan mittaus
-
-- **Ennen/jälkeen seuranta**: Erilliset mittaukset ennen ja jälkeen liikunnan
-- **Liikunnan kuvaus**: Vapaa tekstikenttä (esim. "Kävely 15 minuuttia")
-- **Muutoksen laskenta**: Automaattinen SpO2:n ja sykkeen muutoksen laskenta
-- **Merkittävän laskun varoitus**: Hälytys, jos SpO2 laskee yli 5% liikunnan aikana
-- **Historiatiedot**: Kaikki aiemmat liikuntasuoritukset nähtävissä
-- **Trendianalyysi**: Ennen/jälkeen arvojen vertailu ajan mittaan
-
-### Raportit ja tilastot
-
-**Aikavälit**:
-- 7 päivää (Viikko)
-- 30 päivää (Kuukausi)
-- 3 kuukautta
-- Kaikki ajat
-
-**Näkymätilat**:
-- **Tilastot**: Keskiarvo SpO2, keskiarvo syke, min/max arvot, matalan hapen määrä
-- **Lista**: Kronologinen lista kaikista mittauksista
-- **Kuvaaja**: Visuaaliset trendigraafit päivämääräleimalla
-
-**Mittaustyypit**:
-- Päivittäinen mittaus
-- Liikunnan mittaus (ennen/jälkeen vertailu)
-
-**Kuvaajan ominaisuudet**:
-- Viivakaaviot Vico Charts -kirjastolla
-- Päivämäärämuotoiltu X-akseli (pp.kk)
-- Automaattinen skaalaus Y-akselille
-- Värillinen selite ennen/jälkeen vertailulle
-- Sulava animaatio ja vuorovaikutus
-
-### Asetukset
-
-- **Hälytysraja-arvo**: Säädettävä matalan SpO2:n varoitustaso (70-95%)
-- **Suuri fontti**: Esteettömyysvaihtoehto näkörajoitteisille
-- **Tilin hallinta**: Näytä kirjautunut tili, uloskirjautuminen
-- **Sovellustiedot**: Versio ja kuvaus
-
-## 🎨 Suunnitteluperiaatteet
-
-### Esteettömyys iäkkäille käyttäjille
-
-1. **Suuret painikkeet**: Kaikki painikkeet vähintään 64dp korkeita
-2. **Korkea kontrasti**: Selkeä erottelu elementtien välillä
-3. **Kelluva navigointi**: Moderni alapalkin pyöristetyt kulmat
-4. **Suuret fontit**: Valinnainen suuri typografia
-5. **Selkeät otsikot**: Kuvaavat tekstit kaikille syötteille
-6. **Minimaalinen monimutkaisuus**: Suoraviivainen käyttö
-7. **Ammattimaiset värit**: Pehmeä indigo/laventeli, ei räikeää syaania
-
-### Material Design 3
-
-- **Dynaaminen värimaailma**: Lääketieteellinen sininen (#1565C0), pehmeä indigo (#5C6BC0)
-- **Korostetut kortit**: Pyöristetyt kulmat (16-20dp) hienoilla varjoilla
-- **Johdonmukainen välistys**: 8dp ruudukko ja runsas padding
-- **Ammattimainen ilme**: Puhdas, lääketieteellisen tason käyttöliittymä
-- **Sulava animaatio**: Material-liikkeen periaatteet
-- **Kelluvat elementit**: Alapalkki läpinäkyvyydellä ja korostuksella
-
-## 🔒 Tietosuoja ja tietoturva
-
-### Paikallinen tallennus
-
-- Kaikki mittaukset tallennetaan paikallisesti Room-tietokantaan
-- Tietoja ei lähetetä ilman käyttäjän tunnistautumista
-- Offline-first arkkitehtuuri
-- Toimii ilman internet-yhteyttä
-
-### Pilvisynkronointi (Google-kirjautumisen kanssa)
-
-- Käyttäjätiedot yhdistetty Google-tilin ID:hen
-- Vaihe 2: Synkronointi Cloudflare-tietokantaan
-- Käyttäjä hallitsee tietojaan uloskirjautumalla
-- Ei tietojen myyntiä tai kolmansille osapuolille jakamista
-
-## 🔮 Kehityssuunnitelma
-
-### Vaihe 1 (Valmis) ✅
-- ✅ Natiivi Android-sovellus kaikilla ominaisuuksilla
-- ✅ Paikallinen tietokannan tallennus Room-kirjastolla
-- ✅ Google-kirjautuminen
-- ✅ Päivittäiset ja liikunnan mittaukset
-- ✅ Tilastot ja raportit 4 aikavälillä
-- ✅ Säädettävät hälytykset
-- ✅ Ammattimainen Material Design 3 käyttöliittymä
-- ✅ Graafiset trendikaaviot Vico-kirjastolla
-- ✅ Kelluva alapalkin navigointi
-- ✅ Esteettömyysominaisuudet (suuret fontit)
-
-### Vaihe 2 (Suunnitteilla) 🔜
-
-**Backend ja pilvisynkronointi:**
-- ⏳ Cloudflare Workers REST API
-- ⏳ Cloudflare D1 tietokanta pilvivarastointiin
-- ⏳ Reaaliaikainen synkronointi laitteiden välillä
-- ⏳ Tietojen varmuuskopiointi pilveen
-- ⏳ Konfliktien ratkaisu synkronoinnissa
-
-**Verkkosivu katselua varten:**
-- ⏳ Cloudflare Pages -verkkosivu
-- ⏳ Kirjautuminen samalla Google-tilillä
-- ⏳ Kaikkien mittausten katselu selaimessa
-- ⏳ Edistyneet visualisoinnit ja kuvaajat
-- ⏳ Responsiivinen muotoilu (puhelin, tabletti, tietokone)
-
-**Lisäominaisuudet:**
-- ⏳ PDF-raporttien vienti
-- ⏳ Lääkärin/hoitajan jakamisominaisuudet
-  - Aikarajoitetut jakolinkit
-  - Vain luku -käyttöoikeudet
-  - Yksityisyyden hallinta
-- ⏳ Monikielinen tuki (englanti, ruotsi)
-- ⏳ Tietojen vienti CSV-muodossa
-- ⏳ Muistutukset mittauksiin
-- ⏳ Pitkäaikaiset trendit ja analyysit
-- ⏳ Vertailu normaaliarvoihin (ikä/sukupuoli mukaan)
-
-### Vaihe 3 (Tulevaisuus) 💡
-
-**Edistyneet ominaisuudet:**
-- Tekoälyavusteinen trendianalyysi
-- Ennustava analytiikka (mahdolliset ongelmat)
-- Integraatio terveyssovelluksiin (Google Fit, Apple Health)
-- Integraatio lääketieteellisiin laitteisiin (Bluetooth-hapettumismittarit)
-- Perhetilien tuki (useita käyttäjiä per tili)
-
-## 📲 Asennus ja käyttö
-
-### Järjestelmävaatimukset
-
-- Android 8.0 (API 26) tai uudempi
-- Suositeltu: Android 10 tai uudempi
-- Google Play -palvelut (Google-kirjautumista varten)
-- Noin 50 Mt vapaata tallennustilaa
-
-### Asennus (tulossa Google Play Storeen)
-
-1. Lataa sovellus Google Play Storesta
-2. Avaa sovellus
-3. Kirjaudu Google-tilillä (valinnainen)
-4. Aloita mittausten tallentaminen
-
-### Ensimmäinen käyttökerta
-
-1. **Kirjautuminen**: Valitse Google-tili tai jatka ilman kirjautumista
-2. **Asetukset**: Aseta hälytysraja-arvo (oletus 90%)
-3. **Ensimmäinen mittaus**: Siirry "Päivittäinen" -välilehdelle ja syötä ensimmäinen mittauksesi
-4. **Tutki sovellusta**: Tutustu raportit- ja asetukset-välilehtiin
-
-## 🛠️ Tekniset tiedot
-
-### Käytetyt teknologiat
-
-- **Ohjelmointikieli**: Kotlin 1.9.22
-- **UI-framework**: Jetpack Compose + Material Design 3
-- **Arkkitehtuuri**: MVVM + Clean Architecture
-- **Tietokanta**: Room 2.6.1
-- **Riippuvuuksien injektointi**: Hilt
-- **Autentikointi**: Firebase Auth + Google Sign-In
-- **Kuvaajat**: Vico Charts 1.13.1
-- **Min SDK**: 26 (Android 8.0)
-- **Target SDK**: 34 (Android 14)
-
-Katso yksityiskohtaiset tekniset tiedot: **[Technical Documentation (English)](README_EN.md)**
-
-## 📄 Lisenssi
-
-Tämä projekti on suojattu tekijänoikeuksilla. Kaikki oikeudet pidätetään.
-
-## 👤 Tekijä
-
-**Konderi Development**
-
-## 📧 Yhteystiedot
-
-Ongelmien, kysymysten tai ehdotusten osalta avaa issue GitHubissa.
-
-## 🙏 Kiitokset
-
-- Material Design 3 -suunnitteluohjeet
-- Android Jetpack -kirjastot
-- Vico Charts -kirjasto (patrykandpatrick)
-- Firebase/Google Sign-In
-- Room-tietokantakirjasto
-- Kotlin Coroutines & Flow
-- Hilt-riippuvuuksien injektointi
-- Avoimen lähdekoodin yhteisö
+- **🏥 Medical-Grade Quality** - Professional, trustworthy, accurate
+- **♿ Accessibility First** - Designed for all ages, especially elderly users
+- **📱 Multi-Platform** - Seamless experience across web, Android, and iOS
+- **🔒 Privacy Focused** - Your health data stays yours
+- **🎨 Beautiful Design** - Modern, clean, award-winning aesthetics
 
 ---
 
-**Rakennettu ❤️:lla parempaa terveydenseurantaa varten**
+## 🚀 Project Status
+
+### ✅ Phase 1: Android Application (Complete)
+Native Android app with full functionality:
+- Daily and exercise measurements
+- Real-time charts and statistics  
+- Google Sign-In authentication
+- Configurable alerts
+- Material Design 3 UI
+- Offline support
+
+**[📱 View Android App →](android/)**
+
+### 🚧 Phase 2: Website (In Progress)
+Professional web application for data viewing and management:
+- Modern Next.js with TypeScript
+- Real-time synchronization with mobile apps
+- Interactive data visualization
+- Responsive design (mobile, tablet, desktop)
+- Firebase backend integration
+
+**Target Launch**: March 2026
+
+### 📋 Phase 3: iOS Application (Planned)
+Native iOS app with feature parity to Android:
+- SwiftUI implementation
+- HealthKit integration
+- Apple Sign-In support
+- Consistent design language
+
+**Target Launch**: Q2 2026
+
+---
+
+## 🏗️ Repository Structure
+
+```
+SpO2-Seuranta/
+├── android/              # Native Android application
+│   ├── app/
+│   ├── build.gradle.kts
+│   └── README.md
+│
+├── web/                  # Next.js website
+│   ├── src/
+│   ├── public/
+│   └── README.md
+│
+├── ios/                  # iOS application (future)
+│   └── README.md
+│
+├── backend/              # Cloudflare Workers (if needed)
+│   └── README.md
+│
+├── shared/               # Shared resources
+│   ├── docs/            # Documentation
+│   │   ├── ARCHITECTURE.md
+│   │   └── API_SPEC.md
+│   ├── design/          # Design system
+│   │   ├── DESIGN_SYSTEM.md
+│   │   └── assets/
+│   └── api-specs/       # API specifications
+│
+├── .github/             # GitHub workflows & Copilot instructions
+├── docs/                # General documentation
+├── README.md            # This file
+├── CONTRIBUTING.md      # Contribution guidelines
+├── LICENSE              # MIT License
+└── .gitignore
+```
+
+---
+
+## 🎨 Design System
+
+Hapetus features a professional, modern design language inspired by award-winning agencies like [Halo Lab](https://www.halo-lab.com/):
+
+### Key Design Elements
+- **Color Palette**: Medical blue (#2196F3) with semantic health indicators
+- **Typography**: Inter font family for clarity and readability
+- **Spacing**: 4px base unit with progressive scale
+- **Components**: Consistent UI across all platforms
+- **Motion**: Purposeful animations that enhance usability
+- **Accessibility**: WCAG 2.1 Level AA compliant
+
+**[🎨 View Complete Design System →](shared/design/DESIGN_SYSTEM.md)**
+
+---
+
+## 🏗️ Technical Architecture
+
+### Technology Stack
+
+| Platform | Technologies |
+|----------|--------------|
+| **Web** | Next.js 14+, TypeScript, Tailwind CSS, Recharts, Firebase |
+| **Android** | Kotlin, Jetpack Compose, Material Design 3, Room, Hilt, Firebase |
+| **iOS** | Swift, SwiftUI, CoreData, HealthKit (planned) |
+| **Backend** | Firebase (Authentication, Firestore, Hosting) |
+
+### Backend: Firebase
+- **Authentication**: Google Sign-In with JWT tokens
+- **Database**: Cloud Firestore with real-time sync
+- **Hosting**: Firebase Hosting for web application
+- **Cost**: $0/month for up to 100 users (free tier)
+
+**[📖 View Architecture Details →](shared/docs/ARCHITECTURE.md)**
+
+---
+
+## ✨ Key Features
+
+### 📊 Comprehensive Measurements
+- **Daily Tracking**: Quick SpO2 (50-100%) and heart rate entry
+- **Exercise Monitoring**: Before/after measurements with exercise details
+- **Notes & Context**: Optional notes for each measurement
+- **Auto Timestamps**: Automatic date and time recording
+
+### 📈 Advanced Analytics
+- **Time Ranges**: View data by week, month, quarter, or all time
+- **Statistics**: Averages, min/max values, trend analysis
+- **Visual Charts**: Interactive line graphs with date labels
+- **Comparison Views**: Before/after exercise comparisons
+
+### ⚠️ Smart Alerts
+- **Low Oxygen Warnings**: Configurable threshold (70-95%)
+- **Significant Changes**: Alert on drops >5% during exercise
+- **Visual Indicators**: Color-coded status (red/orange/green)
+
+### 🔐 Secure Authentication
+- **Google Sign-In**: OAuth 2.0 authentication
+- **Multi-Device Sync**: Access data from any device
+- **Offline Support**: Android app works without internet
+- **Privacy First**: Your data, your control
+
+### ♿ Accessibility
+- **Large Font Mode**: Enhanced readability for visually impaired
+- **High Contrast**: Clear differentiation between elements
+- **Simple Navigation**: Intuitive flow for elderly users
+- **Touch Targets**: Minimum 48dp for easy tapping
+
+---
+
+## 🚀 Quick Start
+
+### For Users
+
+#### 🌐 Web Application
+Visit [hapetus.info](https://hapetus.info)
+1. Click "Sign in with Google"
+2. Start tracking your health data
+3. View reports and statistics
+
+#### 📱 Android Application
+1. Download from Google Play Store (coming soon)
+2. Or build from source: [Android README](android/README.md)
+
+### For Developers
+
+#### Clone Repository
+```bash
+git clone https://github.com/Konderi/SpO2-Seuranta.git
+cd SpO2-Seuranta
+```
+
+#### Android Development
+```bash
+cd android
+# Open in Android Studio
+# See android/README.md for setup
+```
+
+#### Web Development
+```bash
+cd web
+npm install
+npm run dev
+# See web/README.md for setup
+```
+
+**[📖 Full Development Guide →](CONTRIBUTING.md)**
+
+---
+
+## 📊 Cost Analysis (Firebase)
+
+| Service | Free Tier | Estimated Usage (10 users) | Cost |
+|---------|-----------|----------------------------|------|
+| Authentication | Unlimited | 10 users | $0 |
+| Firestore Reads | 50,000/day | ~500/day | $0 |
+| Firestore Writes | 20,000/day | ~100/day | $0 |
+| Firestore Storage | 1 GB | <10 MB | $0 |
+| Hosting | 10 GB/month | <1 GB/month | $0 |
+| **Total** | | | **$0/month** |
+
+**Scalability**: 
+- 100 users: Still free ($0/month)
+- 1,000 users: ~$10/month
+- 10,000 users: ~$110/month
+
+**Recommendation**: Firebase is perfect for your current needs (max 10 users) and will remain free indefinitely.
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! Whether it's:
+- 🐛 Bug reports
+- 💡 Feature requests
+- 📖 Documentation improvements
+- 🎨 Design enhancements
+- 💻 Code contributions
+
+**[📖 Read Contributing Guidelines →](CONTRIBUTING.md)**
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🌐 Links & Resources
+
+### Project Links
+- **Website**: [hapetus.info](https://hapetus.info)
+- **GitHub**: [github.com/Konderi/SpO2-Seuranta](https://github.com/Konderi/SpO2-Seuranta)
+- **Issues**: [GitHub Issues](https://github.com/Konderi/SpO2-Seuranta/issues)
+
+### Documentation
+- [Architecture Overview](shared/docs/ARCHITECTURE.md)
+- [Design System](shared/design/DESIGN_SYSTEM.md)
+- [Android App](android/README.md)
+- [Web App](web/README.md)
+
+### Design Inspiration
+- [Halo Lab](https://www.halo-lab.com/) - Design inspiration for website
+- [Material Design 3](https://m3.material.io/) - Android design system
+- [Apple HIG](https://developer.apple.com/design/) - iOS design patterns
+
+---
+
+## 📞 Contact & Support
+
+- **Developer**: Toni Joronen
+- **GitHub Issues**: [Report a bug or request a feature](https://github.com/Konderi/SpO2-Seuranta/issues)
+- **Website**: [hapetus.info](https://hapetus.info)
+
+---
+
+## 🙏 Acknowledgments
+
+- **Design Inspiration**: [Halo Lab](https://www.halo-lab.com/)
+- **Icons**: Material Design Icons
+- **Charts**: Recharts (web), Vico Charts (Android)
+- **Backend**: Firebase / Google Cloud Platform
+- **Community**: Open source contributors worldwide
+
+---
+
+<div align="center">
+  
+  **Built with ❤️ for better health monitoring**
+  
+  [⭐ Star this project](https://github.com/Konderi/SpO2-Seuranta) • [🐛 Report Bug](https://github.com/Konderi/SpO2-Seuranta/issues) • [💡 Request Feature](https://github.com/Konderi/SpO2-Seuranta/issues)
+  
+</div>
+
+---
+
+**Last Updated**: February 11, 2026  
+**Version**: 2.0.0 (Multi-platform monorepo)  
+**Status**: Phase 1 Complete ✅ | Phase 2 In Progress 🚧 | Phase 3 Planned 📋
