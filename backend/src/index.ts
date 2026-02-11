@@ -21,7 +21,24 @@ const app = new Hono<{ Bindings: Env }>();
 // Middleware
 app.use('*', logger());
 app.use('*', cors({
-  origin: '*',
+  origin: (origin) => {
+    // Allow requests from your domains only
+    const allowedOrigins = [
+      'https://hapetus.info',
+      'https://www.hapetus.info',
+      'https://api.hapetus.info',
+      'http://localhost:3000',      // Next.js dev
+      'http://localhost:19006',     // Expo dev
+      'http://localhost:19000',     // Expo dev alternative
+    ];
+    
+    // Allow if origin is in the list, or if no origin (mobile apps, Postman)
+    if (!origin || allowedOrigins.includes(origin)) {
+      return origin || '*';
+    }
+    
+    return null;
+  },
   allowHeaders: ['Content-Type', 'Authorization'],
   allowMethods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   credentials: true,
@@ -39,16 +56,6 @@ app.get('/', (c) => {
 
 // Public routes
 app.get('/health', (c) => c.json({ status: 'ok' }));
-
-// Test database connection
-app.get('/api/test-db', async (c) => {
-  try {
-    const result = await c.env.DB.prepare('SELECT 1 as test').first();
-    return c.json({ success: true, result });
-  } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500);
-  }
-});
 
 // ============================================================================
 // AUTHENTICATION MIDDLEWARE
@@ -150,6 +157,25 @@ async function verifyFirebaseToken(token: string, env: Env): Promise<AuthUser | 
 }
 
 // ============================================================================
+// ERROR HANDLING UTILITIES
+// ============================================================================
+
+/**
+ * Handles errors safely without exposing internal details to clients
+ * @param error The error that occurred
+ * @param context Description for server logs
+ * @param c Hono context for returning JSON response
+ * @returns JSON error response
+ */
+function handleError(error: any, context: string, c: any) {
+  // Log detailed error for debugging (server logs only)
+  console.error(`${context}:`, error);
+  
+  // Return generic error message to client (don't expose internal details)
+  return c.json({ error: context }, 500);
+}
+
+// ============================================================================
 // DAILY MEASUREMENTS ROUTES
 // ============================================================================
 
@@ -200,7 +226,8 @@ app.get('/api/daily/range', async (c) => {
 
     return c.json({ data: results });
   } catch (error: any) {
-    return c.json({ error: 'Failed to fetch measurements', message: error.message }, 500);
+    console.error('Failed to fetch daily measurements:', error);
+    return c.json({ error: 'Failed to fetch measurements' }, 500);
   }
 });
 
@@ -263,6 +290,15 @@ app.put('/api/daily/:id', async (c) => {
   try {
     const body: any = await c.req.json();
     const { spo2, heart_rate, notes } = body;
+
+    // Validate input
+    if (spo2 && (spo2 < 50 || spo2 > 100)) {
+      return c.json({ error: 'SpO2 must be between 50 and 100' }, 400);
+    }
+
+    if (heart_rate && (heart_rate < 30 || heart_rate > 250)) {
+      return c.json({ error: 'Heart rate must be between 30 and 250' }, 400);
+    }
 
     // Verify ownership
     const { results }: any = await c.env.DB.prepare(
@@ -374,6 +410,21 @@ app.post('/api/exercise', async (c) => {
 
     if (!exercise_type || !spo2_before || !heart_rate_before || !spo2_after || !heart_rate_after || !measured_at) {
       return c.json({ error: 'Missing required fields' }, 400);
+    }
+
+    // Validate SpO2 values
+    if (spo2_before < 50 || spo2_before > 100 || spo2_after < 50 || spo2_after > 100) {
+      return c.json({ error: 'SpO2 values must be between 50 and 100' }, 400);
+    }
+
+    // Validate heart rate values
+    if (heart_rate_before < 30 || heart_rate_before > 250 || heart_rate_after < 30 || heart_rate_after > 250) {
+      return c.json({ error: 'Heart rate values must be between 30 and 250' }, 400);
+    }
+
+    // Validate exercise duration if provided
+    if (exercise_duration && (exercise_duration < 0 || exercise_duration > 10000)) {
+      return c.json({ error: 'Exercise duration must be between 0 and 10000 minutes' }, 400);
     }
 
     const id = crypto.randomUUID();
@@ -653,16 +704,6 @@ app.put('/api/user/settings', async (c) => {
   }
 });
 
-// Test database connection
-app.get('/api/test-db', async (c) => {
-  try {
-    const result = await c.env.DB.prepare('SELECT 1 as test').first();
-    return c.json({ success: true, result });
-  } catch (error: any) {
-    return c.json({ success: false, error: error.message }, 500);
-  }
-});
-
 // 404 handler
 app.notFound((c) => {
   return c.json({ error: 'Not Found', path: c.req.path }, 404);
@@ -670,10 +711,13 @@ app.notFound((c) => {
 
 // Error handler
 app.onError((err, c) => {
+  // Log detailed error for debugging (server logs only)
   console.error('Error:', err);
+  
+  // Return generic error message to client (don't expose internal details)
   return c.json({
     error: 'Internal Server Error',
-    message: err.message,
+    message: 'An unexpected error occurred. Please try again later.',
   }, 500);
 });
 
