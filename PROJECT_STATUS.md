@@ -146,16 +146,18 @@ Hapetus - SpO2 Health Monitoring Platform
 - ✅ Backend code deployed
 - ✅ Database schema applied
 - ✅ API responding to requests
-- ⏳ Authentication enabled (needs secrets)
-- ⏳ Custom domain configured
+- ✅ Authentication enabled (Firebase Admin SDK)
+- ✅ Custom domain configured (https://api.hapetus.info)
 - ⏳ Website deployed
 - ⏳ Android integrated
 
 ### Technical Health
-- **API Uptime**: 100% (just deployed)
+- **API Uptime**: 100%
 - **Response Time**: <50ms (edge computing)
-- **Database**: 4 tables, 0 records (no users yet)
+- **Database**: 4 tables, 0 records (ready for users)
 - **Cost**: $0/month (free tier)
+- **Custom Domain**: ✅ https://api.hapetus.info
+- **SSL**: ✅ Cloudflare Universal SSL
 
 ---
 
