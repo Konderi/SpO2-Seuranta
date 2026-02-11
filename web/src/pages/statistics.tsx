@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, TrendingUp, Heart, BarChart3, Calendar, Download, Printer, FileDown } from 'lucide-react'
+import { Activity, TrendingUp, Heart, BarChart3, Calendar, Download, Printer, FileDown, LogOut, Menu, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -13,8 +13,8 @@ import { openPrintView, downloadCSV, downloadJSON, formatStatisticsForExport } f
 type TimeRange = '7days' | '30days' | '3months' | 'custom'
 
 export default function Statistics() {
-  const { user } = useAuth()
-  const { isDemoMode, demoMeasurements, demoStats } = useDemo()
+  const { user, signOut } = useAuth()
+  const { isDemoMode, demoMeasurements, demoStats, exitDemoMode } = useDemo()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<any>(null)
   const [timeRange, setTimeRange] = useState<TimeRange>('30days')
@@ -22,6 +22,7 @@ export default function Statistics() {
   const [customStartDate, setCustomStartDate] = useState('')
   const [customEndDate, setCustomEndDate] = useState('')
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
   // Helper function to filter data by date range
   const filterDataByRange = (data: any[], range: TimeRange, startDate?: string, endDate?: string) => {
@@ -328,14 +329,123 @@ export default function Statistics() {
         </div>
 
         {/* Header */}
-        <nav className="w-full bg-white border-b border-border shadow-elevation-1 no-print">
+        <nav className="sticky top-0 w-full z-50 bg-white border-b border-border shadow-elevation-1 no-print">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
+              {/* Logo */}
               <Link href="/dashboard" className="flex items-center gap-3">
                 <Activity className="w-10 h-10 text-primary" strokeWidth={2.5} />
                 <span className="text-3xl font-bold text-primary">Hapetus</span>
               </Link>
+
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center gap-6">
+                {isDemoMode && (
+                  <div className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-2xl text-sm font-semibold flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    Demo-tila
+                  </div>
+                )}
+                <Link href="/dashboard" className="text-lg text-text-secondary hover:text-primary transition-colors">
+                  Etusivu
+                </Link>
+                <Link href="/history" className="text-lg text-text-secondary hover:text-primary transition-colors">
+                  Historia
+                </Link>
+                <Link href="/statistics" className="text-lg font-semibold text-primary">
+                  Tilastot
+                </Link>
+                <div className="flex items-center gap-3 ml-6 pl-6 border-l border-border">
+                  <div className="text-right">
+                    <p className="text-sm text-text-secondary">
+                      {isDemoMode ? 'Demo-tila' : 'Kirjautunut'}
+                    </p>
+                    <p className="font-semibold text-text-primary">
+                      {isDemoMode ? 'Demo' : (user?.displayName || 'Käyttäjä')}
+                    </p>
+                  </div>
+                  {isDemoMode ? (
+                    <button
+                      onClick={() => { exitDemoMode(); window.location.href = '/' }}
+                      className="btn btn-secondary"
+                      title="Poistu demosta"
+                    >
+                      <LogOut className="w-5 h-5" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => signOut()}
+                      className="btn btn-secondary"
+                      title="Kirjaudu ulos"
+                    >
+                      <LogOut className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {/* Mobile Menu Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-surface transition-colors"
+              >
+                {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
+              </button>
             </div>
+
+            {/* Mobile Menu */}
+            {mobileMenuOpen && (
+              <div className="md:hidden py-4 border-t border-border">
+                <div className="flex flex-col gap-4">
+                  <Link
+                    href="/dashboard"
+                    className="text-lg text-text-secondary hover:text-primary transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Etusivu
+                  </Link>
+                  <Link
+                    href="/history"
+                    className="text-lg text-text-secondary hover:text-primary transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Historia
+                  </Link>
+                  <Link
+                    href="/statistics"
+                    className="text-lg font-semibold text-primary py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Tilastot
+                  </Link>
+                  <div className="pt-4 mt-4 border-t border-border">
+                    <p className="text-sm text-text-secondary mb-2">
+                      {isDemoMode ? 'Demo-tila' : 'Kirjautunut'}
+                    </p>
+                    <p className="font-semibold text-text-primary mb-4">
+                      {isDemoMode ? 'Demo' : (user?.displayName || 'Käyttäjä')}
+                    </p>
+                    {isDemoMode ? (
+                      <button
+                        onClick={() => { exitDemoMode(); window.location.href = '/' }}
+                        className="btn btn-secondary w-full justify-center"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        <span>Poistu demosta</span>
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => signOut()}
+                        className="btn btn-secondary w-full justify-center"
+                      >
+                        <LogOut className="w-5 h-5" />
+                        <span>Kirjaudu ulos</span>
+                      </button>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </nav>
 
