@@ -2,23 +2,28 @@
 
 **Professional web interface for health monitoring**
 
-## 🚧 Status: In Development (Phase 2)
+## � Status: Ready for Deployment
 
 This is the web application component of the Hapetus health monitoring platform. The website provides a professional, accessible interface for viewing and managing SpO2 and heart rate data across all devices.
 
+### Quick Links
+- 📖 **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete deployment instructions
+- 🔧 **[setup.sh](./setup.sh)** - Automated setup script
+- � **API**: https://api.hapetus.info (Backend deployed and secured ✅)
+
 ---
 
-## 🎯 Target Features
+## 🎯 Features
 
 ### Core Functionality
-- ✅ Google Sign-In authentication
-- ✅ Real-time data synchronization with mobile apps
+- ✅ Google Sign-In authentication (Firebase)
+- ✅ Real-time data synchronization with backend API
 - ✅ Interactive dashboard with statistics
-- ✅ Advanced data visualization (charts, trends)
+- ✅ Advanced data visualization (Recharts)
 - ✅ Responsive design (mobile, tablet, desktop)
 - ✅ Measurement history with filtering
-- ✅ Export data functionality
 - ✅ User settings management
+- ⏳ Export data functionality (coming soon)
 
 ### Design Goals
 - Professional, modern interface inspired by [Halo Lab](https://www.halo-lab.com/)
