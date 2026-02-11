@@ -10,7 +10,7 @@ route = "api.hapetus.info/*"
 [[d1_databases]]
 binding = "DB"
 database_name = "hapetus-db"
-database_id = "" # Will be filled after creation
+database_id = "8dc4273c-8663-48ea-af01-7c5ba5a4f1d4"
 
 # Environment variables
 [vars]
