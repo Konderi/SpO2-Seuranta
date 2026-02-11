@@ -1,0 +1,35 @@
+{
+  // Java Language Server Configuration
+  "java.jdt.ls.java.home": "/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+  
+  // Java Configuration
+  "java.configuration.runtimes": [
+    {
+      "name": "JavaSE-21",
+      "path": "/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+      "default": true
+    }
+  ],
+  
+  // Android Development
+  "java.project.sourcePaths": [
+    "android/app/src/main/java"
+  ],
+  
+  // Gradle Configuration
+  "java.import.gradle.java.home": "/Applications/Android Studio.app/Contents/jbr/Contents/Home",
+  
+  // Editor Settings
+  "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "never"
+  },
+  
+  // Files to exclude from explorer
+  "files.exclude": {
+    "**/.gradle": true,
+    "**/build": true,
+    "**/.idea": true,
+    "**/node_modules": true
+  }
+}
