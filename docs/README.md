@@ -7,6 +7,7 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 ### Pika-aloitus
 - **[QUICK_START.md](QUICK_START.md)** - Pikaohjeet Android-sovelluksen käyttöönottoon
 - **[TEST_DEVICE_SETUP.md](TEST_DEVICE_SETUP.md)** - Testilaitteen yhdistäminen ja asennus
+- **[ADD_NEW_TEST_DEVICE.md](ADD_NEW_TEST_DEVICE.md)** - Uuden testilaitteen lisääminen (fyysinen/emulaattori)
 - **[USB_CONNECTION_GUIDE.md](USB_CONNECTION_GUIDE.md)** - USB-yhteysasetukset
 
 ### Kehitysympäristö
@@ -26,6 +27,10 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 - **[DEMO_MODE_COMPLETE.md](DEMO_MODE_COMPLETE.md)** - Demo-tilan toteutus ja käyttö
 - **[STATISTICS_TIME_RANGES.md](STATISTICS_TIME_RANGES.md)** - Tilastojen aikavälit (7d, 30d, 3m, custom)
 - **[EXPORT_PRINT_FEATURE.md](EXPORT_PRINT_FEATURE.md)** - Vie CSV/JSON ja tulostustoiminto
+
+### Mobiilioptiimointi
+- **[MOBILE_OPTIMIZATION_COMPLETE.md](MOBILE_OPTIMIZATION_COMPLETE.md)** - Mobiiliresponsiivisuuden parannukset ✅
+- **[MOBILE_OPTIMIZATION.md](MOBILE_OPTIMIZATION.md)** - Mobiilioptiimoinnin suunnitelma
 
 ### Deployment
 - **[WEBSITE_DEPLOYMENT_READY.md](WEBSITE_DEPLOYMENT_READY.md)** - Verkkosivuston julkaisuohje
