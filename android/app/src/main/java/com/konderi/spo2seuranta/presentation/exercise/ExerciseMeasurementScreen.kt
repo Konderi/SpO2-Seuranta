@@ -3,6 +3,7 @@ package com.konderi.spo2seuranta.presentation.exercise
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -64,8 +65,6 @@ fun ExerciseMeasurementScreen(
                             text = "Uusi mittaus",
                             style = MaterialTheme.typography.headlineSmall,
                             color = MaterialTheme.colorScheme.onSecondaryContainer
-                        )
-                            style = MaterialTheme.typography.headlineSmall
                         )
                         
                         Text(

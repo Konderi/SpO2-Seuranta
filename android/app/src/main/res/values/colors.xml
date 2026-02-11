@@ -8,6 +8,9 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     
-    <!-- Launcher icon background - Medical blue -->
-    <color name="ic_launcher_background">#1565C0</color>
+    <!-- App Primary Colors (matching website) -->
+    <color name="primary">#2563EB</color>
+    
+    <!-- Launcher icon background - Primary blue (matching website) -->
+    <color name="ic_launcher_background">#2563EB</color>
 </resources>

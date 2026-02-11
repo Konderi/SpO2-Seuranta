@@ -37,7 +37,7 @@ Sovelluksella voit:
 
 ## 📱 Alustat
 
-### ✅ Android-sovellus (Valmis - Odottaa API-integraatiota!)
+### ✅ Android-sovellus (VALMIS ja Toimii!)
 
 Täysipainoinen Android-sovellus, joka toimii puhelimella tai tabletilla.
 
@@ -46,11 +46,15 @@ Täysipainoinen Android-sovellus, joka toimii puhelimella tai tabletilla.
 - ✅ Liikunnan vaikutuksen mittaaminen
 - ✅ Graafinen tilastonäkymä
 - ✅ Hälytysten asettaminen
-- ✅ Google-kirjautuminen
+- ✅ Google-kirjautuminen (toimii!)
 - ✅ Toimii ilman nettiä (Room database)
-- ⏳ API-synkronointi kehityksessä
+- ✅ **Sininen sydänsyke-ikoni** (yhtenäinen brändi verkkosivuston kanssa)
+- ⏳ API-synkronointi kehityksessä (tulossa pian)
 
-**[📱 Katso lisätietoja ja integraatio-ohje →](ANDROID_API_INTEGRATION_GUIDE.md)**
+**Testattu laitteilla:**
+- Samsung Galaxy S9 (Android 10) ✅
+
+**[📱 Katso lisätietoja ja integraatio-ohje →](docs/ANDROID_API_INTEGRATION_GUIDE.md)**
 
 ### ✅ Verkkosivusto (VALMIS ja LIVE!)
 
@@ -71,7 +75,7 @@ Moderni, responsiivinen verkkosivusto täydellä toiminnallisuudella.
 
 **Demo-tila:** Klikkaa "Kokeile Demoa" -nappia etusivulla nähdäksesi 4 viikon realistisen esimerkkidatan kaavioineen!
 
-**[🌐 Siirry sivustolle →](https://hapetus.info)** | **[📖 Dokumentaatio →](DEMO_MODE_COMPLETE.md)**
+**[🌐 Siirry sivustolle →](https://hapetus.info)** | **[📖 Dokumentaatio →](docs/DEMO_MODE_COMPLETE.md)**
 
 ### ✅ Backend API (VALMIS ja LIVE!)
 
