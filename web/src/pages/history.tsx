@@ -2,18 +2,27 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { Activity, ArrowLeft, Calendar, Heart, TrendingUp } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
 
 export default function History() {
   const { user } = useAuth()
+  const { isDemoMode, demoMeasurements } = useDemo()
   const [filter, setFilter] = useState('all') // all, daily, exercise
   const [measurements, setMeasurements] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const fetchHistory = async () => {
+      if (isDemoMode) {
+        // Use demo data
+        setMeasurements(demoMeasurements)
+        setLoading(false)
+        return
+      }
+
       try {
         const [dailyData, exerciseData] = await Promise.all([
           apiClient.getDailyMeasurements(),
@@ -68,7 +77,7 @@ export default function History() {
     }
 
     fetchHistory()
-  }, [])
+  }, [isDemoMode, demoMeasurements])
 
   const filteredMeasurements = measurements.filter(m => 
     filter === 'all' || m.type === filter

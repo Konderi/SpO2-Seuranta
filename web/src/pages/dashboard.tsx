@@ -2,20 +2,35 @@ import Head from 'next/head'
 import Link from 'next/link'
 import { Activity, Heart, TrendingUp, Plus, LogOut, User, Menu, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
+import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
 
 export default function Dashboard() {
   const { user, signOut } = useAuth()
+  const { isDemoMode, demoMeasurements, demoStats, exitDemoMode } = useDemo()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loading, setLoading] = useState(true)
   const [measurements, setMeasurements] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
 
-  // Fetch real data from API
+  // Fetch real data from API or use demo data
   useEffect(() => {
     const fetchData = async () => {
+      if (isDemoMode) {
+        // Use demo data
+        const dailyDemo = demoMeasurements.filter(m => m.type === 'daily')
+        setMeasurements(dailyDemo.map(m => ({
+          spo2: m.spo2,
+          heart_rate: m.heartRate,
+          measured_at: m.measured_at * 1000, // Convert to milliseconds for Date
+        })))
+        setStats(demoStats)
+        setLoading(false)
+        return
+      }
+
       try {
         setLoading(true)
         // Fetch latest measurements
@@ -33,12 +48,12 @@ export default function Dashboard() {
     }
     
     fetchData()
-  }, [])
+  }, [isDemoMode, demoMeasurements, demoStats])
 
   // Calculate latest measurements and trend from real data
   const latestMeasurements = measurements.length > 0 ? {
     spo2: measurements[0].spo2,
-    heartRate: measurements[0].heart_rate,
+    heartRate: measurements[0].heart_rate || measurements[0].heartRate,
     trend: measurements.length > 1 
       ? `${measurements[0].spo2 > measurements[1].spo2 ? '+' : ''}${measurements[0].spo2 - measurements[1].spo2}%`
       : '0%',
@@ -78,6 +93,12 @@ export default function Dashboard() {
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center gap-6">
+                {isDemoMode && (
+                  <div className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-2xl text-sm font-semibold flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    Demo-tila
+                  </div>
+                )}
                 <Link href="/dashboard" className="text-lg font-semibold text-primary">
                   Etusivu
                 </Link>
@@ -89,16 +110,30 @@ export default function Dashboard() {
                 </Link>
                 <div className="flex items-center gap-3 ml-6 pl-6 border-l border-border">
                   <div className="text-right">
-                    <p className="text-sm text-text-secondary">Kirjautunut</p>
-                    <p className="font-semibold text-text-primary">{user?.displayName || 'Käyttäjä'}</p>
+                    <p className="text-sm text-text-secondary">
+                      {isDemoMode ? 'Demo-tila' : 'Kirjautunut'}
+                    </p>
+                    <p className="font-semibold text-text-primary">
+                      {isDemoMode ? 'Demo' : (user?.displayName || 'Käyttäjä')}
+                    </p>
                   </div>
-                  <button
-                    onClick={() => signOut()}
-                    className="btn btn-secondary"
-                    title="Kirjaudu ulos"
-                  >
-                    <LogOut className="w-5 h-5" />
-                  </button>
+                  {isDemoMode ? (
+                    <button
+                      onClick={() => { exitDemoMode(); window.location.href = '/' }}
+                      className="btn btn-secondary"
+                      title="Poistu demosta"
+                    >
+                      <LogOut className="w-5 h-5" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => signOut()}
+                      className="btn btn-secondary"
+                      title="Kirjaudu ulos"
+                    >
+                      <LogOut className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
               </div>
 

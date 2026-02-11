@@ -1,4 +1,5 @@
 import { useAuth } from '@/contexts/AuthContext'
+import { useDemo } from '@/contexts/DemoContext'
 import { useRouter } from 'next/router'
 import { useEffect, ReactNode } from 'react'
 import { Activity } from 'lucide-react'
@@ -9,15 +10,17 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth()
+  const { isDemoMode } = useDemo()
   const router = useRouter()
 
   useEffect(() => {
-    if (!loading && !user) {
+    // Allow access if in demo mode OR authenticated
+    if (!loading && !user && !isDemoMode) {
       router.push('/login')
     }
-  }, [user, loading, router])
+  }, [user, loading, isDemoMode, router])
 
-  if (loading) {
+  if (loading && !isDemoMode) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <div className="text-center">
@@ -28,7 +31,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     )
   }
 
-  if (!user) {
+  if (!user && !isDemoMode) {
     return null
   }
 

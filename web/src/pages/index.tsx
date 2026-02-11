@@ -1,8 +1,18 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, Heart, TrendingUp, Shield, Smartphone, BarChart3, CheckCircle2 } from 'lucide-react'
+import { useRouter } from 'next/router'
+import { Activity, Heart, TrendingUp, Shield, Smartphone, BarChart3, CheckCircle2, Eye } from 'lucide-react'
+import { useDemo } from '@/contexts/DemoContext'
 
 export default function Home() {
+  const router = useRouter()
+  const { enterDemoMode } = useDemo()
+
+  const handleDemoClick = () => {
+    enterDemoMode()
+    router.push('/dashboard')
+  }
+
   return (
     <>
       <Head>
@@ -78,6 +88,13 @@ export default function Home() {
                 <Link href="/login" className="btn btn-large bg-white text-primary hover:bg-gray-50 shadow-elevation-3 hover:shadow-elevation-4">
                   Aloita käyttö
                 </Link>
+                <button
+                  onClick={handleDemoClick}
+                  className="btn btn-large bg-white/10 text-white border-2 border-white hover:bg-white/20 shadow-elevation-2 hover:shadow-elevation-3 flex items-center justify-center gap-2"
+                >
+                  <Eye className="w-6 h-6" />
+                  Kokeile Demoa
+                </button>
                 <a href="#ominaisuudet" className="btn btn-large border-2 border-white text-white hover:bg-white/10">
                   Lue lisää
                 </a>
