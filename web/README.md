@@ -1,4 +1,14 @@
-# Hapetus Web Application
+# Ha## 🌐 Status: LIVE and Production-Ready! ✅
+
+This is the web application component of the Hapetus health monitoring platform. The website provides a professional, accessible interface for viewing and managing SpO2 and heart rate data across all devices.
+
+### Quick Links
+- 🌐 **Live Site**: [https://hapetus.info](https://hapetus.info)
+- 🎮 **Try Demo**: Click "Kokeile Demoa" on landing page (no signup required!)
+- 🌐 **API**: https://api.hapetus.info (Backend deployed and secured ✅)
+- 📖 **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Complete deployment instructions
+- 📊 **[DEMO_MODE_COMPLETE.md](../DEMO_MODE_COMPLETE.md)** - Demo mode documentation
+- 🔗 **[WEBSITE_API_INTEGRATION_COMPLETE.md](../WEBSITE_API_INTEGRATION_COMPLETE.md)** - API integration detailsb Application
 
 **Professional web interface for health monitoring**
 
@@ -23,7 +33,53 @@ This is the web application component of the Hapetus health monitoring platform.
 - ✅ Responsive design (mobile, tablet, desktop)
 - ✅ Measurement history with filtering
 - ✅ User settings management
+- ✅ **Demo Mode** - Try without signup! (84 realistic measurements over 28 days)
+- ✅ **Interactive Charts** - SpO2 area chart + heart rate line chart
+- ✅ **Period Toggle** - View 30 days daily or weekly aggregations
 - ⏳ Export data functionality (coming soon)
+
+### 🎮 Demo Mode Features
+
+Experience the full app without creating an account:
+
+- **84 Realistic Measurements**: 3 measurements per day for 28 days
+  - Morning measurements (8am)
+  - Afternoon measurements (2pm) - 60% daily, 40% exercise
+  - Evening measurements (8pm)
+- **Real-Time Statistics**: 7-day averages, min/max values
+- **Interactive Charts**: Fully functional with demo data
+- **Full History**: Browse all measurements with filters
+- **No Signup Required**: Instant access to all features
+- **Persistent**: Stays in demo mode until manually exited
+
+Try it now: [hapetus.info](https://hapetus.info) → Click "Kokeile Demoa"
+
+### 📊 Interactive Charts
+
+Built with **Recharts** library for professional data visualization:
+
+**SpO2 Area Chart:**
+- Green gradient fill (#10b981)
+- Y-axis: 90-100%
+- Smooth curves with area under line
+- Hover tooltips with exact values
+
+**Heart Rate Line Chart:**
+- Red line with data point dots (#ef4444)
+- Y-axis: 60-90 bpm
+- Stroke width: 3px
+- Interactive hover tooltips
+
+**Period Toggle:**
+- **Daily View**: Last 30 days, individual measurements
+- **Weekly View**: 12 weeks, averaged by week
+- Smooth transitions between views
+- Finnish date formatting (e.g., "1. helmi")
+
+**Responsive Design:**
+- Desktop: Full-width charts with tooltips
+- Mobile: Touch-friendly with optimized layout
+- Retains all functionality on all screen sizes
 
 ### Design Goals
 - Professional, modern interface inspired by [Halo Lab](https://www.halo-lab.com/)
@@ -37,16 +93,24 @@ This is the web application component of the Hapetus health monitoring platform.
 ## 🏗️ Technology Stack
 
 ```yaml
-Framework: Next.js 14+ (App Router)
+Framework: Next.js 14.1.0 (Pages Router)
 Language: TypeScript
 Styling: Tailwind CSS
-UI Components: shadcn/ui + custom components
-Charts: Recharts
-State Management: React Context + hooks
-Authentication: Firebase Auth SDK
-Database: Cloud Firestore
-Deployment: Firebase Hosting
+UI Components: Custom components + Lucide icons
+Charts: Recharts 2.15.0 (area + line charts)
+State Management: React Context (DemoContext) + hooks
+Authentication: Firebase Auth SDK 10.7.1
+API: RESTful API at api.hapetus.info
+Deployment: Cloudflare Pages
+Demo Mode: localStorage persistence
 ```
+
+**Key Libraries:**
+- `recharts` - Professional charts
+- `firebase` - Authentication
+- `tailwindcss` - Styling
+- `lucide-react` - Icons
+- `date-fns` - Date formatting
 
 ---
 

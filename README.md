@@ -37,42 +37,91 @@ Sovelluksella voit:
 
 ## 📱 Alustat
 
-### ✅ Android-sovellus (Valmis!)
+### ✅ Android-sovellus (Valmis - Odottaa API-integraatiota!)
 
 Täysipainoinen Android-sovellus, joka toimii puhelimella tai tabletilla.
 
 **Ominaisuudet:**
-- Päivittäisten mittausten seuranta
-- Liikunnan vaikutuksen mittaaminen
-- Graafinen tilastonäkymä
-- Hälytysten asettaminen
-- Google-kirjautuminen
-- Toimii ilman nettiä
+- ✅ Päivittäisten mittausten seuranta
+- ✅ Liikunnan vaikutuksen mittaaminen
+- ✅ Graafinen tilastonäkymä
+- ✅ Hälytysten asettaminen
+- ✅ Google-kirjautuminen
+- ✅ Toimii ilman nettiä (Room database)
+- ⏳ API-synkronointi kehityksessä
 
-**[📱 Katso lisätietoja →](android/README.md)**
+**[📱 Katso lisätietoja ja integraatio-ohje →](ANDROID_API_INTEGRATION_GUIDE.md)**
 
-### 🚧 Verkkosivusto (Kehityksessä)
+### ✅ Verkkosivusto (VALMIS ja LIVE!)
 
-Moderni verkkosivusto, jolla voit katsella mittauksiasi mistä tahansa.
+**🌐 Sivusto on nyt live-tilassa: [hapetus.info](https://hapetus.info)**
 
-**Julkaisu:** Maaliskuu 2026
+Moderni, responsiivinen verkkosivusto täydellä toiminnallisuudella.
+
+**Ominaisuudet:**
+- ✅ Google-kirjautuminen
+- ✅ Päivittäisten mittausten lisääminen
+- ✅ Liikuntamittausten tallentaminen
+- ✅ Mittaushistorian selaaminen ja suodattaminen
+- ✅ **Interaktiiviset kaaviot** (SpO2 ja syke trendit)
+- ✅ **Demo-tila** - Kokeile sovellusta ilman kirjautumista!
+- ✅ Tilastojen laskenta (7-30 päivää)
+- ✅ Responsiivinen suunnittelu (toimii kaikilla laitteilla)
+- ✅ Tietojen synkronointi pilvipalveluun
+
+**Demo-tila:** Klikkaa "Kokeile Demoa" -nappia etusivulla nähdäksesi 4 viikon realistisen esimerkkidatan kaavioineen!
+
+**[🌐 Siirry sivustolle →](https://hapetus.info)** | **[📖 Dokumentaatio →](DEMO_MODE_COMPLETE.md)**
+
+### ✅ Backend API (VALMIS ja LIVE!)
+
+**RESTful API Cloudflare Workers + D1 -tietokannalla**
+
+- ✅ Live osoitteessa: `https://api.hapetus.info`
+- ✅ Firebase-autentikaatio
+- ✅ Päivittäiset mittaukset (CRUD)
+- ✅ Liikuntamittaukset (CRUD)
+- ✅ Tilastolaskenta (viikko/kuukausi)
+- ✅ Käyttäjäkohtainen tietosuoja
+- ✅ CORS-tuki web-sovellukselle
+
+**[📋 API-dokumentaatio →](backend/README.md)**
 
 ### 📋 iPhone-sovellus (Suunnitteilla)
 
-Native iOS-sovellus tulee myöhemmin vuonna 2026.
+Native iOS-sovellus tulee myöhemmin vuonna 2026 samalla API-integraatiolla.
 
 ---
 
 ## 🚀 Aloita käyttö
 
+### 🌐 Kokeile Demo-tilaa HETI!
+
+**Nopein tapa tutustua sovellukseen:**
+
+1. Siirry osoitteeseen: **[hapetus.info](https://hapetus.info)**
+2. Klikkaa **"Kokeile Demoa"** -nappia
+3. Näet välittömästi 4 viikon mittaushistorian kaavioineen!
+
+**Demo-tilassa näet:**
+- 84 realistista mittausta (3 päivässä × 28 päivää)
+- Interaktiiviset SpO2 ja syke -kaaviot
+- Historian suodatus ja selaus
+- Tilastolliset yhteenvedot
+- Kaikki ominaisuudet ilman kirjautumista!
+
+### 🔐 Aloita oikea käyttö
+
+1. Siirry osoitteeseen: **[hapetus.info](https://hapetus.info)**
+2. Klikkaa **"Kirjaudu sisään"**
+3. Kirjaudu Google-tililläsi
+4. Ala lisätä omia mittauksiasi!
+
 ### 📱 Lataa Android-sovellus
 
-1. **Tulossa Google Play Kauppaan** (kevät 2026)
-2. Tai rakenna itse lähdekoodista: [Android-ohjeet](android/README.md)
-
-### 🌐 Käytä verkkosivustoa
-
-Tulossa osoitteeseen: [hapetus.info](https://hapetus.info)
+1. **Rakenna lähdekoodista**: [Android-ohjeet](android/README.md)
+2. **Konfiguroi API-synkronointi**: [Integraatio-ohje](ANDROID_API_INTEGRATION_GUIDE.md)
+3. **Google Play Kauppa** - Tulossa kesällä 2026
 
 ---
 
@@ -107,15 +156,22 @@ Tulossa osoitteeseen: [hapetus.info](https://hapetus.info)
 Sovellus näyttää sinulle:
 
 - **7 päivän keskiarvot** - Kuinka arvosi ovat kehittyneet viikon aikana
-- **Graafit** - Näe trendit helposti visuaalisesti
+- **30 päivän keskiarvot** - Pidemmän aikavälin trendi
+- **📊 Interaktiiviset kaaviot** - Visuaaliset trendit SpO2:lle ja sykkeelle
+  - Area-kaavio happisaturaatiolle (vihreä)
+  - Line-kaavio sykkeelle (punainen)
+  - Vaihda näkymää: 30 päivää tai viikkokohtainen
+  - Hover-tooltipit tarkoilla arvoilla
 - **Min/Max arvot** - Parhaat ja huonoimmat mittaukset
 - **Liikunnan vaikutus** - Miten arvosi muuttuvat liikunnan aikana
+- **Aktiivisuustiedot** - Yhteensä tallennettuja mittauksia ja liikuntakertoja
 
 Voit valita aikaväliksi:
-- Viimeinen viikko
-- Viimeinen kuukausi
-- Viimeinen 3 kuukautta
-- Kaikki mittaukset
+- **30 päivää** - Päivittäiset keskiarvot
+- **Viikot** - Viikkokohtaiset yhteenvedot
+- Historian selaus - Kaikki mittaukset aikajärjestyksessä
+
+**Kaaviot käyttävät Recharts-kirjastoa** - Ammattimainen ja responsiivinen visualisointi!
 
 ---
 
@@ -132,11 +188,14 @@ Sovellus voi varoittaa sinua, jos:
 
 ## 🔒 Tietoturva ja yksityisyys
 
-- ✅ **Tietosi ovat turvassa** - Google Firebase käyttää pankki-tason salausta
+- ✅ **Tietosi ovat turvassa** - Firebase Authentication ja Cloudflare D1 käyttävät pankki-tason salausta
 - ✅ **Vain sinä näet tietosi** - Kukaan muu ei voi lukea mittauksiasi
 - ✅ **Ei mainoksia** - Emme myy tietojasi kenellekään
-- ✅ **Varmuuskopiointi** - Tiedot tallennetaan automaattisesti pilveen
+- ✅ **Automaattinen varmuuskopiointi** - Verkkosivusto tallentaa tiedot automaattisesti pilveen
+- ✅ **Offline-toiminta** - Android-sovellus toimii ilman nettiä, synkronointi tapahtuu kun verkko palautuu
 - ✅ **Poisto milloin vain** - Voit poistaa kaikki tietosi koska haluat
+- ✅ **GDPR-yhteensopiva** - Täyttää EU:n tietosuoja-asetuksen vaatimukset
+- ✅ **Open Source** - Lähdekoodi julkisesti tarkasteltavissa GitHubissa
 
 ---
 
@@ -200,10 +259,24 @@ Tarvitset **pulssioksimetrin** (sormeen laitettava mittari). Voit ostaa sellaise
 Jos olet kehittäjä ja haluat osallistua projektin kehitykseen:
 
 - **📖 Tekninen dokumentaatio**: [README_EN.md](README_EN.md) (englanniksi)
-- **🔧 Projektin tila**: [PROJECT_STATUS.md](PROJECT_STATUS.md)
-- **🚀 Käyttöönotto-opas**: [backend/DEPLOYMENT_GUIDE.md](backend/DEPLOYMENT_GUIDE.md)
-- **📋 API-dokumentaatio**: [backend/API.md](backend/API.md)
-- **🎨 Suunnittelujärjestelmä**: [shared/design/DESIGN_SYSTEM.md](shared/design/DESIGN_SYSTEM.md)
+- **🎯 Projektin tila**: Kaikki komponentit valmiit!
+  - ✅ Verkkosivusto (Next.js + Cloudflare Pages)
+  - ✅ Backend API (Cloudflare Workers + D1)
+  - ✅ Android-sovellus (Kotlin + Jetpack Compose)
+  - ⏳ API-integraatio Androidiin (ohje valmis)
+- **🌐 Live-demo**: [hapetus.info](https://hapetus.info) - Kokeile demo-tilaa!
+- **📊 Demo-tila**: [DEMO_MODE_COMPLETE.md](DEMO_MODE_COMPLETE.md)
+- **🔗 API-integraatio**: [ANDROID_API_INTEGRATION_GUIDE.md](ANDROID_API_INTEGRATION_GUIDE.md)
+- **✅ Website-API yhteys**: [WEBSITE_API_INTEGRATION_COMPLETE.md](WEBSITE_API_INTEGRATION_COMPLETE.md)
+- **🚀 Deployment-ohje**: [backend/DEPLOYMENT_GUIDE.md](backend/DEPLOYMENT_GUIDE.md)
+- **📋 API-dokumentaatio**: [backend/README.md](backend/README.md)
+- **🎨 Suunnittelujärjestelmä**: Material Design 3, Tailwind CSS
+
+**Teknologiat:**
+- **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Recharts
+- **Backend**: Cloudflare Workers, D1 (SQLite), Hono framework
+- **Mobile**: Kotlin, Jetpack Compose, Room, Firebase Auth
+- **Deployment**: Cloudflare Pages (web), Cloudflare Workers (API)
 
 ---
 
@@ -221,23 +294,46 @@ Jos olet kehittäjä ja haluat osallistua projektin kehitykseen:
 
 ## 🗺️ Tiekartta
 
-### ✅ Vaihe 1: Android-sovellus (Valmis!)
-- Täysin toimiva Android-sovellus
-- Kaikki perusominaisuudet käytössä
-- Google-kirjautuminen
-- Offline-tuki
+### ✅ Vaihe 1: Web-sovellus (VALMIS!)
+- ✅ Täysin toimiva verkkosivusto
+- ✅ Kaikki perusominaisuudet käytössä
+- ✅ Google-kirjautuminen
+- ✅ **Interaktiiviset kaaviot (Recharts)**
+- ✅ **Demo-tila ilman kirjautumista**
+- ✅ Responsiivinen suunnittelu
+- ✅ Live osoitteessa: [hapetus.info](https://hapetus.info)
+- ✅ **Julkaistu: 11. helmikuuta 2026**
 
-### 🚧 Vaihe 2: Verkkosivusto (Käynnissä)
-- Verkkopohjainen käyttöliittymä
-- Tietojen katselu selaimessa
-- Synkronointi puhelimen kanssa
-- **Julkaisu: Maaliskuu 2026**
+### ✅ Vaihe 2: Backend API (VALMIS!)
+- ✅ RESTful API Cloudflare Workersilla
+- ✅ D1-tietokanta (SQLite)
+- ✅ Firebase-autentikaatio
+- ✅ Päivittäiset ja liikuntamittaukset
+- ✅ Tilastolaskenta
+- ✅ CORS-tuki
+- ✅ Live osoitteessa: `https://api.hapetus.info`
 
-### 📋 Vaihe 3: iPhone-sovellus (Suunnitelma)
-- Native iOS-sovellus
-- Apple Health -integraatio
-- Samat ominaisuudet kuin Androidissa
-- **Julkaisu: Q2 2026**
+### ✅ Vaihe 3: Android-sovellus (VALMIS - Odottaa synkronointia!)
+- ✅ Täysin toimiva Android-sovellus
+- ✅ Kaikki perusominaisuudet
+- ✅ Google-kirjautuminen
+- ✅ Offline-tuki (Room database)
+- ⏳ API-synkronointi (integraatio-ohje valmis)
+- 📅 **API-integraatio: Helmikuu-maaliskuu 2026**
+
+### 📋 Vaihe 4: Cross-Platform Sync (Seuraavaksi!)
+- ⏳ Android-sovelluksen API-integraatio
+- ⏳ Offline-first -synkronointi
+- ⏳ Automaattinen tietojen synkronointi laitteiden välillä
+- ⏳ Konfliktien hallinta
+- 📅 **Tavoite: Maaliskuu 2026**
+
+### 📋 Vaihe 5: iPhone-sovellus (Suunnitelma)
+- ⏳ Native iOS-sovellus
+- ⏳ Apple Health -integraatio
+- ⏳ Samat ominaisuudet kuin Androidissa
+- ⏳ Sama API-integraatio
+- 📅 **Tavoite: Q2-Q3 2026**
 
 ---
 

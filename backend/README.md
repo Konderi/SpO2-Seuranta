@@ -2,13 +2,33 @@
 
 **Cloudflare Workers** backend for the Hapetus SpO2 monitoring application.
 
+## 🌐 Status: LIVE and Production-Ready! ✅
+
+The backend API is **deployed and serving production traffic** at:
+
+🔗 **https://api.hapetus.info**
+
+### Current Status
+- ✅ Deployed on Cloudflare Workers
+- ✅ D1 SQLite database configured
+- ✅ Firebase Authentication integrated
+- ✅ All endpoints tested and working
+- ✅ CORS configured for cross-origin requests
+- ✅ Website integration complete
+- ⏳ Android integration pending (guide ready)
+
+### Connected Clients
+- ✅ **Website**: [hapetus.info](https://hapetus.info) - Fully integrated
+- ⏳ **Android App**: Integration guide available at `../ANDROID_API_INTEGRATION_GUIDE.md`
+- 📋 **iOS App**: Planned for Q2-Q3 2026
+
 ## 🚀 Tech Stack
 
-- **Cloudflare Workers**: Serverless API
-- **Cloudflare D1**: SQL Database
-- **Hono**: Fast web framework
+- **Cloudflare Workers**: Serverless API (Global edge deployment)
+- **Cloudflare D1**: SQL Database (SQLite)
+- **Hono**: Fast web framework (~13KB)
 - **TypeScript**: Type-safe development
-- **Firebase Auth**: Authentication
+- **Firebase Auth**: Authentication & user management
 
 ## 📋 Prerequisites
 

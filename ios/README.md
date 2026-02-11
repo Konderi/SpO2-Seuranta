@@ -2,9 +2,34 @@
 
 **Native iOS app for health monitoring**
 
-## 📋 Status: Planned (Phase 3)
+## 📋 Status: Planned for Q2-Q3 2026
 
 This directory will contain the native iOS application for the Hapetus health monitoring platform.
+
+### Current Project Status
+- ✅ **Android App**: Complete and ready for API integration
+- ✅ **Website**: Live at [hapetus.info](https://hapetus.info)
+- ✅ **Backend API**: Live at `https://api.hapetus.info`
+- ⏳ **iOS App**: Scheduled for Q2-Q3 2026
+
+### API Integration
+The iOS app will use the **same RESTful API** as the Android app and website:
+
+📖 **Integration Reference**: See `../ANDROID_API_INTEGRATION_GUIDE.md` for API structure and patterns. The iOS implementation will follow the same:
+- Offline-first architecture
+- JWT authentication via Firebase
+- Automatic background sync
+- Conflict resolution
+- Snake_case field names (API) → camelCase (Swift)
+
+**API Endpoints Available:**
+```
+GET  /api/measurements/daily
+POST /api/measurements/daily
+GET  /api/measurements/exercise
+POST /api/measurements/exercise
+GET  /api/statistics
+```
 
 ---
 
@@ -35,13 +60,22 @@ This directory will contain the native iOS application for the Hapetus health mo
 Language: Swift 5.9+
 UI Framework: SwiftUI
 Architecture: MVVM + Clean Architecture
-Database: CoreData + CloudKit
-Authentication: Firebase Auth
-Backend: Firebase Firestore
-Health: HealthKit
+Database: CoreData (local) + API sync
+Authentication: Firebase Auth (Google Sign-In + Apple Sign-In)
+Backend: RESTful API at api.hapetus.info
+Charts: Swift Charts (iOS 16+)
+Health: HealthKit integration
 Minimum iOS: iOS 16+
 Target iOS: iOS 17+
+Network: URLSession + async/await
 ```
+
+**Key Similarities to Android:**
+- Same MVVM architecture
+- Same API integration patterns
+- Same offline-first approach
+- Same Firebase authentication
+- Equivalent local database (CoreData ≈ Room)
 
 ---
 

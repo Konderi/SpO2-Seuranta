@@ -28,6 +28,36 @@ SpO2 Seuranta is a professional-grade Android application designed for tracking 
 - **🎨 Professional Design** - Modern Material Design 3 with medical-grade appearance
 - **📊 Visual Charts** - Trend graphs with Vico Charts library
 - **🇫🇮 Finnish Language** - Full Finnish UI (prepared for localization)
+- **⏳ Cross-Platform Sync** - API integration ready (implementation guide available)
+
+### 🔄 API Integration Status
+
+The Android app is **fully functional** with local storage (Room database) and **ready for API integration**. A comprehensive integration guide is available:
+
+📖 **[ANDROID_API_INTEGRATION_GUIDE.md](../ANDROID_API_INTEGRATION_GUIDE.md)**
+
+This guide provides:
+- Step-by-step implementation (3-4 hours)
+- Retrofit setup with proper DTOs
+- Offline-first architecture with sync manager
+- Network monitoring and error handling
+- Testing procedures
+- Production deployment checklist
+
+**Current Status:**
+- ✅ Local database working perfectly
+- ✅ All features functional offline
+- ✅ Google Sign-In implemented
+- ⏳ Backend API ready at `https://api.hapetus.info`
+- ⏳ Integration guide complete
+- ⏳ Implementation scheduled for February-March 2026
+
+**What API Integration Enables:**
+- 🔄 Multi-device data synchronization
+- 💻 Access data from web interface
+- ☁️ Cloud backup of all measurements
+- 📊 Advanced analytics across platforms
+- 🔐 Secure data storage with Firebase Auth
 
 ## 🏗️ Architecture
 
