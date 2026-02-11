@@ -114,19 +114,19 @@ export default function History() {
             <div className="flex flex-wrap gap-4">
               <button
                 onClick={() => setFilter('all')}
-                className={`btn ${filter === 'all' ? 'btn-primary' : 'btn-secondary'}`}
+                className={`btn ${filter === 'all' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
               >
                 Kaikki
               </button>
               <button
                 onClick={() => setFilter('daily')}
-                className={`btn ${filter === 'daily' ? 'btn-primary' : 'btn-secondary'}`}
+                className={`btn ${filter === 'daily' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
               >
                 Päivittäiset
               </button>
               <button
                 onClick={() => setFilter('exercise')}
-                className={`btn ${filter === 'exercise' ? 'btn-primary' : 'btn-secondary'}`}
+                className={`btn ${filter === 'exercise' ? 'bg-primary text-white hover:bg-primary-dark shadow-md' : 'btn-secondary'}`}
               >
                 Liikunta
               </button>
