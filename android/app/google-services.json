@@ -7,12 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:511544546057:android:0d38f334b1c189a6acf9d8",
+        "mobilesdk_app_id": "1:511544546057:android:fa8d807e8ecbc1caacf9d8",
         "android_client_info": {
-          "package_name": "com.konderi.spo2seuranta"
+          "package_name": "com.konderi.hapetus"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "511544546057-t99nkjq6ni0h1dr9lm0bk40713esetpl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyArj8dhh03bQjIkAflX9nWfLVyLrh3UBfU"
@@ -20,7 +25,49 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "511544546057-t99nkjq6ni0h1dr9lm0bk40713esetpl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:511544546057:android:0d38f334b1c189a6acf9d8",
+        "android_client_info": {
+          "package_name": "com.konderi.spo2seuranta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "511544546057-k7j6blvika7gaubqqrobtm49rb70flep.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.konderi.spo2seuranta",
+            "certificate_hash": "5518bb8b6fba71c5fe4561b962ba290b60f5b470"
+          }
+        },
+        {
+          "client_id": "511544546057-t99nkjq6ni0h1dr9lm0bk40713esetpl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyArj8dhh03bQjIkAflX9nWfLVyLrh3UBfU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "511544546057-t99nkjq6ni0h1dr9lm0bk40713esetpl.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
