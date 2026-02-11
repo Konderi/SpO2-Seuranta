@@ -10,15 +10,15 @@ module.exports = {
       colors: {
         // Primary - Trust & Medical Blue
         primary: {
-          DEFAULT: 'hsl(210, 100%, 55%)', // #0088FF
-          dark: 'hsl(210, 100%, 45%)',    // #0070CC
+          DEFAULT: 'hsl(210, 100%, 45%)', // #0070E6 - Darker, more professional
+          dark: 'hsl(210, 100%, 35%)',    // #0059B3 - Even darker for hover
           light: 'hsl(210, 100%, 95%)',    // #E6F4FF
         },
         // Semantic Colors
         success: 'hsl(142, 76%, 45%)',     // #1CB854
         warning: 'hsl(38, 92%, 55%)',      // #F59E0B
         error: 'hsl(0, 84%, 60%)',         // #EF4444
-        info: 'hsl(210, 100%, 55%)',       // #0088FF
+        info: 'hsl(210, 100%, 45%)',       // #0070E6 - Match primary
         // Neutral Palette (High Contrast for Accessibility)
         background: 'hsl(0, 0%, 100%)',    // White
         surface: 'hsl(210, 20%, 98%)',     // Off-white
