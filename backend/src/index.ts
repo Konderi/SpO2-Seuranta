@@ -6,6 +6,7 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import { decode, verify } from '@tsndr/cloudflare-worker-jwt';
 
 export interface Env {
   DB: D1Database;
@@ -60,25 +61,87 @@ interface AuthUser {
 
 async function verifyFirebaseToken(token: string, env: Env): Promise<AuthUser | null> {
   try {
-    // Simple Firebase token verification using Google's API
-    const response = await fetch(
-      `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${env.FIREBASE_PROJECT_ID}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ idToken: token }),
-      }
+    // Decode the token to get the payload without verification first
+    const { payload } = decode(token);
+    
+    if (!payload) {
+      console.log('Failed to decode token');
+      return null;
+    }
+    
+    // Validate basic claims
+    const now = Math.floor(Date.now() / 1000);
+    
+    // Check expiration
+    if (!payload.exp || payload.exp < now) {
+      console.log('Token expired');
+      return null;
+    }
+    
+    // Check issued at
+    if (!payload.iat || payload.iat > now) {
+      console.log('Token used before issued');
+      return null;
+    }
+    
+    // Check audience (should be your project ID)
+    if (payload.aud !== env.FIREBASE_PROJECT_ID) {
+      console.log('Invalid audience', payload.aud, 'expected', env.FIREBASE_PROJECT_ID);
+      return null;
+    }
+    
+    // Check issuer
+    const expectedIssuer = `https://securetoken.google.com/${env.FIREBASE_PROJECT_ID}`;
+    if (payload.iss !== expectedIssuer) {
+      console.log('Invalid issuer', payload.iss, 'expected', expectedIssuer);
+      return null;
+    }
+    
+    // Check subject (user ID) exists
+    if (!payload.sub || payload.sub.length === 0 || payload.sub.length > 128) {
+      console.log('Invalid subject');
+      return null;
+    }
+    
+    // Fetch Google's public keys to verify signature
+    const keysResponse = await fetch(
+      'https://www.googleapis.com/robot/v1/metadata/x509/securetoken@system.gserviceaccount.com',
+      { cf: { cacheTtl: 3600 } } // Cache keys for 1 hour
     );
-
-    if (!response.ok) return null;
-
-    const data: any = await response.json();
-    if (!data.users || data.users.length === 0) return null;
-
-    const user = data.users[0];
+    
+    if (!keysResponse.ok) {
+      console.log('Failed to fetch public keys');
+      return null;
+    }
+    
+    const publicKeys: Record<string, string> = await keysResponse.json();
+    
+    // Get the key ID from token header
+    const { header } = decode(token);
+    if (!header || !(header as any).kid) {
+      console.log('No kid in token header');
+      return null;
+    }
+    
+    const kid = (header as any).kid;
+    const publicKeyCert = publicKeys[kid];
+    if (!publicKeyCert) {
+      console.log('Public key not found for kid:', kid);
+      return null;
+    }
+    
+    // Verify the token signature using the public key
+    const isValid = await verify(token, publicKeyCert, { algorithm: 'RS256', throwError: false });
+    
+    if (!isValid) {
+      console.log('Token signature verification failed');
+      return null;
+    }
+    
+    // All validations passed, return the user info
     return {
-      uid: user.localId,
-      email: user.email,
+      uid: payload.sub || (payload as any).user_id,
+      email: (payload as any).email,
     };
   } catch (error) {
     console.error('Token verification error:', error);
