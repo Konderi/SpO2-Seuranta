@@ -5,6 +5,8 @@ export interface DailyMeasurement {
   user_id: string;
   spo2: number;
   heart_rate: number;
+  systolic?: number;
+  diastolic?: number;
   notes?: string;
   measured_at: number;
   created_at: number;
@@ -18,8 +20,12 @@ export interface ExerciseMeasurement {
   exercise_duration?: number;
   spo2_before: number;
   heart_rate_before: number;
+  systolic_before?: number;
+  diastolic_before?: number;
   spo2_after: number;
   heart_rate_after: number;
+  systolic_after?: number;
+  diastolic_after?: number;
   notes?: string;
   measured_at: number;
   created_at: number;
@@ -30,10 +36,16 @@ export interface Statistics {
   // Flat structure for API compatibility
   avg_spo2?: number;
   avg_heart_rate?: number;
+  avg_systolic?: number;
+  avg_diastolic?: number;
   min_spo2?: number;
   max_spo2?: number;
   min_heart_rate?: number;
   max_heart_rate?: number;
+  min_systolic?: number;
+  max_systolic?: number;
+  min_diastolic?: number;
+  max_diastolic?: number;
   count?: number;
   
   // Nested structure for demo mode compatibility
@@ -51,6 +63,16 @@ export interface Statistics {
     min: number;
     max: number;
   };
+  bloodPressure?: {
+    currentSystolic: number;
+    currentDiastolic: number;
+    average7daysSystolic: number;
+    average7daysDiastolic: number;
+    minSystolic: number;
+    maxSystolic: number;
+    minDiastolic: number;
+    maxDiastolic: number;
+  };
   totalMeasurements?: number;
   exerciseSessions?: number;
 }
@@ -63,6 +85,9 @@ export interface UserSettings {
   heart_rate_high_threshold: number;
   large_font_enabled: boolean;
   notifications_enabled: boolean;
+  gender?: 'male' | 'female' | 'other';
+  birth_year?: number;
+  date_of_birth?: string;
 }
 
 class ApiClient {
