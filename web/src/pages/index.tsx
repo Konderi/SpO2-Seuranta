@@ -17,7 +17,7 @@ export default function Home() {
     <>
       <Head>
         <title>Hapetus - Helppoa Terveyden Seurantaa</title>
-        <meta name="description" content="Seuraa happisaturaatiota ja sykettä helposti. Suunniteltu erityisesti ikäihmisille ja hengitysvaikeuksista kärsiville." />
+        <meta name="description" content="Seuraa happisaturaatiota, sykettä ja verenpainetta helposti. Suunniteltu erityisesti ikäihmisille ja hengitysvaikeuksista kärsiville." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
 
@@ -79,7 +79,7 @@ export default function Home() {
               
               {/* Subheading */}
               <p className="text-xl md:text-2xl text-white/90 mb-12 max-w-3xl mx-auto leading-relaxed">
-                Hapetus auttaa sinua seuraamaan happisaturaatiota ja sykettä. 
+                Hapetus auttaa sinua seuraamaan happisaturaatiota, sykettä ja verenpainetta. 
                 Suunniteltu erityisesti ikäihmisille – helppo käyttää, selkeä ja luotettava.
               </p>
 
@@ -128,15 +128,15 @@ export default function Home() {
                 },
                 { 
                   icon: Activity, 
-                  value: '72', 
-                  label: 'Syke (lyöntiä/min)', 
-                  color: 'text-heart-rate',
+                  value: '120/80', 
+                  label: 'Verenpaine (mmHg)', 
+                  color: 'text-primary',
                   bgColor: 'bg-red-50'
                 },
                 { 
                   icon: TrendingUp, 
-                  value: '+2%', 
-                  label: 'Kehitys', 
+                  value: 'Hyvä', 
+                  label: 'Kokonaistila', 
                   color: 'text-success',
                   bgColor: 'bg-blue-50'
                 },
@@ -175,7 +175,12 @@ export default function Home() {
                 {
                   icon: Activity,
                   title: 'Päivittäinen seuranta',
-                  description: 'Tallenna happisaturaatio ja syke päivittäin. Seuraa arvojen kehitystä ajan mittaan.',
+                  description: 'Tallenna happisaturaatio, syke ja verenpaine päivittäin. Seuraa arvojen kehitystä ajan mittaan.',
+                },
+                {
+                  icon: Heart,
+                  title: 'Verenpaineen seuranta',
+                  description: 'Mittaa ja tallenna verenpaine. Saat henkilökohtaiset suositukset ikäsi ja sukupuolesi mukaan.',
                 },
                 {
                   icon: BarChart3,
@@ -193,13 +198,8 @@ export default function Home() {
                   description: 'Käytä Android-puhelimella tai tietokoneella. Tiedot päivittyvät automaattisesti.',
                 },
                 {
-                  icon: Heart,
-                  title: 'Liikunta-aktiviteetit',
-                  description: 'Mittaa arvot ennen ja jälkeen liikunnan. Seuraa palautumista.',
-                },
-                {
                   icon: TrendingUp,
-                  title: 'Historian seuranta',
+                  title: 'Historia ja raportit',
                   description: 'Katso kaikkien mittausten historia. Tulosta raportit lääkärille.',
                 },
               ].map((feature, i) => (
@@ -237,7 +237,7 @@ export default function Home() {
                 {
                   number: '2',
                   title: 'Mittaa arvot',
-                  description: 'Syötä happisaturaatio ja syke. Lisää halutessasi muistiinpanoja.',
+                  description: 'Syötä happisaturaatio, syke ja verenpaine. Lisää halutessasi muistiinpanoja.',
                 },
                 {
                   number: '3',
