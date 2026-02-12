@@ -61,16 +61,25 @@ daily.post('/', async (c) => {
     const body = await c.req.json();
     const { spo2, heart_rate, systolic, diastolic, notes, measured_at } = body;
 
-    // Validation
-    if (!spo2 || !heart_rate || !measured_at) {
-      return c.json({ error: 'Missing required fields' }, 400);
+    // At least one measurement type must be provided
+    const hasSpO2Data = spo2 !== undefined && spo2 !== null && spo2 !== 0;
+    const hasBPData = (systolic !== undefined && systolic !== null) && (diastolic !== undefined && diastolic !== null);
+    
+    if (!hasSpO2Data && !hasBPData) {
+      return c.json({ error: 'At least SpO2/HR or BP measurements required' }, 400);
     }
 
-    if (spo2 < 50 || spo2 > 100) {
+    if (!measured_at) {
+      return c.json({ error: 'Measurement timestamp is required' }, 400);
+    }
+
+    // Validate SpO2 if provided
+    if (hasSpO2Data && (spo2 < 50 || spo2 > 100)) {
       return c.json({ error: 'SpO2 must be between 50 and 100' }, 400);
     }
 
-    if (heart_rate < 30 || heart_rate > 250) {
+    // Validate heart rate if provided
+    if (heart_rate && (heart_rate < 30 || heart_rate > 250)) {
       return c.json({ error: 'Heart rate must be between 30 and 250' }, 400);
     }
 
@@ -94,7 +103,18 @@ daily.post('/', async (c) => {
     await db.prepare(
       `INSERT INTO daily_measurements (id, user_id, spo2, heart_rate, systolic, diastolic, notes, measured_at, created_at, updated_at)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(id, user.uid, spo2, heart_rate, systolic || null, diastolic || null, notes || null, measured_at, timestamp, timestamp).run();
+    ).bind(
+      id, 
+      user.uid, 
+      spo2 || null,  // Allow null for BP-only measurements
+      heart_rate || null,  // Allow null for BP-only measurements
+      systolic || null, 
+      diastolic || null, 
+      notes || null, 
+      measured_at, 
+      timestamp, 
+      timestamp
+    ).run();
 
     return c.json({
       message: 'Measurement created successfully',
