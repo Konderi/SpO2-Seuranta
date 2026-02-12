@@ -38,6 +38,18 @@ object DatabaseModule {
         }
     }
     
+    /**
+     * Migration from version 3 to 4: Make spo2 and heartRate nullable
+     * Note: SQLite doesn't support ALTER COLUMN, but Room handles nullability in Kotlin layer
+     * The columns are already nullable in SQLite (INTEGER allows NULL by default)
+     */
+    private val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // No SQL changes needed - SQLite columns are already nullable by default
+            // This migration just updates the schema version to match the Kotlin model changes
+        }
+    }
+    
     @Provides
     @Singleton
     fun provideSpO2Database(
@@ -48,7 +60,7 @@ object DatabaseModule {
             SpO2Database::class.java,
             "spo2_database"
         )
-            .addMigrations(MIGRATION_2_3)
+            .addMigrations(MIGRATION_2_3, MIGRATION_3_4)
             .fallbackToDestructiveMigration()
             .build()
     }
