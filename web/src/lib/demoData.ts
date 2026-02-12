@@ -226,6 +226,22 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
   const highBpPercentage = bpMeasurementCount > 0 ? Math.round((highBpCount / bpMeasurementCount) * 100) : 0
 
   return {
+    // Flat structure for API compatibility (for dashboard)
+    avg_spo2: Math.round(avg(spo2Last7)),
+    avg_heart_rate: Math.round(avg(hrLast7)),
+    avg_systolic: Math.round(avg(systolicLast7)),
+    avg_diastolic: Math.round(avg(diastolicLast7)),
+    min_spo2: min(allSpo2),
+    max_spo2: max(allSpo2),
+    min_heart_rate: min(allHeartRate),
+    max_heart_rate: max(allHeartRate),
+    min_systolic: min(allSystolic),
+    max_systolic: max(allSystolic),
+    min_diastolic: min(allDiastolic),
+    max_diastolic: max(allDiastolic),
+    count: dailyMeasurements.length,
+    
+    // Nested structure for statistics page compatibility
     spo2: {
       current: allSpo2[0] || 0,
       average7days: Math.round(avg(spo2Last7)),
@@ -241,6 +257,21 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
       max: max(allHeartRate),
     },
     bloodPressure: {
+      // Flat structure for dashboard
+      currentSystolic: allSystolic[0] || 0,
+      currentDiastolic: allDiastolic[0] || 0,
+      average7daysSystolic: Math.round(avg(systolicLast7)),
+      average7daysDiastolic: Math.round(avg(diastolicLast7)),
+      average30daysSystolic: Math.round(avg(systolicLast30)),
+      average30daysDiastolic: Math.round(avg(diastolicLast30)),
+      minSystolic: min(allSystolic),
+      maxSystolic: max(allSystolic),
+      minDiastolic: min(allDiastolic),
+      maxDiastolic: max(allDiastolic),
+      measurementCount: bpMeasurementCount,
+      highBpCount,
+      highBpPercentage,
+      // Nested structure for statistics page
       systolic: {
         current: allSystolic[0] || 0,
         average7days: Math.round(avg(systolicLast7)),
@@ -255,9 +286,6 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
         min: min(allDiastolic),
         max: max(allDiastolic),
       },
-      measurementCount: bpMeasurementCount,
-      highBpCount,
-      highBpPercentage,
     },
     totalMeasurements: dailyMeasurements.length,
     exerciseSessions: exerciseMeasurements.length,
@@ -314,7 +342,7 @@ export const generateWeeklyChartData = (measurements: DemoMeasurement[]) => {
   const dailyMeasurements = measurements.filter(m => m.type === 'daily')
   
   // Group by week
-  const weeklyData: { [week: string]: { spo2: number[], heartRate: number[] } } = {}
+  const weeklyData: { [week: string]: { spo2: number[], heartRate: number[], systolic: number[], diastolic: number[] } } = {}
   
   dailyMeasurements.forEach(m => {
     const date = new Date(m.measured_at * 1000)
@@ -323,10 +351,12 @@ export const generateWeeklyChartData = (measurements: DemoMeasurement[]) => {
     const weekKey = weekStart.toISOString().split('T')[0]
     
     if (!weeklyData[weekKey]) {
-      weeklyData[weekKey] = { spo2: [], heartRate: [] }
+      weeklyData[weekKey] = { spo2: [], heartRate: [], systolic: [], diastolic: [] }
     }
     if (m.spo2) weeklyData[weekKey].spo2.push(m.spo2)
     if (m.heartRate) weeklyData[weekKey].heartRate.push(m.heartRate)
+    if (m.systolic) weeklyData[weekKey].systolic.push(m.systolic)
+    if (m.diastolic) weeklyData[weekKey].diastolic.push(m.diastolic)
   })
 
   // Calculate weekly averages for last 12 weeks
@@ -340,6 +370,8 @@ export const generateWeeklyChartData = (measurements: DemoMeasurement[]) => {
       const data = weeklyData[week]
       const avgSpo2 = data.spo2.reduce((a, b) => a + b, 0) / data.spo2.length
       const avgHR = data.heartRate.reduce((a, b) => a + b, 0) / data.heartRate.length
+      const avgSystolic = data.systolic.length > 0 ? data.systolic.reduce((a, b) => a + b, 0) / data.systolic.length : undefined
+      const avgDiastolic = data.diastolic.length > 0 ? data.diastolic.reduce((a, b) => a + b, 0) / data.diastolic.length : undefined
       
       const weekDate = new Date(week)
       const weekLabel = `Vk ${weekDate.toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' })}`
@@ -348,7 +380,9 @@ export const generateWeeklyChartData = (measurements: DemoMeasurement[]) => {
         week,
         weekLabel,
         spo2: Math.round(avgSpo2 * 10) / 10,
-        heartRate: Math.round(avgHR)
+        heartRate: Math.round(avgHR),
+        systolic: avgSystolic ? Math.round(avgSystolic) : undefined,
+        diastolic: avgDiastolic ? Math.round(avgDiastolic) : undefined
       }
     })
 
