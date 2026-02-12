@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, Heart, TrendingUp, Plus, LogOut, User, Menu, X, RefreshCw } from 'lucide-react'
+import { Activity, Heart, TrendingUp, Plus, LogOut, User, Menu, X } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -12,58 +12,43 @@ export default function Dashboard() {
   const { isDemoMode, demoMeasurements, demoStats, exitDemoMode } = useDemo()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [refreshing, setRefreshing] = useState(false)
   const [measurements, setMeasurements] = useState<any[]>([])
   const [stats, setStats] = useState<any>(null)
 
   // Fetch real data from API or use demo data
-  const fetchData = async () => {
-    if (isDemoMode) {
-      // Use demo data
-      const dailyDemo = demoMeasurements.filter(m => m.type === 'daily')
-      setMeasurements(dailyDemo.map(m => ({
-        spo2: m.spo2,
-        heart_rate: m.heartRate,
-        measured_at: m.measured_at, // Already in seconds (Unix timestamp)
-      })))
-      setStats(demoStats)
-      setLoading(false)
-      return
-    }
-
-    try {
-      setLoading(true)
-      // Fetch latest measurements
-      const dailyData = await apiClient.getDailyMeasurements()
-      setMeasurements(dailyData)
-      
-      // Fetch weekly statistics
-      const weeklyStats = await apiClient.getWeeklyStats()
-      setStats(weeklyStats)
-    } catch (error) {
-      console.error('Failed to fetch dashboard data:', error)
-    } finally {
-      setLoading(false)
-    }
-  }
-  
-  // Initial load
   useEffect(() => {
+    const fetchData = async () => {
+      if (isDemoMode) {
+        // Use demo data
+        const dailyDemo = demoMeasurements.filter(m => m.type === 'daily')
+        setMeasurements(dailyDemo.map(m => ({
+          spo2: m.spo2,
+          heart_rate: m.heartRate,
+          measured_at: m.measured_at, // Already in seconds (Unix timestamp)
+        })))
+        setStats(demoStats)
+        setLoading(false)
+        return
+      }
+
+      try {
+        setLoading(true)
+        // Fetch latest measurements
+        const dailyData = await apiClient.getDailyMeasurements()
+        setMeasurements(dailyData)
+        
+        // Fetch weekly statistics
+        const weeklyStats = await apiClient.getWeeklyStats()
+        setStats(weeklyStats)
+      } catch (error) {
+        console.error('Failed to fetch dashboard data:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
     fetchData()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isDemoMode, demoMeasurements, demoStats])
-
-  // Manual refresh function
-  const handleRefresh = async () => {
-    setRefreshing(true)
-    await fetchData()
-    setRefreshing(false)
-  }
-
-  // Sign out function
-  const handleSignOut = async () => {
-    await signOut()
-  }
 
   // Calculate latest measurements and trend from real data
   const latestMeasurements = measurements.length > 0 ? {
@@ -100,59 +85,66 @@ export default function Dashboard() {
         <nav className="sticky top-0 w-full z-50 bg-white border-b border-border shadow-elevation-1">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex justify-between items-center h-20">
-              {/* Logo - Left */}
+              {/* Logo */}
               <Link href="/dashboard" className="flex items-center gap-3">
                 <Activity className="w-10 h-10 text-primary" strokeWidth={2.5} />
                 <span className="text-3xl font-bold text-primary">Hapetus</span>
               </Link>
 
-              {/* Title - Center */}
-              <h1 className="text-2xl font-semibold text-text-primary">Dashboard</h1>
-
-              {/* Refresh Button - Right */}
-              <button 
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Päivitä tiedot"
-              >
-                <RefreshCw className={`w-5 h-5 ${refreshing ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">Päivitä</span>
-              </button>
-            </div>
-
-            {/* Desktop Navigation - Below */}
-            <div className="hidden md:flex items-center justify-center gap-6 pb-3 pt-2 border-t border-border">
-              {isDemoMode && (
-                <div className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-2xl text-sm font-semibold flex items-center gap-2">
-                  <Activity className="w-4 h-4" />
-                  Demo-tila
+              {/* Desktop Navigation */}
+              <div className="hidden md:flex items-center gap-6">
+                {isDemoMode && (
+                  <div className="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-2xl text-sm font-semibold flex items-center gap-2">
+                    <Activity className="w-4 h-4" />
+                    Demo-tila
+                  </div>
+                )}
+                <Link href="/dashboard" className="text-lg font-semibold text-primary">
+                  Etusivu
+                </Link>
+                <Link href="/history" className="text-lg text-text-secondary hover:text-primary transition-colors">
+                  Historia
+                </Link>
+                <Link href="/statistics" className="text-lg text-text-secondary hover:text-primary transition-colors">
+                  Tilastot
+                </Link>
+                <div className="flex items-center gap-3 ml-6 pl-6 border-l border-border">
+                  <div className="text-right">
+                    <p className="text-sm text-text-secondary">
+                      {isDemoMode ? 'Demo-tila' : 'Kirjautunut'}
+                    </p>
+                    <p className="font-semibold text-text-primary">
+                      {isDemoMode ? 'Demo' : (user?.displayName || 'Käyttäjä')}
+                    </p>
+                  </div>
+                  {isDemoMode ? (
+                    <button
+                      onClick={() => { exitDemoMode(); window.location.href = '/' }}
+                      className="btn btn-secondary"
+                      title="Poistu demosta"
+                    >
+                      <LogOut className="w-5 h-5" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => signOut()}
+                      className="btn btn-secondary"
+                      title="Kirjaudu ulos"
+                    >
+                      <LogOut className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
-              )}
-              <Link href="/dashboard" className="text-lg font-semibold text-primary">
-                Etusivu
-              </Link>
-              <Link href="/history" className="text-lg text-text-secondary hover:text-primary transition-colors">
-                Historia
-              </Link>
-              <Link href="/statistics" className="text-lg text-text-secondary hover:text-primary transition-colors">
-                Tilastot
-              </Link>
+              </div>
+
+              {/* Mobile Menu Button */}
               <button
-                onClick={handleSignOut}
-                className="text-lg text-text-secondary hover:text-primary transition-colors"
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2 rounded-lg hover:bg-surface transition-colors"
               >
-                Kirjaudu ulos
+                {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
               </button>
             </div>
-
-            {/* Mobile Menu Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg hover:bg-surface transition-colors absolute top-4 right-4"
-            >
-              {mobileMenuOpen ? <X className="w-8 h-8" /> : <Menu className="w-8 h-8" />}
-            </button>
 
             {/* Mobile Menu */}
             {mobileMenuOpen && (
@@ -171,7 +163,7 @@ export default function Dashboard() {
                     <p className="text-sm text-text-secondary mb-1">Kirjautunut</p>
                     <p className="font-semibold text-text-primary mb-3">{user?.displayName || 'Käyttäjä'}</p>
                     <button
-                      onClick={handleSignOut}
+                      onClick={() => signOut()}
                       className="btn btn-secondary w-full"
                     >
                       <LogOut className="w-5 h-5" />
