@@ -217,6 +217,23 @@ a:hover {
     min-height: 56px;
   }
   
+  /* Date input specific styling for mobile */
+  input[type="date"].input {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* iOS Safari specific date input fixes */
+  @supports (-webkit-touch-callout: none) {
+    input[type="date"].input {
+      -webkit-appearance: none;
+      appearance: none;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+  
   .input-label {
     @apply block text-base font-semibold text-text-primary mb-2;
   }

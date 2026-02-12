@@ -722,7 +722,7 @@ export default function Statistics() {
               {showCustomDatePicker && (
                 <div className="bg-surface p-4 rounded-xl border-2 border-primary mb-4">
                   <div className="flex flex-col sm:flex-row sm:items-end gap-4">
-                    <div className="flex-1 sm:min-w-[200px]">
+                    <div className="w-full sm:flex-1 sm:min-w-[200px] sm:max-w-[250px]">
                       <label className="block text-sm font-medium text-text-secondary mb-2">
                         Alkupäivä
                       </label>
@@ -730,11 +730,11 @@ export default function Statistics() {
                         type="date"
                         value={customStartDate}
                         onChange={(e) => setCustomStartDate(e.target.value)}
-                        className="input w-full"
+                        className="input w-full max-w-full"
                         max={customEndDate || new Date().toISOString().split('T')[0]}
                       />
                     </div>
-                    <div className="flex-1 sm:min-w-[200px]">
+                    <div className="w-full sm:flex-1 sm:min-w-[200px] sm:max-w-[250px]">
                       <label className="block text-sm font-medium text-text-secondary mb-2">
                         Loppupäivä
                       </label>
@@ -742,7 +742,7 @@ export default function Statistics() {
                         type="date"
                         value={customEndDate}
                         onChange={(e) => setCustomEndDate(e.target.value)}
-                        className="input w-full"
+                        className="input w-full max-w-full"
                         min={customStartDate}
                         max={new Date().toISOString().split('T')[0]}
                       />
