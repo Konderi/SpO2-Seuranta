@@ -9,7 +9,7 @@ import { apiClient } from '@/lib/api'
 import { classifyBP } from '@/lib/bpGuidelines'
 
 export default function AddBloodPressure() {
-  const { user } = useAuth()
+  const { user, loading } = useAuth()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -27,6 +27,9 @@ export default function AddBloodPressure() {
 
   // Load user settings for BP classification
   useEffect(() => {
+    // Wait for auth to be ready and user to be authenticated
+    if (loading || !user) return;
+    
     const loadUserSettings = async () => {
       try {
         const settings = await apiClient.getUserSettings()
@@ -40,7 +43,7 @@ export default function AddBloodPressure() {
       }
     }
     loadUserSettings()
-  }, [])
+  }, [loading, user])
 
   // Calculate BP classification
   const bpClassification = formData.systolic && formData.diastolic && userAge !== null

@@ -8,7 +8,7 @@ import { useState, useEffect } from 'react'
 import { apiClient } from '@/lib/api'
 
 export default function Dashboard() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading: authLoading } = useAuth()
   const { isDemoMode, demoMeasurements, demoStats, exitDemoMode } = useDemo()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [loading, setLoading] = useState(true)
@@ -31,6 +31,9 @@ export default function Dashboard() {
         return
       }
 
+      // Wait for auth to be ready before making API calls
+      if (authLoading || !user) return;
+
       try {
         setLoading(true)
         // Fetch latest measurements
@@ -48,7 +51,7 @@ export default function Dashboard() {
     }
     
     fetchData()
-  }, [isDemoMode, demoMeasurements, demoStats])
+  }, [isDemoMode, demoMeasurements, demoStats, authLoading, user])
 
   // Calculate latest measurements and trend from real data
   const latestMeasurements = measurements.length > 0 ? {

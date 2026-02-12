@@ -9,7 +9,7 @@ import { apiClient } from '@/lib/api'
 import { openPrintView, downloadCSV, downloadJSON, formatMeasurementForExport, printCurrentPage } from '@/lib/exportUtils'
 
 export default function History() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading: authLoading } = useAuth()
   const { isDemoMode, demoMeasurements, exitDemoMode } = useDemo()
   const [filter, setFilter] = useState('all') // all, daily, exercise
   const [measurements, setMeasurements] = useState<any[]>([])
@@ -24,6 +24,9 @@ export default function History() {
         setLoading(false)
         return
       }
+
+      // Wait for auth to be ready before making API calls
+      if (authLoading || !user) return;
 
       try {
         const [dailyData, exerciseData] = await Promise.all([
@@ -79,7 +82,7 @@ export default function History() {
     }
 
     fetchHistory()
-  }, [isDemoMode, demoMeasurements])
+  }, [isDemoMode, demoMeasurements, authLoading, user])
 
   const filteredMeasurements = measurements.filter(m => 
     filter === 'all' || m.type === filter

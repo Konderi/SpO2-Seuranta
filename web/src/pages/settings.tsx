@@ -8,7 +8,7 @@ import { useRouter } from 'next/router'
 import { apiClient } from '@/lib/api'
 
 export default function Settings() {
-  const { user } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -23,6 +23,9 @@ export default function Settings() {
   })
 
   useEffect(() => {
+    // Wait for auth to be ready and user to be authenticated
+    if (authLoading || !user) return;
+    
     const fetchSettings = async () => {
       try {
         setLoading(true)
@@ -41,7 +44,7 @@ export default function Settings() {
     }
 
     fetchSettings()
-  }, [])
+  }, [authLoading, user])
 
   const calculateAge = () => {
     if (!formData.birth_year) return null

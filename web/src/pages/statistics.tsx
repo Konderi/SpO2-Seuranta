@@ -16,7 +16,7 @@ type TimeRange = '7days' | '30days' | '3months' | 'custom'
 const DEFAULT_SPO2_THRESHOLD = 90
 
 export default function Statistics() {
-  const { user, signOut } = useAuth()
+  const { user, signOut, loading: authLoading } = useAuth()
   const { isDemoMode, demoMeasurements, demoStats, exitDemoMode } = useDemo()
   const [loading, setLoading] = useState(true)
   const [stats, setStats] = useState<any>(null)
@@ -148,6 +148,9 @@ export default function Statistics() {
         return
       }
 
+      // Wait for auth to be ready before making API calls
+      if (authLoading || !user) return;
+
       try {
         const [weeklyStats, dailyStats, dailyData, exerciseData] = await Promise.all([
           apiClient.getWeeklyStats(),
@@ -253,7 +256,7 @@ export default function Statistics() {
     }
 
     fetchStatistics()
-  }, [isDemoMode, demoMeasurements, demoStats, timeRange, customStartDate, customEndDate])
+  }, [isDemoMode, demoMeasurements, demoStats, timeRange, customStartDate, customEndDate, authLoading, user])
 
   // Handle time range change
   const handleTimeRangeChange = (range: TimeRange) => {
