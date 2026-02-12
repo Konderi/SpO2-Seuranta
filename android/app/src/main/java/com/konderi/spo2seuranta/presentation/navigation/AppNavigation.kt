@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.konderi.spo2seuranta.presentation.auth.AuthScreen
 import com.konderi.spo2seuranta.presentation.auth.AuthState
 import com.konderi.spo2seuranta.presentation.auth.AuthViewModel
+import com.konderi.spo2seuranta.presentation.bloodpressure.BloodPressureScreen
 import com.konderi.spo2seuranta.presentation.daily.DailyMeasurementScreen
 import com.konderi.spo2seuranta.presentation.daily.DailyMeasurementViewModel
 import com.konderi.spo2seuranta.presentation.exercise.ExerciseMeasurementScreen
@@ -107,6 +108,7 @@ fun MainApp(
                         Text(
                             text = when (currentRoute) {
                                 Screen.Daily.route -> "Päivittäinen"
+                                Screen.BloodPressure.route -> "Verenpaine"
                                 Screen.Exercise.route -> "Liikunta"
                                 Screen.Reports.route -> "Raportit"
                                 Screen.Settings.route -> "Asetukset"
@@ -150,6 +152,19 @@ fun MainApp(
                     selected = currentRoute == Screen.Daily.route,
                     onClick = {
                         navController.navigate(Screen.Daily.route) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    }
+                )
+                NavigationBarItem(
+                    icon = { Icon(Icons.Default.Bloodtype, contentDescription = "Verenpaine") },
+                    selected = currentRoute == Screen.BloodPressure.route,
+                    onClick = {
+                        navController.navigate(Screen.BloodPressure.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }
@@ -208,6 +223,9 @@ fun MainApp(
             composable(Screen.Daily.route) {
                 DailyMeasurementScreen()
             }
+            composable(Screen.BloodPressure.route) {
+                BloodPressureScreen()
+            }
             composable(Screen.Exercise.route) {
                 ExerciseMeasurementScreen()
             }
@@ -223,6 +241,7 @@ fun MainApp(
 
 sealed class Screen(val route: String) {
     object Daily : Screen("daily")
+    object BloodPressure : Screen("bloodpressure")
     object Exercise : Screen("exercise")
     object Reports : Screen("reports")
     object Settings : Screen("settings")

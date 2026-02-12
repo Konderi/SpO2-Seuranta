@@ -1,5 +1,6 @@
 package com.konderi.spo2seuranta.presentation.settings
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.*
@@ -19,6 +20,9 @@ fun SettingsScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showThresholdDialog by remember { mutableStateOf(false) }
     var thresholdValue by remember { mutableStateOf(uiState.settings.lowSpo2AlertThreshold.toString()) }
+    var showGenderDialog by remember { mutableStateOf(false) }
+    var showBirthYearDialog by remember { mutableStateOf(false) }
+    var birthYearValue by remember { mutableStateOf(uiState.settings.birthYear?.toString() ?: "") }
     
     Scaffold(
     ) { paddingValues ->
@@ -163,6 +167,81 @@ fun SettingsScreen(
                         modifier = Modifier.padding(16.dp)
                     ) {
                         Text(
+                            text = "Henkilötiedot",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                        
+                        Text(
+                            text = "Tiedot auttavat antamaan ikä- ja sukupuolikohtaisia suosituksia verenpaineelle",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        // Gender setting
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Sukupuoli",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = uiState.settings.getGenderDisplay() ?: "Ei asetettu",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Button(onClick = { showGenderDialog = true }) {
+                                Text("Muuta")
+                            }
+                        }
+                        
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        // Birth year setting
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Syntymävuosi",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = if (uiState.settings.birthYear != null) {
+                                        "${uiState.settings.birthYear} (Ikä: ${uiState.settings.getAge()} v)"
+                                    } else {
+                                        "Ei asetettu"
+                                    },
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Button(onClick = { showBirthYearDialog = true }) {
+                                Text("Muuta")
+                            }
+                        }
+                    }
+                }
+            }
+            
+            item {
+                Card(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
                             text = "Tietoja sovelluksesta",
                             style = MaterialTheme.typography.titleLarge,
                             color = MaterialTheme.colorScheme.primary
@@ -225,4 +304,93 @@ fun SettingsScreen(
             }
         )
     }
+    
+    if (showGenderDialog) {
+        AlertDialog(
+            onDismissRequest = { showGenderDialog = false },
+            title = { Text("Valitse sukupuoli") },
+            text = {
+                Column {
+                    Text("Sukupuoli auttaa antamaan tarkempia suosituksia verenpaineelle")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    
+                    listOf(
+                        "male" to "Mies",
+                        "female" to "Nainen",
+                        "other" to "Muu"
+                    ).forEach { (value, label) ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    viewModel.updateGender(value)
+                                    showGenderDialog = false
+                                }
+                                .padding(vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = uiState.settings.gender == value,
+                                onClick = {
+                                    viewModel.updateGender(value)
+                                    showGenderDialog = false
+                                }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(label)
+                        }
+                    }
+                }
+            },
+            confirmButton = {},
+            dismissButton = {
+                TextButton(onClick = { showGenderDialog = false }) {
+                    Text("Sulje")
+                }
+            }
+        )
+    }
+    
+    if (showBirthYearDialog) {
+        AlertDialog(
+            onDismissRequest = { showBirthYearDialog = false },
+            title = { Text("Aseta syntymävuosi") },
+            text = {
+                Column {
+                    Text("Ikä auttaa antamaan ikäkohtaisia suosituksia verenpaineelle")
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedTextField(
+                        value = birthYearValue,
+                        onValueChange = { 
+                            if (it.isEmpty() || (it.all { char -> char.isDigit() } && it.length <= 4)) {
+                                birthYearValue = it
+                            }
+                        },
+                        label = { Text("Syntymävuosi (esim. 1960)") },
+                        singleLine = true,
+                        placeholder = { Text("1960") }
+                    )
+                }
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        val value = birthYearValue.toIntOrNull()
+                        if (value != null && value in 1900..2026) {
+                            viewModel.updateBirthYear(value)
+                            showBirthYearDialog = false
+                        }
+                    }
+                ) {
+                    Text("Tallenna")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showBirthYearDialog = false }) {
+                    Text("Peruuta")
+                }
+            }
+        )
+    }
 }
+

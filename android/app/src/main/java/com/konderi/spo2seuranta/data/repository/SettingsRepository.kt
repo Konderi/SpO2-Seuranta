@@ -31,6 +31,9 @@ class SettingsRepository @Inject constructor(
         val USER_ID = stringPreferencesKey("user_id")
         val USER_NAME = stringPreferencesKey("user_name")
         val USER_EMAIL = stringPreferencesKey("user_email")
+        val GENDER = stringPreferencesKey("gender")
+        val BIRTH_YEAR = intPreferencesKey("birth_year")
+        val DATE_OF_BIRTH = stringPreferencesKey("date_of_birth")
     }
     
     val userSettings: Flow<UserSettings> = context.dataStore.data.map { preferences ->
@@ -39,7 +42,10 @@ class SettingsRepository @Inject constructor(
             largeFontEnabled = preferences[PreferencesKeys.LARGE_FONT_ENABLED] ?: false,
             userId = preferences[PreferencesKeys.USER_ID],
             userName = preferences[PreferencesKeys.USER_NAME],
-            userEmail = preferences[PreferencesKeys.USER_EMAIL]
+            userEmail = preferences[PreferencesKeys.USER_EMAIL],
+            gender = preferences[PreferencesKeys.GENDER],
+            birthYear = preferences[PreferencesKeys.BIRTH_YEAR],
+            dateOfBirth = preferences[PreferencesKeys.DATE_OF_BIRTH]
         )
     }
     
@@ -52,6 +58,24 @@ class SettingsRepository @Inject constructor(
     suspend fun updateLargeFontEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.LARGE_FONT_ENABLED] = enabled
+        }
+    }
+    
+    suspend fun updateGender(gender: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.GENDER] = gender
+        }
+    }
+    
+    suspend fun updateBirthYear(birthYear: Int) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.BIRTH_YEAR] = birthYear
+        }
+    }
+    
+    suspend fun updateDateOfBirth(dateOfBirth: String) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.DATE_OF_BIRTH] = dateOfBirth
         }
     }
     

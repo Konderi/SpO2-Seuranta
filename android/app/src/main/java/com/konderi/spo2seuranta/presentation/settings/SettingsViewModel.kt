@@ -69,6 +69,38 @@ class SettingsViewModel @Inject constructor(
         }
     }
     
+    fun updateGender(gender: String) {
+        viewModelScope.launch {
+            try {
+                repository.updateGender(gender)
+                _uiState.value = _uiState.value.copy(
+                    saveSuccess = true,
+                    errorMessage = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Asetuksen tallennus epäonnistui: ${e.message}"
+                )
+            }
+        }
+    }
+    
+    fun updateBirthYear(birthYear: Int) {
+        viewModelScope.launch {
+            try {
+                repository.updateBirthYear(birthYear)
+                _uiState.value = _uiState.value.copy(
+                    saveSuccess = true,
+                    errorMessage = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Asetuksen tallennus epäonnistui: ${e.message}"
+                )
+            }
+        }
+    }
+    
     fun resetSaveStatus() {
         _uiState.value = _uiState.value.copy(saveSuccess = false, errorMessage = null)
     }
