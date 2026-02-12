@@ -69,4 +69,15 @@ class SettingsRepository @Inject constructor(
             preferences.remove(PreferencesKeys.USER_EMAIL)
         }
     }
+    
+    /**
+     * Get current user ID synchronously
+     */
+    suspend fun getUserId(): String? {
+        var userId: String? = null
+        context.dataStore.data.map { preferences ->
+            preferences[PreferencesKeys.USER_ID]
+        }.collect { userId = it }
+        return userId
+    }
 }
