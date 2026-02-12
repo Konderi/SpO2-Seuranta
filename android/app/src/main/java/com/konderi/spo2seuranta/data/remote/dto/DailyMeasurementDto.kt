@@ -18,10 +18,10 @@ data class DailyMeasurementDto(
     val userId: String,
     
     @SerializedName("spo2")
-    val spo2: Int,
+    val spo2: Int? = null,  // Optional (0 means not measured)
     
     @SerializedName("heart_rate")
-    val heartRate: Int,
+    val heartRate: Int? = null,  // Optional (0 means not measured)
     
     @SerializedName("systolic")
     val systolic: Int? = null,

@@ -48,8 +48,8 @@ class DailyMeasurementViewModel @Inject constructor(
             try {
                 val settings = settingsRepository.userSettings.first()
                 val measurement = DailyMeasurement(
-                    spo2 = spo2 ?: 0,  // Use 0 if null (indicates not measured)
-                    heartRate = heartRate ?: 0,  // Use 0 if null (indicates not measured)
+                    spo2 = spo2,  // Keep as null if not measured
+                    heartRate = heartRate,  // Keep as null if not measured
                     systolic = systolic,
                     diastolic = diastolic,
                     notes = notes,

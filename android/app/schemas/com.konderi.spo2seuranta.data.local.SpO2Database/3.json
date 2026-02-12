@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "7a74b9a5a6dd27136a1ef60344f30c78",
+    "identityHash": "2977bc2a5a89429518d3aa844b092372",
     "entities": [
       {
         "tableName": "daily_measurements",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `spo2` INTEGER NOT NULL, `heartRate` INTEGER NOT NULL, `systolic` INTEGER, `diastolic` INTEGER, `notes` TEXT NOT NULL, `timestamp` TEXT NOT NULL, `userId` TEXT, `serverId` TEXT, `syncedToServer` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `spo2` INTEGER, `heartRate` INTEGER, `systolic` INTEGER, `diastolic` INTEGER, `notes` TEXT NOT NULL, `timestamp` TEXT NOT NULL, `userId` TEXT, `serverId` TEXT, `syncedToServer` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -18,13 +18,13 @@
             "fieldPath": "spo2",
             "columnName": "spo2",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "heartRate",
             "columnName": "heartRate",
             "affinity": "INTEGER",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "systolic",
@@ -186,7 +186,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7a74b9a5a6dd27136a1ef60344f30c78')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2977bc2a5a89429518d3aa844b092372')"
     ]
   }
 }

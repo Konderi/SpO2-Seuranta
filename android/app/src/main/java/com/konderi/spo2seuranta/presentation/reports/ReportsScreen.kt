@@ -241,8 +241,15 @@ fun DailyMeasurementItemCard(measurement: com.konderi.spo2seuranta.domain.model.
                 }
             }
             Column {
-                Text("SpO2: ${measurement.spo2}%")
-                Text("Syke: ${measurement.heartRate}")
+                if (measurement.spo2 != null) {
+                    Text("SpO2: ${measurement.spo2}%")
+                }
+                if (measurement.heartRate != null) {
+                    Text("Syke: ${measurement.heartRate}")
+                }
+                if (measurement.systolic != null && measurement.diastolic != null) {
+                    Text("Verenpaine: ${measurement.systolic}/${measurement.diastolic}")
+                }
             }
         }
     }

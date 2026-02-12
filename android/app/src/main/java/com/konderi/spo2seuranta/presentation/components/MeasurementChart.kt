@@ -20,7 +20,10 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun DailyMeasurementChart(measurements: List<DailyMeasurement>) {
-    if (measurements.isEmpty()) {
+    // Filter measurements that have SpO2 and heart rate data
+    val validMeasurements = measurements.filter { it.spo2 != null && it.heartRate != null }
+    
+    if (validMeasurements.isEmpty()) {
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
@@ -36,7 +39,7 @@ fun DailyMeasurementChart(measurements: List<DailyMeasurement>) {
         return
     }
 
-    val sortedMeasurements = measurements.sortedBy { it.timestamp }
+    val sortedMeasurements = validMeasurements.sortedBy { it.timestamp }
     
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -61,7 +64,7 @@ fun DailyMeasurementChart(measurements: List<DailyMeasurement>) {
                 
                 ProvideChartStyle(m3ChartStyle()) {
                     val entries = sortedMeasurements.mapIndexed { index, measurement ->
-                        FloatEntry(x = index.toFloat(), y = measurement.spo2.toFloat())
+                        FloatEntry(x = index.toFloat(), y = measurement.spo2!!.toFloat())
                     }
                     val model = ChartEntryModelProducer(entries).getModel() ?: return@ProvideChartStyle
                     
@@ -104,7 +107,7 @@ fun DailyMeasurementChart(measurements: List<DailyMeasurement>) {
                 
                 ProvideChartStyle(m3ChartStyle()) {
                     val entries = sortedMeasurements.mapIndexed { index, measurement ->
-                        FloatEntry(x = index.toFloat(), y = measurement.heartRate.toFloat())
+                        FloatEntry(x = index.toFloat(), y = measurement.heartRate!!.toFloat())
                     }
                     val model = ChartEntryModelProducer(entries).getModel() ?: return@ProvideChartStyle
                     

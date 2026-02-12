@@ -235,13 +235,19 @@ class DailyMeasurementRepository @Inject constructor(
         
         if (measurements.isEmpty()) return null
         
+        // Filter out measurements with null values for statistics
+        val validSpo2 = measurements.mapNotNull { it.spo2 }
+        val validHR = measurements.mapNotNull { it.heartRate }
+        
+        if (validSpo2.isEmpty() || validHR.isEmpty()) return null
+        
         return MeasurementStatistics(
             averageSpo2 = avgSpo2,
             averageHeartRate = avgHR,
-            minSpo2 = measurements.minOf { it.spo2 },
-            maxSpo2 = measurements.maxOf { it.spo2 },
-            minHeartRate = measurements.minOf { it.heartRate },
-            maxHeartRate = measurements.maxOf { it.heartRate },
+            minSpo2 = validSpo2.minOrNull() ?: 0,
+            maxSpo2 = validSpo2.maxOrNull() ?: 0,
+            minHeartRate = validHR.minOrNull() ?: 0,
+            maxHeartRate = validHR.maxOrNull() ?: 0,
             measurementCount = measurements.size,
             lowOxygenCount = lowOxygenCount,
             period = period,

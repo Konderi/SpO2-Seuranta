@@ -337,15 +337,18 @@ fun BloodPressureCard(
             Spacer(modifier = Modifier.height(12.dp))
             
             // Additional Vitals
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                VitalChip(label = "SpO2", value = "${measurement.spo2}%")
-                VitalChip(label = "Syke", value = "${measurement.heartRate} BPM")
+            // Only show SpO2/HR if they were measured
+            if (measurement.spo2 != null && measurement.heartRate != null) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    VitalChip(label = "SpO2", value = "${measurement.spo2}%")
+                    VitalChip(label = "Syke", value = "${measurement.heartRate} BPM")
+                }
+                
+                Spacer(modifier = Modifier.height(8.dp))
             }
-            
-            Spacer(modifier = Modifier.height(8.dp))
             
             Text(
                 text = measurement.timestamp.format(formatter),

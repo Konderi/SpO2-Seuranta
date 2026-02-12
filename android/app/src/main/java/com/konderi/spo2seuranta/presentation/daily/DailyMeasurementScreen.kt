@@ -141,13 +141,25 @@ fun MeasurementCard(measurement: DailyMeasurement) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
+                if (measurement.spo2 != null) {
+                    Text(
+                        text = "SpO2: ${measurement.spo2}%",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+                if (measurement.heartRate != null) {
+                    Text(
+                        text = "Syke: ${measurement.heartRate} BPM",
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            }
+            
+            // Show BP if available
+            if (measurement.systolic != null && measurement.diastolic != null) {
                 Text(
-                    text = "SpO2: ${measurement.spo2}%",
-                    style = MaterialTheme.typography.titleMedium
-                )
-                Text(
-                    text = "Syke: ${measurement.heartRate} BPM",
-                    style = MaterialTheme.typography.titleMedium
+                    text = "Verenpaine: ${measurement.systolic}/${measurement.diastolic} mmHg",
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
             
