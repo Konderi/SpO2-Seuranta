@@ -121,19 +121,43 @@ fun MainApp(
                             color = MaterialTheme.colorScheme.onSurface
                         )
                         
-                        // Right: Refresh button
-                        IconButton(
-                            onClick = {
-                                scope.launch {
-                                    onRefresh()
-                                }
-                            }
+                        // Right: Action buttons
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Default.Refresh,
-                                contentDescription = "Päivitä",
-                                tint = MaterialTheme.colorScheme.primary
-                            )
+                            // Settings button
+                            IconButton(
+                                onClick = {
+                                    navController.navigate(Screen.Settings.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Settings,
+                                    contentDescription = "Asetukset",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                            
+                            // Refresh button
+                            IconButton(
+                                onClick = {
+                                    scope.launch {
+                                        onRefresh()
+                                    }
+                                }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Refresh,
+                                    contentDescription = "Päivitä",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
                 }
@@ -198,19 +222,6 @@ fun MainApp(
                     selected = currentRoute == Screen.Reports.route,
                     onClick = {
                         navController.navigate(Screen.Reports.route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
-                            }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }
-                )
-                NavigationBarItem(
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Asetukset") },
-                    selected = currentRoute == Screen.Settings.route,
-                    onClick = {
-                        navController.navigate(Screen.Settings.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
                                 saveState = true
                             }

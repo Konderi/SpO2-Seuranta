@@ -43,13 +43,13 @@ class DailyMeasurementViewModel @Inject constructor(
         }
     }
     
-    fun saveMeasurement(spo2: Int, heartRate: Int, systolic: Int?, diastolic: Int?, notes: String) {
+    fun saveMeasurement(spo2: Int?, heartRate: Int?, systolic: Int?, diastolic: Int?, notes: String) {
         viewModelScope.launch {
             try {
                 val settings = settingsRepository.userSettings.first()
                 val measurement = DailyMeasurement(
-                    spo2 = spo2,
-                    heartRate = heartRate,
+                    spo2 = spo2 ?: 0,  // Use 0 if null (indicates not measured)
+                    heartRate = heartRate ?: 0,  // Use 0 if null (indicates not measured)
                     systolic = systolic,
                     diastolic = diastolic,
                     notes = notes,
@@ -59,8 +59,8 @@ class DailyMeasurementViewModel @Inject constructor(
                 
                 repository.insertMeasurement(measurement)
                 
-                // Check for low oxygen alert
-                if (measurement.isLowOxygen(settings.lowSpo2AlertThreshold)) {
+                // Check for low oxygen alert (only if SpO2 was actually measured)
+                if (spo2 != null && measurement.isLowOxygen(settings.lowSpo2AlertThreshold)) {
                     _uiState.value = _uiState.value.copy(
                         showLowOxygenAlert = true,
                         lastMeasurement = measurement
