@@ -2,7 +2,7 @@
 
 <div align="center">
   
-  **🫁 Seuraa happisaturaatiota ja sykettä helposti**
+  **🫁 Seuraa happisaturaatiota, sykettä ja verenpainetta helposti**
   
   [![Android](https://img.shields.io/badge/Alusta-Android-green.svg)](https://www.android.com/)
   [![Verkkosivusto](https://img.shields.io/badge/Alusta-Web-blue.svg)](https://hapetus.info)
@@ -16,10 +16,11 @@
 
 ## 🎯 Mikä on Hapetus?
 
-**Hapetus** on helppokäyttöinen terveysseurantasovellus, joka on suunniteltu erityisesti **iäkkäille käyttäjille** ja henkilöille, joilla on hengityselinsairauksia (kuten COPD tai astma).
+**Hapetus** on helppokäyttöinen terveysseurantasovellus, joka on suunniteltu erityisesti **iäkkäille käyttäjille** ja henkilöille, joilla on hengityselinten tai sydämen sairauksia (kuten COPD, astma tai verenpainetauti).
 
 Sovelluksella voit:
-- 📊 Seurata happisaturaatiota (SpO2) ja sykettä päivittäin
+- 📊 Seurata happisaturaatiota (SpO2), sykettä ja verenpainetta päivittäin
+- 🩺 Saada henkilökohtaiset suositukset ikäsi ja sukupuolesi mukaan
 - 🏃 Mitata arvoja ennen ja jälkeen liikunnan
 - 📈 Nähdä tilastot ja kehityksen viikon tai kuukauden ajalta
 - 🔔 Saada hälytyksen, jos arvot laskevat liikaa
@@ -42,7 +43,8 @@ Sovelluksella voit:
 Täysipainoinen Android-sovellus, joka toimii puhelimella tai tabletilla.
 
 **Ominaisuudet:**
-- ✅ Päivittäisten mittausten seuranta
+- ✅ Päivittäisten mittausten seuranta (SpO2, syke, verenpaine)
+- ✅ Henkilökohtaiset verenpaineen suositukset (ikä & sukupuoli)
 - ✅ Liikunnan vaikutuksen mittaaminen
 - ✅ Graafinen tilastonäkymä
 - ✅ Hälytysten asettaminen

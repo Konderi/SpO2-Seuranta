@@ -60,7 +60,7 @@ private val LightColorScheme = lightColorScheme(
 )
 
 @Composable
-fun SpO2SeurantaTheme(
+fun HapetusTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     largeFontEnabled: Boolean = false,
     content: @Composable () -> Unit
@@ -83,13 +83,13 @@ fun SpO2SeurantaTheme(
  * Theme wrapper that automatically applies large font setting
  */
 @Composable
-fun SpO2SeurantaThemeWrapper(
+fun HapetusThemeWrapper(
     settingsViewModel: SettingsViewModel = hiltViewModel(),
     content: @Composable () -> Unit
 ) {
     val uiState by settingsViewModel.uiState.collectAsState()
     
-    SpO2SeurantaTheme(
+    HapetusTheme(
         largeFontEnabled = uiState.settings.largeFontEnabled,
         content = content
     )

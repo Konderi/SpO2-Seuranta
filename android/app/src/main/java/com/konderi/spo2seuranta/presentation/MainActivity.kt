@@ -17,7 +17,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import com.konderi.spo2seuranta.data.sync.SyncManager
 import com.konderi.spo2seuranta.presentation.navigation.AppNavigation
-import com.konderi.spo2seuranta.presentation.theme.SpO2SeurantaTheme
+import com.konderi.spo2seuranta.presentation.theme.HapetusTheme
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -34,7 +34,7 @@ class MainActivity : ComponentActivity() {
         syncManager.syncAll()
         
         setContent {
-            SpO2SeurantaTheme {
+            HapetusTheme {
                 // Observe lifecycle events and sync when app resumes
                 val lifecycleOwner = LocalLifecycleOwner.current
                 var isAppInForeground by remember { mutableStateOf(true) }
