@@ -60,6 +60,12 @@ class DailyMeasurementRepository @Inject constructor(
                 
                 Log.d("SYNC_TEST", "📡 API Response: ${response.code()} ${if (response.isSuccessful) "✅ SUCCESS" else "❌ FAILED"}")
                 
+                // Log error body if failed
+                if (!response.isSuccessful) {
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("SYNC_TEST", "❌ Error body: $errorBody")
+                }
+                
                 // Mark as synced and store server ID
                 if (response.isSuccessful && response.body()?.data?.id != null) {
                     val serverId = response.body()!!.data!!.id

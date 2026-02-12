@@ -269,30 +269,67 @@ app.post('/api/daily', async (c) => {
 
   try {
     const body: any = await c.req.json();
-    const { spo2, heart_rate, notes, measured_at } = body;
+    const { spo2, heart_rate, systolic, diastolic, notes, measured_at } = body;
 
-    if (!spo2 || !heart_rate || !measured_at) {
-      return c.json({ error: 'Missing required fields' }, 400);
+    // Check if SpO2/HR or BP data is provided
+    const hasSpO2Data = typeof spo2 === 'number' && !isNaN(spo2) && spo2 > 0;
+    const hasHRData = typeof heart_rate === 'number' && !isNaN(heart_rate) && heart_rate > 0;
+    const hasBPData = typeof systolic === 'number' && !isNaN(systolic) && 
+                      typeof diastolic === 'number' && !isNaN(diastolic);
+
+    // At least one measurement type required
+    if (!hasSpO2Data && !hasBPData) {
+      return c.json({ error: 'At least SpO2 or BP measurements required' }, 400);
     }
 
-    if (spo2 < 50 || spo2 > 100) {
+    if (!measured_at) {
+      return c.json({ error: 'Measurement timestamp is required' }, 400);
+    }
+
+    // Validate SpO2 ONLY if provided
+    if (hasSpO2Data && (spo2 < 50 || spo2 > 100)) {
       return c.json({ error: 'SpO2 must be between 50 and 100' }, 400);
     }
 
-    if (heart_rate < 30 || heart_rate > 250) {
+    // Validate heart rate ONLY if provided
+    if (hasHRData && (heart_rate < 30 || heart_rate > 250)) {
       return c.json({ error: 'Heart rate must be between 30 and 250' }, 400);
+    }
+
+    // Validate BP ONLY if provided
+    if (typeof systolic === 'number' && (systolic < 80 || systolic > 200)) {
+      return c.json({ error: 'Systolic pressure must be between 80 and 200' }, 400);
+    }
+
+    if (typeof diastolic === 'number' && (diastolic < 50 || diastolic > 130)) {
+      return c.json({ error: 'Diastolic pressure must be between 50 and 130' }, 400);
+    }
+
+    if (typeof systolic === 'number' && typeof diastolic === 'number' && systolic <= diastolic) {
+      return c.json({ error: 'Systolic pressure must be greater than diastolic' }, 400);
     }
 
     const id = crypto.randomUUID();
     const timestamp = Math.floor(Date.now() / 1000);
 
     await c.env.DB.prepare(
-      'INSERT INTO daily_measurements (id, user_id, spo2, heart_rate, notes, measured_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)'
-    ).bind(id, user.uid, spo2, heart_rate, notes || null, measured_at, timestamp, timestamp).run();
+      'INSERT INTO daily_measurements (id, user_id, spo2, heart_rate, systolic, diastolic, notes, measured_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    ).bind(
+      id, 
+      user.uid, 
+      spo2 || null, 
+      heart_rate || null, 
+      systolic || null, 
+      diastolic || null, 
+      notes || null, 
+      measured_at, 
+      timestamp, 
+      timestamp
+    ).run();
 
     return c.json({
       message: 'Measurement created successfully',
-      data: { id, spo2, heart_rate, notes, measured_at }
+      data: { id, spo2, heart_rate, systolic, diastolic, notes, measured_at }
     }, 201);
   } catch (error: any) {
     return c.json({ error: 'Failed to create measurement', message: error.message }, 500);

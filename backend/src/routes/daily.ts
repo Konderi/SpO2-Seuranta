@@ -61,14 +61,35 @@ daily.post('/', async (c) => {
     const body = await c.req.json();
     const { spo2, heart_rate, systolic, diastolic, notes, measured_at } = body;
 
-    // Check if SpO2/HR data is provided (must be a valid number, not 0/null/undefined)
-    const hasSpO2Data = typeof spo2 === 'number' && spo2 > 0;
-    const hasHRData = typeof heart_rate === 'number' && heart_rate > 0;
-    const hasBPData = typeof systolic === 'number' && typeof diastolic === 'number';
+    // Debug logging
+    console.log('📥 Received body:', JSON.stringify(body));
+    console.log('📊 spo2:', spo2, typeof spo2);
+    console.log('📊 heart_rate:', heart_rate, typeof heart_rate);
+    console.log('📊 systolic:', systolic, typeof systolic);
+    console.log('📊 diastolic:', diastolic, typeof diastolic);
+
+    // Check if SpO2/HR data is provided (must be a valid number > 0)
+    const hasSpO2Data = typeof spo2 === 'number' && !isNaN(spo2) && spo2 > 0;
+    const hasHRData = typeof heart_rate === 'number' && !isNaN(heart_rate) && heart_rate > 0;
+    const hasBPData = typeof systolic === 'number' && !isNaN(systolic) && 
+                      typeof diastolic === 'number' && !isNaN(diastolic);
+    
+    console.log('✅ hasSpO2Data:', hasSpO2Data);
+    console.log('✅ hasHRData:', hasHRData);
+    console.log('✅ hasBPData:', hasBPData);
     
     // At least one measurement type must be provided
     if (!hasSpO2Data && !hasBPData) {
-      return c.json({ error: 'At least SpO2 or BP measurements required' }, 400);
+      console.error('❌ Validation failed: No valid data');
+      return c.json({ 
+        error: 'At least SpO2 or BP measurements required',
+        debug: {
+          spo2: { value: spo2, type: typeof spo2, hasData: hasSpO2Data },
+          systolic: { value: systolic, type: typeof systolic },
+          diastolic: { value: diastolic, type: typeof diastolic },
+          hasBPData
+        }
+      }, 400);
     }
 
     if (!measured_at) {
