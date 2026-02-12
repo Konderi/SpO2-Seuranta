@@ -66,8 +66,8 @@ export default function Dashboard() {
   }
 
   const weeklyAverage = stats ? {
-    spo2: stats.spo2?.average7days || 0,
-    heartRate: stats.heartRate?.average7days || 0,
+    spo2: Math.round(stats.avg_spo2 || stats.spo2?.average7days || 0),
+    heartRate: Math.round(stats.avg_heart_rate || stats.heartRate?.average7days || 0),
   } : {
     spo2: 0,
     heartRate: 0,
