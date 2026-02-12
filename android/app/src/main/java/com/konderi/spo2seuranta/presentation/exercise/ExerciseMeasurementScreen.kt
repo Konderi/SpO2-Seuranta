@@ -30,15 +30,6 @@ fun ExerciseMeasurementScreen(
     var notes by remember { mutableStateOf("") }
     
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Liikuntamittaus") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

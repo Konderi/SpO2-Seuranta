@@ -27,15 +27,6 @@ fun DailyMeasurementScreen(
     var notes by remember { mutableStateOf("") }
     
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Päivittäinen mittaus") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

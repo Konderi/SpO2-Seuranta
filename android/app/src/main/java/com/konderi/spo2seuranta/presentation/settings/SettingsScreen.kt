@@ -21,15 +21,6 @@ fun SettingsScreen(
     var thresholdValue by remember { mutableStateOf(uiState.settings.lowSpo2AlertThreshold.toString()) }
     
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Asetukset") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
-            )
-        }
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier

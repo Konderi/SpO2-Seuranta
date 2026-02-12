@@ -46,10 +46,13 @@ Täysipainoinen Android-sovellus, joka toimii puhelimella tai tabletilla.
 - ✅ Liikunnan vaikutuksen mittaaminen
 - ✅ Graafinen tilastonäkymä
 - ✅ Hälytysten asettaminen
-- ✅ Google-kirjautuminen (toimii!)
-- ✅ Toimii ilman nettiä (Room database)
-- ✅ **Sininen sydänsyke-ikoni** (yhtenäinen brändi verkkosivuston kanssa)
-- ⏳ API-synkronointi kehityksessä (tulossa pian)
+- ✅ Google-kirjautuminen ja Firebase Auth
+- ✅ **Offline-first arkkitehtuuri** - Toimii täysin ilman nettiä
+- ✅ **Automaattinen pilvisynkronointi** - Kaksisuuntainen synkronointi API:n kanssa
+- ✅ **Lifecycle-pohjainen päivitys** - Synkronoi automaattisesti kun palaat sovellukseen
+- ✅ **Yhtenäinen käyttöliittymä** - Yksi top bar MonitorHeart-ikonilla ja sivun otsikolla
+- ✅ **Manuaalinen päivitys** - Refresh-nappi top barissa välittömään synkronointiin
+- ✅ Monilaitteen tuki - Sama data näkyy Android-appissa ja verkkosivustolla
 
 **Testattu laitteilla:**
 - Samsung Galaxy S9 (Android 10) ✅

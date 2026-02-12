@@ -24,40 +24,42 @@ SpO2 Seuranta is a professional-grade Android application designed for tracking 
 - **📈 Advanced Reports** - 7-day averages, trend analysis, and graphical charts
 - **⚠️ Smart Alerts** - Configurable low oxygen warnings with customizable thresholds
 - **🔐 Google Sign-In** - Secure authentication with multi-device sync
+- **☁️ Cloud Sync** - Offline-first two-way synchronization with backend API
+- **🔄 Automatic Updates** - Lifecycle-based sync when resuming app
+- **🔄 Manual Refresh** - Top bar refresh button for immediate sync
 - **♿ Accessibility First** - Large font option, high contrast, simplified navigation
-- **🎨 Professional Design** - Modern Material Design 3 with medical-grade appearance
+- **🎨 Professional Design** - Modern Material Design 3 with unified top bar
 - **📊 Visual Charts** - Trend graphs with Vico Charts library
 - **🇫🇮 Finnish Language** - Full Finnish UI (prepared for localization)
-- **⏳ Cross-Platform Sync** - API integration ready (implementation guide available)
+- **💾 Offline-First** - Full functionality without internet, syncs when online
 
 ### 🔄 API Integration Status
 
-The Android app is **fully functional** with local storage (Room database) and **ready for API integration**. A comprehensive integration guide is available:
+The Android app is **fully integrated** with cloud synchronization:
 
-📖 **[ANDROID_API_INTEGRATION_GUIDE.md](../ANDROID_API_INTEGRATION_GUIDE.md)**
+✅ **CLOUD SYNC COMPLETE!**
 
-This guide provides:
-- Step-by-step implementation (3-4 hours)
-- Retrofit setup with proper DTOs
-- Offline-first architecture with sync manager
-- Network monitoring and error handling
-- Testing procedures
-- Production deployment checklist
+**Implemented Features:**
+- ✅ Offline-first architecture with Room v2 database
+- ✅ Two-way sync with backend API at `https://api.hapetus.info`
+- ✅ Automatic sync on app start
+- ✅ Lifecycle-based sync when resuming from background
+- ✅ Manual refresh via top bar button
+- ✅ Sync tracking fields (serverId, syncedToServer)
+- ✅ Network connectivity monitoring
+- ✅ Conflict-free sync with server IDs
+- ✅ Multi-device data access (Android + Web)
+- ✅ Firebase ID token authentication
 
-**Current Status:**
-- ✅ Local database working perfectly
-- ✅ All features functional offline
-- ✅ Google Sign-In implemented
-- ⏳ Backend API ready at `https://api.hapetus.info`
-- ⏳ Integration guide complete
-- ⏳ Implementation scheduled for February-March 2026
+**What Cloud Sync Provides:**
+- 🔄 Real-time data synchronization across devices
+- 💻 Access measurements from web interface at hapetus.info
+- ☁️ Automatic cloud backup of all measurements
+- 📊 Consistent data across Android app and website
+- 🔐 Secure storage with Firebase authentication
+- 📱 Seamless experience when switching devices
 
-**What API Integration Enables:**
-- 🔄 Multi-device data synchronization
-- 💻 Access data from web interface
-- ☁️ Cloud backup of all measurements
-- 📊 Advanced analytics across platforms
-- 🔐 Secure data storage with Firebase Auth
+📖 **Documentation:** [CLOUD_SYNC_COMPLETE.md](../docs/CLOUD_SYNC_COMPLETE.md)
 
 ## 🏗️ Architecture
 

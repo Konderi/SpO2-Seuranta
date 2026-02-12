@@ -206,17 +206,35 @@ suspend fun syncWithCloud(): Result<Unit> {
 
 ## Conclusion
 
-The offline-first cloud sync is now **fully operational**. Users can:
+The offline-first cloud sync is now **fully operational** with enhanced UX features. Users can:
 - Create measurements offline
-- Automatic sync when online
-- Access data from any device
+- Automatic sync when online and when resuming app
+- Manual refresh via top bar button
+- Access data from any device (Android + Website)
 - No data loss guaranteed
 - Professional production-ready implementation
+- Unified UI with consistent top bar across all screens
 
-**Status: Phase 2 Complete ✅**
+### Additional UI Enhancements (Feb 12, 2026) ✅
+
+**Lifecycle-Based Sync:**
+- Automatic sync when app resumes from background
+- Uses DisposableEffect with LifecycleEventObserver
+- Prevents redundant syncs with foreground state tracking
+
+**Unified Top Bar:**
+- Single global TopAppBar with MonitorHeart icon
+- Dynamic screen title (center)
+- Manual refresh button (right)
+- Removed individual screen TopAppBars
+- More screen space for content
+
+**See also:** [UI_IMPROVEMENTS.md](docs/UI_IMPROVEMENTS.md)
+
+**Status: Phase 2 Complete + UI Enhanced ✅**
 
 ---
 
 *Implementation completed: February 12, 2026*
-*Total development time: ~4 hours*
-*Lines of code changed: 1,154 additions, 109 deletions*
+*Total development time: ~6 hours*
+*Lines of code changed: 1,500+ additions, 200+ deletions*
