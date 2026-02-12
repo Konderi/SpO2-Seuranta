@@ -325,7 +325,10 @@ export default function Statistics() {
           filteredCount: filteredDailyStats.length,
           chartDataCount: formattedChartData.length,
           firstChartPoint: formattedChartData[0],
-          lastChartPoint: formattedChartData[formattedChartData.length - 1]
+          lastChartPoint: formattedChartData[formattedChartData.length - 1],
+          hasBPData: formattedChartData.some(d => d.systolic || d.diastolic),
+          bpDataPoints: formattedChartData.filter(d => d.systolic || d.diastolic).length,
+          sampleDaysWithBP: filteredDailyStats.filter((d: any) => d.avg_systolic || d.avg_diastolic).slice(0, 3)
         })
         
         setChartData(formattedChartData)
