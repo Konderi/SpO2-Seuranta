@@ -191,7 +191,7 @@ export default function Dashboard() {
           {/* Quick Actions */}
           <div className="mb-12">
             <h2 className="text-h2 font-bold text-text-primary mb-6">Lisää mittaus</h2>
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <Link
                 href="/add-daily"
                 className="card p-8 hover:shadow-elevation-3 transition-all cursor-pointer border-2 border-transparent hover:border-primary"
@@ -201,11 +201,30 @@ export default function Dashboard() {
                     <Activity className="w-8 h-8 text-primary" strokeWidth={2} />
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold text-text-primary">Päivittäinen mittaus</h3>
-                    <p className="text-lg text-text-secondary">Tallenna SpO2 ja syke</p>
+                    <h3 className="text-2xl font-bold text-text-primary">Päivittäinen</h3>
+                    <p className="text-lg text-text-secondary">SpO2 ja syke</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-primary font-semibold text-lg">
+                  <Plus className="w-6 h-6" />
+                  <span>Lisää mittaus</span>
+                </div>
+              </Link>
+
+              <Link
+                href="/add-bloodpressure"
+                className="card p-8 hover:shadow-elevation-3 transition-all cursor-pointer border-2 border-transparent hover:border-primary"
+              >
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 rounded-xl bg-red-50 flex items-center justify-center">
+                    <Heart className="w-8 h-8 text-red-600" strokeWidth={2} />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold text-text-primary">Verenpaine</h3>
+                    <p className="text-lg text-text-secondary">Systolinen/Diastolinen</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 text-red-600 font-semibold text-lg">
                   <Plus className="w-6 h-6" />
                   <span>Lisää mittaus</span>
                 </div>
@@ -217,11 +236,11 @@ export default function Dashboard() {
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className="w-16 h-16 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <Heart className="w-8 h-8 text-primary" strokeWidth={2} />
+                    <TrendingUp className="w-8 h-8 text-primary" strokeWidth={2} />
                   </div>
                   <div>
                     <h3 className="text-2xl font-bold text-text-primary">Liikunta</h3>
-                    <p className="text-lg text-text-secondary">Ennen/jälkeen mittaus</p>
+                    <p className="text-lg text-text-secondary">Ennen/jälkeen</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 text-primary font-semibold text-lg">
