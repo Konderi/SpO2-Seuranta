@@ -24,7 +24,9 @@ data class ExerciseMeasurement(
     val exerciseDetails: String = "", // What exercise was performed
     val notes: String = "",
     val timestamp: LocalDateTime = LocalDateTime.now(),
-    val userId: String? = null // Google account ID for sync
+    val userId: String? = null, // Google account ID for sync
+    val serverId: String? = null, // Server UUID for synced measurements
+    val syncedToServer: Boolean = false // Track if uploaded to server
 ) {
     init {
         require(spo2Before in 50..100) { "SpO2 before must be between 50 and 100" }
@@ -36,4 +38,9 @@ data class ExerciseMeasurement(
     fun getSpo2Change(): Int = spo2After - spo2Before
     fun getHeartRateChange(): Int = heartRateAfter - heartRateBefore
     fun isSignificantSpo2Drop(): Boolean = getSpo2Change() < -5
+    
+    /**
+     * Check if this measurement needs to be synced to server
+     */
+    fun needsSync(): Boolean = !syncedToServer && serverId == null
 }

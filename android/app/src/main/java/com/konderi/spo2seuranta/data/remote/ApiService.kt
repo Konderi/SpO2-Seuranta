@@ -69,6 +69,13 @@ interface ApiService {
         @Path("id") id: String
     ): Response<ApiResponse<Unit>>
     
+    // ============= User Profile =============
+    
+    @GET("/api/user/profile")
+    suspend fun getUserProfile(
+        @Header("Authorization") token: String
+    ): Response<ApiResponse<UserProfileDto>>
+    
     // ============= Statistics =============
     
     @GET("/api/stats/week")

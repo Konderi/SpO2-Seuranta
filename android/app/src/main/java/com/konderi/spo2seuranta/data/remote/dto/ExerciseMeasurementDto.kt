@@ -12,7 +12,7 @@ import java.time.ZoneId
  */
 data class ExerciseMeasurementDto(
     @SerializedName("id")
-    val id: Long = 0,
+    val id: String? = null, // Server returns UUID
     
     @SerializedName("user_id")
     val userId: String,
@@ -35,11 +35,14 @@ data class ExerciseMeasurementDto(
     @SerializedName("notes")
     val notes: String? = null,
     
-    @SerializedName("timestamp")
-    val timestamp: Long, // Unix timestamp in seconds
+    @SerializedName("measured_at")
+    val measuredAt: Long, // Unix timestamp in seconds
     
     @SerializedName("created_at")
-    val createdAt: Long? = null
+    val createdAt: Long? = null,
+    
+    @SerializedName("updated_at")
+    val updatedAt: Long? = null
 )
 
 /**
@@ -47,7 +50,8 @@ data class ExerciseMeasurementDto(
  */
 fun ExerciseMeasurementDto.toEntity(): ExerciseMeasurement {
     return ExerciseMeasurement(
-        id = this.id,
+        id = 0, // Local Room ID, auto-generated
+        serverId = this.id, // Server UUID
         spo2Before = this.spo2Before,
         heartRateBefore = this.heartRateBefore,
         spo2After = this.spo2After,
@@ -55,9 +59,10 @@ fun ExerciseMeasurementDto.toEntity(): ExerciseMeasurement {
         exerciseDetails = this.exerciseDetails,
         notes = this.notes ?: "",
         timestamp = LocalDateTime.ofInstant(
-            Instant.ofEpochSecond(this.timestamp),
+            Instant.ofEpochSecond(this.measuredAt),
             ZoneId.systemDefault()
-        )
+        ),
+        syncedToServer = true // Downloaded from server, already synced
     )
 }
 
@@ -66,7 +71,7 @@ fun ExerciseMeasurementDto.toEntity(): ExerciseMeasurement {
  */
 fun ExerciseMeasurement.toDto(userId: String): ExerciseMeasurementDto {
     return ExerciseMeasurementDto(
-        id = this.id,
+        id = this.serverId, // Use serverId if it exists (for updates)
         userId = userId,
         spo2Before = this.spo2Before,
         heartRateBefore = this.heartRateBefore,
@@ -74,7 +79,6 @@ fun ExerciseMeasurement.toDto(userId: String): ExerciseMeasurementDto {
         heartRateAfter = this.heartRateAfter,
         exerciseDetails = this.exerciseDetails,
         notes = this.notes.ifEmpty { null },
-        timestamp = this.timestamp.atZone(ZoneId.systemDefault()).toEpochSecond(),
-        createdAt = System.currentTimeMillis() / 1000
+        measuredAt = this.timestamp.atZone(ZoneId.systemDefault()).toEpochSecond()
     )
 }

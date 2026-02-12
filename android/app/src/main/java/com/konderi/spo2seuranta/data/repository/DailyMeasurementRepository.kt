@@ -1,5 +1,6 @@
 package com.konderi.spo2seuranta.data.repository
 
+import android.util.Log
 import com.konderi.spo2seuranta.data.local.DailyMeasurementDao
 import com.konderi.spo2seuranta.data.remote.ApiService
 import com.konderi.spo2seuranta.data.remote.dto.toDto
@@ -33,30 +34,49 @@ class DailyMeasurementRepository @Inject constructor(
     ): Flow<List<DailyMeasurement>> = dao.getMeasurementsByDateRange(startDate, endDate)
     
     suspend fun insertMeasurement(measurement: DailyMeasurement): Long {
-        // Save locally first (offline-first)
-        val localId = dao.insert(measurement)
+        // Save locally first (offline-first) - mark as not synced
+        val unsyncedMeasurement = measurement.copy(syncedToServer = false, serverId = null)
+        val localId = dao.insert(unsyncedMeasurement)
+        Log.d("SYNC_TEST", "✅ Saved locally: ID=$localId, SpO2=${measurement.spo2}%, HR=${measurement.heartRate}")
         
-        // Try to sync to cloud
+        // Try to sync to cloud immediately
         try {
             val userId = settingsRepository.getUserId()
             if (userId != null) {
-                val measurementWithId = measurement.copy(id = localId)
+                Log.d("SYNC_TEST", "🌐 Syncing to cloud for user: $userId")
+                
+                // Ensure user profile exists first
+                try {
+                    apiService.getUserProfile(token = "")
+                } catch (e: Exception) {
+                    // Ignore profile check errors
+                }
+                
+                val measurementWithId = unsyncedMeasurement.copy(id = localId)
                 val response = apiService.createDailyMeasurement(
                     token = "", // Token added by interceptor
                     measurement = measurementWithId.toDto(userId)
                 )
                 
-                // Update local ID with server ID if different
+                Log.d("SYNC_TEST", "📡 API Response: ${response.code()} ${if (response.isSuccessful) "✅ SUCCESS" else "❌ FAILED"}")
+                
+                // Mark as synced and store server ID
                 if (response.isSuccessful && response.body()?.data?.id != null) {
                     val serverId = response.body()!!.data!!.id
-                    if (serverId != localId) {
-                        dao.update(measurementWithId.copy(id = serverId))
-                        return serverId
-                    }
+                    Log.d("SYNC_TEST", "🎉 Cloud sync complete! Server ID: $serverId")
+                    
+                    // Update with sync status and server ID
+                    dao.update(measurementWithId.copy(
+                        syncedToServer = true,
+                        serverId = serverId
+                    ))
                 }
+            } else {
+                Log.w("SYNC_TEST", "⚠️ No userId - skipping cloud sync")
             }
         } catch (e: Exception) {
-            // Offline or network error - local save is enough
+            Log.e("SYNC_TEST", "❌ Sync failed: ${e.message}", e)
+            // Offline or network error - local save is enough, will sync later
         }
         
         return localId
@@ -99,7 +119,7 @@ class DailyMeasurementRepository @Inject constructor(
     }
     
     /**
-     * Sync with cloud - download latest measurements
+     * Sync with cloud - two-way sync (upload unsynced, then download latest)
      */
     suspend fun syncWithCloud(): Result<Unit> = withContext(Dispatchers.IO) {
         try {
@@ -108,34 +128,84 @@ class DailyMeasurementRepository @Inject constructor(
                 return@withContext Result.failure(Exception("User not logged in"))
             }
             
+            // STEP 0: Ensure user profile exists in database (for foreign key constraint)
+            try {
+                Log.d("SYNC_TEST", "👤 Ensuring user profile exists...")
+                val profileResponse = apiService.getUserProfile(token = "")
+                if (profileResponse.isSuccessful) {
+                    Log.d("SYNC_TEST", "✅ User profile confirmed")
+                } else {
+                    Log.w("SYNC_TEST", "⚠️ User profile check failed: ${profileResponse.code()}")
+                }
+            } catch (e: Exception) {
+                Log.w("SYNC_TEST", "⚠️ User profile check error: ${e.message}")
+                // Continue anyway - might be network issue
+            }
+            
+            // STEP 1: Upload unsynced local measurements to server
+            val unsyncedMeasurements = dao.getUnsyncedMeasurements()
+            Log.d("SYNC_TEST", "📤 Uploading ${unsyncedMeasurements.size} unsynced measurements")
+            
+            unsyncedMeasurements.forEach { measurement ->
+                try {
+                    val response = apiService.createDailyMeasurement(
+                        token = "",
+                        measurement = measurement.toDto(userId)
+                    )
+                    
+                    if (response.isSuccessful && response.body()?.data?.id != null) {
+                        val serverId = response.body()!!.data!!.id
+                        // Mark as synced with server ID
+                        dao.update(measurement.copy(
+                            syncedToServer = true,
+                            serverId = serverId
+                        ))
+                        Log.d("SYNC_TEST", "✅ Uploaded measurement ID ${measurement.id} → Server ID: $serverId")
+                    }
+                } catch (e: Exception) {
+                    Log.e("SYNC_TEST", "❌ Failed to upload measurement ${measurement.id}: ${e.message}")
+                    // Continue with other measurements
+                }
+            }
+            
+            // STEP 2: Download latest from server and merge
             val response = apiService.getDailyMeasurements(token = "")
             
             if (response.isSuccessful && response.body()?.success == true) {
                 val cloudMeasurements = response.body()?.data ?: emptyList()
+                Log.d("SYNC_TEST", "📥 Downloaded ${cloudMeasurements.size} measurements from server")
                 
                 // Convert DTOs to entities and insert/update
                 cloudMeasurements.forEach { dto ->
                     try {
-                        val entity = dto.toEntity()
-                        val existing = dao.getMeasurementById(entity.id)
+                        val entity = dto.toEntity().copy(
+                            syncedToServer = true,
+                            serverId = dto.id
+                        )
                         
-                        if (existing != null) {
-                            // Update if exists
-                            dao.update(entity)
+                        // Check if we already have this measurement by server ID
+                        val existingByServerId = entity.serverId?.let { dao.getMeasurementByServerId(it) }
+                        
+                        if (existingByServerId != null) {
+                            // Update existing measurement
+                            dao.update(entity.copy(id = existingByServerId.id))
                         } else {
                             // Insert new from cloud
                             dao.insert(entity)
                         }
                     } catch (e: Exception) {
+                        Log.e("SYNC_TEST", "❌ Failed to process cloud measurement: ${e.message}")
                         // Skip individual measurement errors
                     }
                 }
                 
+                Log.d("SYNC_TEST", "✅ Sync complete!")
                 Result.success(Unit)
             } else {
                 Result.failure(Exception("Sync failed: ${response.code()}"))
             }
         } catch (e: Exception) {
+            Log.e("SYNC_TEST", "❌ Sync error: ${e.message}", e)
             Result.failure(e)
         }
     }

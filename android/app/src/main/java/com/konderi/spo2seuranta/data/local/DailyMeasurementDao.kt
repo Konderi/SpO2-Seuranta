@@ -46,6 +46,12 @@ interface DailyMeasurementDao {
     @Query("SELECT COUNT(*) FROM daily_measurements WHERE spo2 < :threshold AND timestamp >= :startDate")
     suspend fun getLowOxygenCountSince(threshold: Int, startDate: LocalDateTime): Int
     
+    @Query("SELECT * FROM daily_measurements WHERE syncedToServer = 0")
+    suspend fun getUnsyncedMeasurements(): List<DailyMeasurement>
+    
+    @Query("SELECT * FROM daily_measurements WHERE serverId = :serverId LIMIT 1")
+    suspend fun getMeasurementByServerId(serverId: String): DailyMeasurement?
+    
     @Query("DELETE FROM daily_measurements")
     suspend fun deleteAll()
 }

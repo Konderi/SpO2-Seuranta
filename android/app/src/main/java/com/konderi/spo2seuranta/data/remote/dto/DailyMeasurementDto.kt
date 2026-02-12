@@ -12,7 +12,7 @@ import java.time.ZoneId
  */
 data class DailyMeasurementDto(
     @SerializedName("id")
-    val id: Long = 0,
+    val id: String? = null, // Server returns UUID strings
     
     @SerializedName("user_id")
     val userId: String,
@@ -26,11 +26,14 @@ data class DailyMeasurementDto(
     @SerializedName("notes")
     val notes: String? = null,
     
-    @SerializedName("timestamp")
-    val timestamp: Long, // Unix timestamp in seconds
+    @SerializedName("measured_at")
+    val measuredAt: Long, // Unix timestamp in seconds
     
     @SerializedName("created_at")
-    val createdAt: Long? = null
+    val createdAt: Long? = null,
+    
+    @SerializedName("updated_at")
+    val updatedAt: Long? = null
 )
 
 /**
@@ -38,14 +41,17 @@ data class DailyMeasurementDto(
  */
 fun DailyMeasurementDto.toEntity(): DailyMeasurement {
     return DailyMeasurement(
-        id = this.id,
+        id = 0, // Local ID will be set by Room
         spo2 = this.spo2,
         heartRate = this.heartRate,
         notes = this.notes ?: "",
         timestamp = LocalDateTime.ofInstant(
-            Instant.ofEpochSecond(this.timestamp),
+            Instant.ofEpochSecond(this.measuredAt),
             ZoneId.systemDefault()
-        )
+        ),
+        userId = this.userId,
+        serverId = this.id,
+        syncedToServer = true
     )
 }
 
@@ -54,12 +60,11 @@ fun DailyMeasurementDto.toEntity(): DailyMeasurement {
  */
 fun DailyMeasurement.toDto(userId: String): DailyMeasurementDto {
     return DailyMeasurementDto(
-        id = this.id,
+        id = this.serverId, // Use serverId if it exists (for updates)
         userId = userId,
         spo2 = this.spo2,
         heartRate = this.heartRate,
         notes = this.notes.ifEmpty { null },
-        timestamp = this.timestamp.atZone(ZoneId.systemDefault()).toEpochSecond(),
-        createdAt = System.currentTimeMillis() / 1000
+        measuredAt = this.timestamp.atZone(ZoneId.systemDefault()).toEpochSecond()
     )
 }

@@ -11,7 +11,7 @@ import com.konderi.spo2seuranta.domain.model.ExerciseMeasurement
  */
 @Database(
     entities = [DailyMeasurement::class, ExerciseMeasurement::class],
-    version = 1,
+    version = 2,
     exportSchema = true
 )
 @TypeConverters(Converters::class)

@@ -6,7 +6,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { decode, verify } from '@tsndr/cloudflare-worker-jwt';
+import { decode } from '@tsndr/cloudflare-worker-jwt';
+import { importX509, jwtVerify } from 'jose';
 
 export interface Env {
   DB: D1Database;
@@ -68,47 +69,57 @@ interface AuthUser {
 
 async function verifyFirebaseToken(token: string, env: Env): Promise<AuthUser | null> {
   try {
+    console.log('🔍 Verifying Firebase token...', token.substring(0, 20) + '...');
+    
     // Decode the token to get the payload without verification first
     const { payload } = decode(token);
     
     if (!payload) {
-      console.log('Failed to decode token');
+      console.log('❌ Failed to decode token');
       return null;
     }
+    
+    console.log('✅ Token decoded, sub:', payload.sub);
     
     // Validate basic claims
     const now = Math.floor(Date.now() / 1000);
     
     // Check expiration
     if (!payload.exp || payload.exp < now) {
-      console.log('Token expired');
+      console.log('❌ Token expired', { exp: payload.exp, now });
       return null;
     }
     
     // Check issued at
     if (!payload.iat || payload.iat > now) {
-      console.log('Token used before issued');
+      console.log('❌ Token used before issued', { iat: payload.iat, now });
       return null;
     }
     
     // Check audience (should be your project ID)
     if (payload.aud !== env.FIREBASE_PROJECT_ID) {
-      console.log('Invalid audience', payload.aud, 'expected', env.FIREBASE_PROJECT_ID);
+      console.log('❌ Invalid audience', { aud: payload.aud, expected: env.FIREBASE_PROJECT_ID });
       return null;
     }
+    
+    console.log('✅ Audience valid');
     
     // Check issuer
     const expectedIssuer = `https://securetoken.google.com/${env.FIREBASE_PROJECT_ID}`;
     if (payload.iss !== expectedIssuer) {
-      console.log('Invalid issuer', payload.iss, 'expected', expectedIssuer);
+      console.log('❌ Invalid issuer', { iss: payload.iss, expected: expectedIssuer });
       return null;
     }
     
+    console.log('✅ Issuer valid');
+    
     // Check subject (user ID) exists
     if (!payload.sub || payload.sub.length === 0 || payload.sub.length > 128) {
-      console.log('Invalid subject');
+      console.log('❌ Invalid subject');
       return null;
     }
+    
+    console.log('✅ Subject valid, fetching public keys...');
     
     // Fetch Google's public keys to verify signature
     const keysResponse = await fetch(
@@ -117,41 +128,55 @@ async function verifyFirebaseToken(token: string, env: Env): Promise<AuthUser | 
     );
     
     if (!keysResponse.ok) {
-      console.log('Failed to fetch public keys');
+      console.log('❌ Failed to fetch public keys', keysResponse.status);
       return null;
     }
     
     const publicKeys: Record<string, string> = await keysResponse.json();
+    console.log('✅ Public keys fetched, count:', Object.keys(publicKeys).length);
     
     // Get the key ID from token header
     const { header } = decode(token);
     if (!header || !(header as any).kid) {
-      console.log('No kid in token header');
+      console.log('❌ No kid in token header');
       return null;
     }
     
     const kid = (header as any).kid;
+    console.log('🔑 Key ID:', kid);
+    
     const publicKeyCert = publicKeys[kid];
     if (!publicKeyCert) {
-      console.log('Public key not found for kid:', kid);
+      console.log('❌ Public key not found for kid:', kid, 'Available keys:', Object.keys(publicKeys));
       return null;
     }
     
-    // Verify the token signature using the public key
-    const isValid = await verify(token, publicKeyCert, { algorithm: 'RS256', throwError: false });
+    console.log('✅ Public key found, verifying signature...');
     
-    if (!isValid) {
-      console.log('Token signature verification failed');
+    // Verify the token signature using jose library
+    try {
+      // Import the X.509 certificate
+      const publicKey = await importX509(publicKeyCert, 'RS256');
+      
+      // Verify the JWT
+      const { payload: verifiedPayload } = await jwtVerify(token, publicKey, {
+        audience: env.FIREBASE_PROJECT_ID,
+        issuer: `https://securetoken.google.com/${env.FIREBASE_PROJECT_ID}`,
+      });
+      
+      console.log('✅✅✅ Token verified successfully! User:', verifiedPayload.sub);
+      
+      // All validations passed, return the user info
+      return {
+        uid: verifiedPayload.sub as string,
+        email: verifiedPayload.email as string | undefined,
+      };
+    } catch (verifyError) {
+      console.log('❌ Signature verification error:', verifyError);
       return null;
     }
-    
-    // All validations passed, return the user info
-    return {
-      uid: payload.sub || (payload as any).user_id,
-      email: (payload as any).email,
-    };
   } catch (error) {
-    console.error('Token verification error:', error);
+    console.error('❌ Token verification error:', error);
     return null;
   }
 }

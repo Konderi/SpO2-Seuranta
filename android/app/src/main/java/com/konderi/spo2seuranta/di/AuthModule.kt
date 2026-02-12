@@ -18,10 +18,15 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object AuthModule {
     
+    // Firebase Web Client ID for requesting ID tokens
+    // This is from your google-services.json (Web client, not Android client)
+    private const val FIREBASE_WEB_CLIENT_ID = "511544546057-t99nkjq6ni0h1dr9lm0bk40713esetpl.apps.googleusercontent.com"
+    
     @Provides
     @Singleton
     fun provideGoogleSignInOptions(): GoogleSignInOptions {
         return GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+            .requestIdToken(FIREBASE_WEB_CLIENT_ID)  // Critical: Request Firebase ID token
             .requestEmail()
             .requestId()
             .requestProfile()

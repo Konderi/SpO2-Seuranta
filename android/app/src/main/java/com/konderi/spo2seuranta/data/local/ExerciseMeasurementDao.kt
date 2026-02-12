@@ -43,6 +43,12 @@ interface ExerciseMeasurementDao {
     @Query("SELECT AVG(spo2After) FROM exercise_measurements WHERE timestamp >= :startDate")
     suspend fun getAverageSpo2AfterSince(startDate: LocalDateTime): Double?
     
+    @Query("SELECT * FROM exercise_measurements WHERE syncedToServer = 0")
+    suspend fun getUnsyncedMeasurements(): List<ExerciseMeasurement>
+    
+    @Query("SELECT * FROM exercise_measurements WHERE serverId = :serverId LIMIT 1")
+    suspend fun getMeasurementByServerId(serverId: String): ExerciseMeasurement?
+    
     @Query("DELETE FROM exercise_measurements")
     suspend fun deleteAll()
 }

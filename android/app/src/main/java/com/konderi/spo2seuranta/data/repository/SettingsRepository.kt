@@ -11,6 +11,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import com.konderi.spo2seuranta.domain.model.UserSettings
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -74,10 +75,8 @@ class SettingsRepository @Inject constructor(
      * Get current user ID synchronously
      */
     suspend fun getUserId(): String? {
-        var userId: String? = null
-        context.dataStore.data.map { preferences ->
-            preferences[PreferencesKeys.USER_ID]
-        }.collect { userId = it }
-        return userId
+        return context.dataStore.data
+            .map { preferences -> preferences[PreferencesKeys.USER_ID] }
+            .first()  // Get first value and complete
     }
 }

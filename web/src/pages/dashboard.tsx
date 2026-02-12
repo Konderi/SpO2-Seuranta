@@ -24,7 +24,7 @@ export default function Dashboard() {
         setMeasurements(dailyDemo.map(m => ({
           spo2: m.spo2,
           heart_rate: m.heartRate,
-          measured_at: m.measured_at * 1000, // Convert to milliseconds for Date
+          measured_at: m.measured_at, // Already in seconds (Unix timestamp)
         })))
         setStats(demoStats)
         setLoading(false)
@@ -57,7 +57,7 @@ export default function Dashboard() {
     trend: measurements.length > 1 
       ? `${measurements[0].spo2 > measurements[1].spo2 ? '+' : ''}${measurements[0].spo2 - measurements[1].spo2}%`
       : '0%',
-    date: new Date(measurements[0].measured_at).toLocaleDateString('fi-FI'),
+    date: new Date(measurements[0].measured_at * 1000).toLocaleDateString('fi-FI'), // Convert Unix timestamp (seconds) to milliseconds
   } : {
     spo2: 0,
     heartRate: 0,

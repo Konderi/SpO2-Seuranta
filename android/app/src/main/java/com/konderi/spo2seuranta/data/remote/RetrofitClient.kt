@@ -1,5 +1,6 @@
 package com.konderi.spo2seuranta.data.remote
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.konderi.hapetus.BuildConfig
 import kotlinx.coroutines.runBlocking
@@ -25,14 +26,20 @@ object RetrofitClient {
         override fun intercept(chain: Interceptor.Chain): okhttp3.Response {
             val original = chain.request()
             
+            val currentUser = auth.currentUser
+            Log.d("SYNC_TEST", "🔑 Firebase user: ${currentUser?.uid ?: "NULL"}")
+            
             // Get Firebase ID token
             val token = runBlocking {
                 try {
                     auth.currentUser?.getIdToken(false)?.await()?.token
                 } catch (e: Exception) {
+                    Log.e("SYNC_TEST", "❌ Failed to get token: ${e.message}")
                     null
                 }
             }
+            
+            Log.d("SYNC_TEST", "🎫 Token: ${if (token != null) "EXISTS (${token.take(20)}...)" else "NULL"}")
             
             // Add Authorization header if token exists
             val request = if (token != null) {
@@ -41,6 +48,7 @@ object RetrofitClient {
                     .method(original.method, original.body)
                     .build()
             } else {
+                Log.w("SYNC_TEST", "⚠️ No token - request will fail with 401!")
                 original
             }
             
