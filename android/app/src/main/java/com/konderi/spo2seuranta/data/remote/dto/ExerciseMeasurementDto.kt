@@ -23,11 +23,23 @@ data class ExerciseMeasurementDto(
     @SerializedName("heart_rate_before")
     val heartRateBefore: Int,
     
+    @SerializedName("systolic_before")
+    val systolicBefore: Int? = null,
+    
+    @SerializedName("diastolic_before")
+    val diastolicBefore: Int? = null,
+    
     @SerializedName("spo2_after")
     val spo2After: Int,
     
     @SerializedName("heart_rate_after")
     val heartRateAfter: Int,
+    
+    @SerializedName("systolic_after")
+    val systolicAfter: Int? = null,
+    
+    @SerializedName("diastolic_after")
+    val diastolicAfter: Int? = null,
     
     @SerializedName("exercise_details")
     val exerciseDetails: String,
@@ -54,8 +66,12 @@ fun ExerciseMeasurementDto.toEntity(): ExerciseMeasurement {
         serverId = this.id, // Server UUID
         spo2Before = this.spo2Before,
         heartRateBefore = this.heartRateBefore,
+        systolicBefore = this.systolicBefore,
+        diastolicBefore = this.diastolicBefore,
         spo2After = this.spo2After,
         heartRateAfter = this.heartRateAfter,
+        systolicAfter = this.systolicAfter,
+        diastolicAfter = this.diastolicAfter,
         exerciseDetails = this.exerciseDetails,
         notes = this.notes ?: "",
         timestamp = LocalDateTime.ofInstant(
@@ -75,8 +91,12 @@ fun ExerciseMeasurement.toDto(userId: String): ExerciseMeasurementDto {
         userId = userId,
         spo2Before = this.spo2Before,
         heartRateBefore = this.heartRateBefore,
+        systolicBefore = this.systolicBefore,
+        diastolicBefore = this.diastolicBefore,
         spo2After = this.spo2After,
         heartRateAfter = this.heartRateAfter,
+        systolicAfter = this.systolicAfter,
+        diastolicAfter = this.diastolicAfter,
         exerciseDetails = this.exerciseDetails,
         notes = this.notes.ifEmpty { null },
         measuredAt = this.timestamp.atZone(ZoneId.systemDefault()).toEpochSecond()

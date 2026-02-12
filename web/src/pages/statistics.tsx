@@ -786,6 +786,16 @@ export default function Statistics() {
 
             {chartData.length > 0 ? (
               <>
+                {/* Info message for limited data */}
+                {chartData.length < 3 && (
+                  <div className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                    <p className="text-sm text-blue-800">
+                      <strong>💡 Vinkki:</strong> Lisää mittauksia useammalta päivältä nähdäksesi kehitystrendin paremmin. 
+                      Tällä hetkellä näytetään vain {chartData.length} päivän tiedot.
+                    </p>
+                  </div>
+                )}
+                
                 {/* SpO2 Chart */}
                 <div className="mb-12">
                   <h3 className="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
@@ -807,7 +817,7 @@ export default function Statistics() {
                         style={{ fontSize: '14px' }}
                       />
                       <YAxis 
-                        domain={[90, 100]}
+                        domain={chartData.length === 1 ? ['auto', 'auto'] : [90, 100]}
                         stroke="#6b7280"
                         style={{ fontSize: '14px' }}
                         label={{ value: 'SpO2 (%)', angle: -90, position: 'insideLeft' }}
@@ -828,6 +838,7 @@ export default function Statistics() {
                         strokeWidth={3}
                         fill="url(#colorSpo2)" 
                         name="SpO2 (%)"
+                        dot={chartData.length <= 3 ? { fill: '#10b981', strokeWidth: 2, r: 6 } : false}
                       />
                     </AreaChart>
                   </ResponsiveContainer>
@@ -848,7 +859,7 @@ export default function Statistics() {
                         style={{ fontSize: '14px' }}
                       />
                       <YAxis 
-                        domain={[60, 90]}
+                        domain={chartData.length === 1 ? ['auto', 'auto'] : [60, 90]}
                         stroke="#6b7280"
                         style={{ fontSize: '14px' }}
                         label={{ value: 'Syke (bpm)', angle: -90, position: 'insideLeft' }}
@@ -867,8 +878,8 @@ export default function Statistics() {
                         dataKey="heartRate" 
                         stroke="#ef4444" 
                         strokeWidth={3}
-                        dot={{ fill: '#ef4444', strokeWidth: 2, r: 4 }}
-                        activeDot={{ r: 6 }}
+                        dot={{ fill: '#ef4444', strokeWidth: 2, r: chartData.length <= 3 ? 6 : 4 }}
+                        activeDot={{ r: 8 }}
                         name="Syke (bpm)"
                       />
                     </LineChart>

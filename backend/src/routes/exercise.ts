@@ -39,8 +39,12 @@ exercise.post('/', async (c) => {
       exercise_duration,
       spo2_before,
       heart_rate_before,
+      systolic_before,
+      diastolic_before,
       spo2_after,
       heart_rate_after,
+      systolic_after,
+      diastolic_after,
       notes,
       measured_at
     } = body;
@@ -50,23 +54,50 @@ exercise.post('/', async (c) => {
       return c.json({ error: 'Missing required fields' }, 400);
     }
 
+    // Validate blood pressure if provided
+    if (systolic_before && (systolic_before < 80 || systolic_before > 200)) {
+      return c.json({ error: 'Systolic pressure (before) must be between 80 and 200' }, 400);
+    }
+    if (diastolic_before && (diastolic_before < 50 || diastolic_before > 130)) {
+      return c.json({ error: 'Diastolic pressure (before) must be between 50 and 130' }, 400);
+    }
+    if (systolic_after && (systolic_after < 80 || systolic_after > 200)) {
+      return c.json({ error: 'Systolic pressure (after) must be between 80 and 200' }, 400);
+    }
+    if (diastolic_after && (diastolic_after < 50 || diastolic_after > 130)) {
+      return c.json({ error: 'Diastolic pressure (after) must be between 50 and 130' }, 400);
+    }
+    if (systolic_before && diastolic_before && systolic_before <= diastolic_before) {
+      return c.json({ error: 'Systolic must be greater than diastolic (before)' }, 400);
+    }
+    if (systolic_after && diastolic_after && systolic_after <= diastolic_after) {
+      return c.json({ error: 'Systolic must be greater than diastolic (after)' }, 400);
+    }
+
     const id = crypto.randomUUID();
     const timestamp = Math.floor(Date.now() / 1000);
 
     await db.prepare(
       `INSERT INTO exercise_measurements 
-       (id, user_id, exercise_type, exercise_duration, spo2_before, heart_rate_before, 
-        spo2_after, heart_rate_after, notes, measured_at, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+       (id, user_id, exercise_type, exercise_duration, 
+        spo2_before, heart_rate_before, systolic_before, diastolic_before,
+        spo2_after, heart_rate_after, systolic_after, diastolic_after,
+        notes, measured_at, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).bind(
       id, user.uid, exercise_type, exercise_duration || null,
-      spo2_before, heart_rate_before, spo2_after, heart_rate_after,
+      spo2_before, heart_rate_before, systolic_before || null, diastolic_before || null,
+      spo2_after, heart_rate_after, systolic_after || null, diastolic_after || null,
       notes || null, measured_at, timestamp, timestamp
     ).run();
 
     return c.json({
       message: 'Exercise measurement created successfully',
-      data: { id, exercise_type, spo2_before, heart_rate_before, spo2_after, heart_rate_after }
+      data: { 
+        id, exercise_type, 
+        spo2_before, heart_rate_before, systolic_before, diastolic_before,
+        spo2_after, heart_rate_after, systolic_after, diastolic_after
+      }
     }, 201);
   } catch (error) {
     console.error('Error creating exercise measurement:', error);

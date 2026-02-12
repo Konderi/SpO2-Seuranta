@@ -2,6 +2,8 @@ package com.konderi.spo2seuranta.di
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 import com.konderi.spo2seuranta.data.local.DailyMeasurementDao
 import com.konderi.spo2seuranta.data.local.ExerciseMeasurementDao
 import com.konderi.spo2seuranta.data.local.SpO2Database
@@ -19,6 +21,23 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object DatabaseModule {
     
+    /**
+     * Migration from version 2 to 3: Add blood pressure columns
+     */
+    private val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            // Add blood pressure columns to daily_measurements
+            database.execSQL("ALTER TABLE daily_measurements ADD COLUMN systolic INTEGER")
+            database.execSQL("ALTER TABLE daily_measurements ADD COLUMN diastolic INTEGER")
+            
+            // Add blood pressure columns to exercise_measurements
+            database.execSQL("ALTER TABLE exercise_measurements ADD COLUMN systolicBefore INTEGER")
+            database.execSQL("ALTER TABLE exercise_measurements ADD COLUMN diastolicBefore INTEGER")
+            database.execSQL("ALTER TABLE exercise_measurements ADD COLUMN systolicAfter INTEGER")
+            database.execSQL("ALTER TABLE exercise_measurements ADD COLUMN diastolicAfter INTEGER")
+        }
+    }
+    
     @Provides
     @Singleton
     fun provideSpO2Database(
@@ -29,6 +48,7 @@ object DatabaseModule {
             SpO2Database::class.java,
             "spo2_database"
         )
+            .addMigrations(MIGRATION_2_3)
             .fallbackToDestructiveMigration()
             .build()
     }

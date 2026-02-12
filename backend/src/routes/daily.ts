@@ -59,7 +59,7 @@ daily.post('/', async (c) => {
 
   try {
     const body = await c.req.json();
-    const { spo2, heart_rate, notes, measured_at } = body;
+    const { spo2, heart_rate, systolic, diastolic, notes, measured_at } = body;
 
     // Validation
     if (!spo2 || !heart_rate || !measured_at) {
@@ -74,17 +74,31 @@ daily.post('/', async (c) => {
       return c.json({ error: 'Heart rate must be between 30 and 250' }, 400);
     }
 
+    // Validate blood pressure if provided
+    if (systolic && (systolic < 80 || systolic > 200)) {
+      return c.json({ error: 'Systolic pressure must be between 80 and 200' }, 400);
+    }
+
+    if (diastolic && (diastolic < 50 || diastolic > 130)) {
+      return c.json({ error: 'Diastolic pressure must be between 50 and 130' }, 400);
+    }
+
+    // Ensure systolic > diastolic if both provided
+    if (systolic && diastolic && systolic <= diastolic) {
+      return c.json({ error: 'Systolic pressure must be greater than diastolic' }, 400);
+    }
+
     const id = crypto.randomUUID();
     const timestamp = Math.floor(Date.now() / 1000);
 
     await db.prepare(
-      `INSERT INTO daily_measurements (id, user_id, spo2, heart_rate, notes, measured_at, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
-    ).bind(id, user.uid, spo2, heart_rate, notes || null, measured_at, timestamp, timestamp).run();
+      `INSERT INTO daily_measurements (id, user_id, spo2, heart_rate, systolic, diastolic, notes, measured_at, created_at, updated_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+    ).bind(id, user.uid, spo2, heart_rate, systolic || null, diastolic || null, notes || null, measured_at, timestamp, timestamp).run();
 
     return c.json({
       message: 'Measurement created successfully',
-      data: { id, spo2, heart_rate, notes, measured_at }
+      data: { id, spo2, heart_rate, systolic, diastolic, notes, measured_at }
     }, 201);
   } catch (error) {
     console.error('Error creating daily measurement:', error);
@@ -100,7 +114,7 @@ daily.put('/:id', async (c) => {
 
   try {
     const body = await c.req.json();
-    const { spo2, heart_rate, notes } = body;
+    const { spo2, heart_rate, systolic, diastolic, notes } = body;
 
     // Verify ownership
     const { results } = await db.prepare(
@@ -115,11 +129,24 @@ daily.put('/:id', async (c) => {
       return c.json({ error: 'Forbidden' }, 403);
     }
 
+    // Validate blood pressure if provided
+    if (systolic && (systolic < 80 || systolic > 200)) {
+      return c.json({ error: 'Systolic pressure must be between 80 and 200' }, 400);
+    }
+
+    if (diastolic && (diastolic < 50 || diastolic > 130)) {
+      return c.json({ error: 'Diastolic pressure must be between 50 and 130' }, 400);
+    }
+
+    if (systolic && diastolic && systolic <= diastolic) {
+      return c.json({ error: 'Systolic pressure must be greater than diastolic' }, 400);
+    }
+
     await db.prepare(
       `UPDATE daily_measurements 
-       SET spo2 = ?, heart_rate = ?, notes = ?
+       SET spo2 = ?, heart_rate = ?, systolic = ?, diastolic = ?, notes = ?
        WHERE id = ?`
-    ).bind(spo2, heart_rate, notes || null, id).run();
+    ).bind(spo2, heart_rate, systolic || null, diastolic || null, notes || null, id).run();
 
     return c.json({ message: 'Measurement updated successfully' });
   } catch (error) {

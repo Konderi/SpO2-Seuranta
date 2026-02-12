@@ -23,6 +23,12 @@ data class DailyMeasurementDto(
     @SerializedName("heart_rate")
     val heartRate: Int,
     
+    @SerializedName("systolic")
+    val systolic: Int? = null,
+    
+    @SerializedName("diastolic")
+    val diastolic: Int? = null,
+    
     @SerializedName("notes")
     val notes: String? = null,
     
@@ -44,6 +50,8 @@ fun DailyMeasurementDto.toEntity(): DailyMeasurement {
         id = 0, // Local ID will be set by Room
         spo2 = this.spo2,
         heartRate = this.heartRate,
+        systolic = this.systolic,
+        diastolic = this.diastolic,
         notes = this.notes ?: "",
         timestamp = LocalDateTime.ofInstant(
             Instant.ofEpochSecond(this.measuredAt),
@@ -64,6 +72,8 @@ fun DailyMeasurement.toDto(userId: String): DailyMeasurementDto {
         userId = userId,
         spo2 = this.spo2,
         heartRate = this.heartRate,
+        systolic = this.systolic,
+        diastolic = this.diastolic,
         notes = this.notes.ifEmpty { null },
         measuredAt = this.timestamp.atZone(ZoneId.systemDefault()).toEpochSecond()
     )

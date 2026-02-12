@@ -19,10 +19,16 @@ stats.get('/week', async (c) => {
       `SELECT 
         AVG(spo2) as avg_spo2,
         AVG(heart_rate) as avg_heart_rate,
+        AVG(systolic) as avg_systolic,
+        AVG(diastolic) as avg_diastolic,
         MIN(spo2) as min_spo2,
         MAX(spo2) as max_spo2,
         MIN(heart_rate) as min_heart_rate,
         MAX(heart_rate) as max_heart_rate,
+        MIN(systolic) as min_systolic,
+        MAX(systolic) as max_systolic,
+        MIN(diastolic) as min_diastolic,
+        MAX(diastolic) as max_diastolic,
         COUNT(*) as count
        FROM daily_measurements 
        WHERE user_id = ? AND measured_at >= ?`
@@ -51,10 +57,16 @@ stats.get('/range', async (c) => {
       `SELECT 
         AVG(spo2) as avg_spo2,
         AVG(heart_rate) as avg_heart_rate,
+        AVG(systolic) as avg_systolic,
+        AVG(diastolic) as avg_diastolic,
         MIN(spo2) as min_spo2,
         MAX(spo2) as max_spo2,
         MIN(heart_rate) as min_heart_rate,
         MAX(heart_rate) as max_heart_rate,
+        MIN(systolic) as min_systolic,
+        MAX(systolic) as max_systolic,
+        MIN(diastolic) as min_diastolic,
+        MAX(diastolic) as max_diastolic,
         COUNT(*) as count
        FROM daily_measurements 
        WHERE user_id = ? AND measured_at BETWEEN ? AND ?`
@@ -81,6 +93,8 @@ stats.get('/daily', async (c) => {
         DATE(measured_at, 'unixepoch') as date,
         AVG(spo2) as avg_spo2,
         AVG(heart_rate) as avg_heart_rate,
+        AVG(systolic) as avg_systolic,
+        AVG(diastolic) as avg_diastolic,
         MIN(spo2) as min_spo2,
         MAX(spo2) as max_spo2,
         COUNT(*) as count
