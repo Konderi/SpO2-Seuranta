@@ -251,23 +251,35 @@ export default function Statistics() {
         const highBpCount = bpMeasurements.filter((m: any) => m.systolic >= 140 || m.diastolic >= 90).length
         const highBpPercentage = bpMeasurements.length > 0 ? Math.round((highBpCount / bpMeasurements.length) * 100) : 0
 
-        // Get latest measurement from daily data
-        const latestDaily = dailyData.length > 0 ? dailyData[0] : null
+        // Find latest measurement for each metric (not just the absolute latest)
+        const latestSpo2 = dailyData.find((m: any) => m.spo2 && m.spo2 > 0)?.spo2 || 0
+        const latestHR = dailyData.find((m: any) => m.heart_rate && m.heart_rate > 0)?.heart_rate || 0
+        const latestSystolic = dailyData.find((m: any) => m.systolic && m.systolic > 0)?.systolic || 0
+        const latestDiastolic = dailyData.find((m: any) => m.diastolic && m.diastolic > 0)?.diastolic || 0
 
         // Calculate warning count from daily data
         const warningCount = dailyData.filter((m: any) => m.spo2 < DEFAULT_SPO2_THRESHOLD).length
         const warningPercentage = dailyData.length > 0 ? Math.round((warningCount / dailyData.length) * 100) : 0
 
+        console.log('Statistics Calculated Values:', {
+          latestSpo2, latestHR, latestSystolic, latestDiastolic,
+          weeklyAvgSpo2: weeklyStats.avg_spo2,
+          weeklyAvgHR: weeklyStats.avg_heart_rate,
+          weeklyAvgSystolic: weeklyStats.avg_systolic,
+          weeklyAvgDiastolic: weeklyStats.avg_diastolic,
+          avgSystolic, avgDiastolic
+        })
+
         setStats({
           spo2: {
-            current: latestDaily?.spo2 || 0,
+            current: latestSpo2,
             average7days: weeklyStats.avg_spo2 ? Math.round(weeklyStats.avg_spo2) : 0,
             average30days: avgSpo2,
             min: weeklyStats.min_spo2 || 0,
             max: weeklyStats.max_spo2 || 0,
           },
           heartRate: {
-            current: latestDaily?.heart_rate || 0,
+            current: latestHR,
             average7days: weeklyStats.avg_heart_rate ? Math.round(weeklyStats.avg_heart_rate) : 0,
             average30days: avgHR,
             min: weeklyStats.min_heart_rate || 0,
@@ -275,15 +287,15 @@ export default function Statistics() {
           },
           bloodPressure: bpMeasurements.length > 0 ? {
             systolic: {
-              current: latestDaily?.systolic || 0,
-              average7days: weeklyStats.avg_systolic ? Math.round(weeklyStats.avg_systolic) : 0,
+              current: latestSystolic,
+              average7days: weeklyStats.avg_systolic ? Math.round(weeklyStats.avg_systolic) : avgSystolic,
               average30days: avgSystolic,
               min: systolicValues.length > 0 ? Math.min(...systolicValues) : 0,
               max: systolicValues.length > 0 ? Math.max(...systolicValues) : 0,
             },
             diastolic: {
-              current: latestDaily?.diastolic || 0,
-              average7days: weeklyStats.avg_diastolic ? Math.round(weeklyStats.avg_diastolic) : 0,
+              current: latestDiastolic,
+              average7days: weeklyStats.avg_diastolic ? Math.round(weeklyStats.avg_diastolic) : avgDiastolic,
               average30days: avgDiastolic,
               min: diastolicValues.length > 0 ? Math.min(...diastolicValues) : 0,
               max: diastolicValues.length > 0 ? Math.max(...diastolicValues) : 0,
