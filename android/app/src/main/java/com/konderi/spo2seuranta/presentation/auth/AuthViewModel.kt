@@ -1,6 +1,5 @@
 package com.konderi.spo2seuranta.presentation.auth
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -46,8 +45,19 @@ class AuthViewModel @Inject constructor(
                     AuthState.NotAuthenticated
                 }
                 
-                // Only update if state actually changed to avoid unnecessary recompositions
-                if (_authState.value::class != newState::class) {
+                // Update state if it's different
+                // Compare by class type for NotAuthenticated/Authenticated transition
+                // For Authenticated state, also check if user data changed
+                val shouldUpdate = when {
+                    _authState.value::class != newState::class -> true
+                    newState is AuthState.Authenticated && _authState.value is AuthState.Authenticated -> {
+                        val current = _authState.value as AuthState.Authenticated
+                        current.userId != newState.userId
+                    }
+                    else -> false
+                }
+                
+                if (shouldUpdate) {
                     _authState.value = newState
                 }
             }
@@ -61,8 +71,6 @@ class AuthViewModel @Inject constructor(
                 val userName = account.displayName ?: "User"
                 val userEmail = account.email ?: ""
                 
-                Log.d("AuthViewModel", "Saving user info: userId=$userId, userName=$userName, email=$userEmail")
-                
                 settingsRepository.updateUserInfo(
                     userId = userId,
                     userName = userName,
@@ -75,10 +83,7 @@ class AuthViewModel @Inject constructor(
                     userName = userName,
                     userEmail = userEmail
                 )
-                
-                Log.d("AuthViewModel", "Auth state updated to Authenticated")
             } else {
-                Log.w("AuthViewModel", "Account is null, staying NotAuthenticated")
                 _authState.value = AuthState.NotAuthenticated
             }
         }
@@ -86,10 +91,13 @@ class AuthViewModel @Inject constructor(
     
     fun signOut() {
         viewModelScope.launch {
+            // First update the state to NotAuthenticated
+            _authState.value = AuthState.NotAuthenticated
+            
+            // Then clear Google Sign-In and user data
             googleSignInClient.signOut().addOnCompleteListener {
                 viewModelScope.launch {
                     settingsRepository.clearUserInfo()
-                    _authState.value = AuthState.NotAuthenticated
                 }
             }
         }

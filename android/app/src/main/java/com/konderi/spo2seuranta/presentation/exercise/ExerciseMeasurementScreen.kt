@@ -89,7 +89,7 @@ fun ExerciseMeasurementScreen(
                             maxValue = 220
                         )
                         
-                        Divider()
+                        HorizontalDivider()
                         
                         Text(
                             text = "Liikunnan jälkeen",

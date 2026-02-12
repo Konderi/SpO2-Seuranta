@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.DirectionsRun
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -63,6 +64,7 @@ fun LoadingScreen() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainApp(
+    @Suppress("UNUSED_PARAMETER") // Needed for proper recomposition on auth state changes
     authViewModel: AuthViewModel = hiltViewModel()
 ) {
     val navController = rememberNavController()
@@ -95,7 +97,7 @@ fun MainApp(
                     }
                 )
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.DirectionsRun, contentDescription = "Liikunta") },
+                    icon = { Icon(Icons.AutoMirrored.Filled.DirectionsRun, contentDescription = "Liikunta") },
                     selected = currentRoute == Screen.Exercise.route,
                     onClick = {
                         navController.navigate(Screen.Exercise.route) {

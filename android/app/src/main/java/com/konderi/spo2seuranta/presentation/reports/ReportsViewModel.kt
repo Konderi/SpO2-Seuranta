@@ -1,6 +1,5 @@
 package com.konderi.spo2seuranta.presentation.reports
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.konderi.spo2seuranta.data.repository.DailyMeasurementRepository
@@ -41,12 +40,9 @@ class ReportsViewModel @Inject constructor(
             _uiState.value = _uiState.value.copy(isLoading = true)
             
             try {
-                Log.d("ReportsViewModel", "Loading statistics for period: $period")
                 val settings = settingsRepository.userSettings.first()
-                Log.d("ReportsViewModel", "Settings loaded, threshold: ${settings.lowSpo2AlertThreshold}")
                 
                 val stats = dailyRepository.getStatistics(period, settings.lowSpo2AlertThreshold)
-                Log.d("ReportsViewModel", "Statistics loaded: $stats")
                 
                 // Load raw measurements for the period
                 val endDate = LocalDateTime.now()
@@ -57,11 +53,8 @@ class ReportsViewModel @Inject constructor(
                     StatisticsPeriod.ALL_TIME -> LocalDateTime.of(2020, 1, 1, 0, 0)
                 }
                 
-                Log.d("ReportsViewModel", "Loading measurements from $startDate to $endDate")
                 val dailyMeasurements = dailyRepository.getMeasurementsByDateRange(startDate, endDate).first()
                 val exerciseMeasurements = exerciseRepository.getMeasurementsByDateRange(startDate, endDate).first()
-                
-                Log.d("ReportsViewModel", "Daily measurements: ${dailyMeasurements.size}, Exercise: ${exerciseMeasurements.size}")
                 
                 _uiState.value = _uiState.value.copy(
                     statistics = stats,
@@ -71,7 +64,6 @@ class ReportsViewModel @Inject constructor(
                     isLoading = false
                 )
             } catch (e: Exception) {
-                Log.e("ReportsViewModel", "Error loading statistics", e)
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
                     errorMessage = "Tilastojen lataus epäonnistui: ${e.message}"
@@ -104,7 +96,7 @@ class ReportsViewModel @Inject constructor(
                 
                 _uiState.value = _uiState.value.copy(statistics = stats)
             } catch (e: Exception) {
-                Log.e("ReportsViewModel", "Error calculating statistics", e)
+                // Error calculating statistics - maintain previous state
             }
         }
     }
@@ -112,8 +104,11 @@ class ReportsViewModel @Inject constructor(
     private fun calculateExerciseStatistics(measurements: List<ExerciseMeasurement>, threshold: Int): MeasurementStatistics? {
         if (measurements.isEmpty()) return null
         
+        // Calculate before/after averages (may be used for future detailed analytics)
+        @Suppress("UNUSED_VARIABLE")
         val avgSpo2Before = measurements.map { it.spo2Before }.average()
         val avgSpo2After = measurements.map { it.spo2After }.average()
+        @Suppress("UNUSED_VARIABLE")
         val avgHeartRateBefore = measurements.map { it.heartRateBefore }.average()
         val avgHeartRateAfter = measurements.map { it.heartRateAfter }.average()
         
