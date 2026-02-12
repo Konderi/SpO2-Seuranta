@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Pulse Oximeter Clip Icon - Represents the actual measurement device -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- Finger clip outline -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M7,6 
+                         L7,4 
+                         A2,2 0 0,1 9,2 
+                         L15,2 
+                         A2,2 0 0,1 17,4 
+                         L17,6 
+                         L17,10 
+                         A5,5 0 0,1 12,15 
+                         A5,5 0 0,1 7,10 
+                         L7,6 Z" />
+    
+    <!-- Display screen -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M9,4 
+                         L15,4 
+                         L15,7 
+                         L9,7 
+                         Z" />
+    
+    <!-- Pulse wave on screen -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FF4444"
+        android:strokeWidth="1"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M10,5.5 
+                         L10.5,5.5 
+                         L11,6.5 
+                         L11.5,4.5 
+                         L12,5.5 
+                         L12.5,5.5 
+                         L13,5.5 
+                         L13.5,5.5" />
+    
+    <!-- Finger indicator -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M10,11 
+                         L14,11 
+                         L14,20 
+                         A2,2 0 0,1 12,22 
+                         A2,2 0 0,1 10,20 
+                         Z" />
+</vector>

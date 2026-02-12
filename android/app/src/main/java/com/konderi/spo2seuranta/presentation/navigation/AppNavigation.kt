@@ -19,10 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import com.konderi.hapetus.R
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -148,7 +150,12 @@ fun MainApp(
                 tonalElevation = 0.dp
             ) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Air, contentDescription = "Päivittäinen") },
+                    icon = { 
+                        Icon(
+                            painter = painterResource(R.drawable.ic_lungs_oxygen),
+                            contentDescription = "Päivittäinen"
+                        )
+                    },
                     selected = currentRoute == Screen.Daily.route,
                     onClick = {
                         navController.navigate(Screen.Daily.route) {

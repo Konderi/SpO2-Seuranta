@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Blood Saturation Icon - Blood drop with percentage indicator -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- Blood drop outline -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M12,3 
+                         C12,3 7,8 7,12.5 
+                         A5,5 0 0,0 12,17.5 
+                         A5,5 0 0,0 17,12.5 
+                         C17,8 12,3 12,3 Z" />
+    
+    <!-- Fill level indicator (showing saturation) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M7.2,13.5 
+                         A5,5 0 0,0 12,17.5 
+                         A5,5 0 0,0 16.8,13.5 
+                         C16.5,13.5 7.5,13.5 7.2,13.5 Z" />
+    
+    <!-- Pulse wave on filled area -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#E53935"
+        android:strokeWidth="1.2"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M9,15 
+                         L9.5,15 
+                         L10,14 
+                         L10.5,16 
+                         L11,15 
+                         L11.5,15 
+                         L12,15 
+                         L12.5,14.5 
+                         L13,15.5 
+                         L13.5,15 
+                         L14,15 
+                         L14.5,15 
+                         L15,15" />
+    
+    <!-- Small O2 indicator at top -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M10.5,7 A0.7,0.7 0 1,1 10.5,8.4 A0.7,0.7 0 1,1 10.5,7 Z
+                         M10.5,7.5 A0.3,0.3 0 1,0 10.5,8.1 A0.3,0.3 0 1,0 10.5,7.5 Z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12.5,6.8 L13.3,6.8 A0.4,0.4 0 0,1 13.3,7.6 L12.5,8 L13.3,8"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="0.4" />
+</vector>

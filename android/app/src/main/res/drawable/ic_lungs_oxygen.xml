@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Lungs Icon - Direct breathing/oxygen representation -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- Trachea -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M11,3 
+                         L13,3 
+                         L13,8 
+                         L11,8 
+                         Z" />
+    
+    <!-- Left lung -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M11,8 
+                         L8,9 
+                         A3,3 0 0,0 5,12 
+                         L5,17 
+                         A3,3 0 0,0 8,20 
+                         A3,3 0 0,0 11,17 
+                         Z" />
+    
+    <!-- Right lung -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="@android:color/white"
+        android:strokeWidth="1.5"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M13,8 
+                         L16,9 
+                         A3,3 0 0,1 19,12 
+                         L19,17 
+                         A3,3 0 0,1 16,20 
+                         A3,3 0 0,1 13,17 
+                         Z" />
+    
+    <!-- O2 molecules (small circles) -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M7,13 A1,1 0 1,1 7,15 A1,1 0 1,1 7,13 Z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M17,13 A1,1 0 1,1 17,15 A1,1 0 1,1 17,13 Z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M8,16.5 A0.7,0.7 0 1,1 8,17.9 A0.7,0.7 0 1,1 8,16.5 Z" />
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M16,16.5 A0.7,0.7 0 1,1 16,17.9 A0.7,0.7 0 1,1 16,16.5 Z" />
+</vector>

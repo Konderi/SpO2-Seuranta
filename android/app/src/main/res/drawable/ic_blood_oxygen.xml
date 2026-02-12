@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Blood Drop with Oxygen Icon - Combines blood drop with O2 symbol -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    
+    <!-- Blood drop shape -->
+    <path
+        android:fillColor="@android:color/white"
+        android:pathData="M12,2 
+                         C12,2 6,8 6,13 
+                         A6,6 0 0,0 12,19 
+                         A6,6 0 0,0 18,13 
+                         C18,8 12,2 12,2 Z" />
+    
+    <!-- O2 text inside drop -->
+    <path
+        android:fillColor="#E53935"
+        android:pathData="M9,10.5 
+                         A1.5,1.5 0 1,1 9,13.5 
+                         A1.5,1.5 0 1,1 9,10.5 Z
+                         M9,11.5 
+                         A0.5,0.5 0 1,0 9,12.5 
+                         A0.5,0.5 0 1,0 9,11.5 Z" />
+    
+    <!-- Number 2 -->
+    <path
+        android:fillColor="#E53935"
+        android:pathData="M13,10.5 
+                         L15,10.5 
+                         A1,1 0 0,1 15,12.5 
+                         L13,13.5 
+                         L15,13.5"
+        android:strokeColor="#E53935"
+        android:strokeWidth="0.8"
+        android:strokeLineCap="round" />
+</vector>
