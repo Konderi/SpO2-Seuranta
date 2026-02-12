@@ -38,17 +38,17 @@ fun AppNavigation(
 ) {
     val authState by authViewModel.authState.collectAsState()
     
-    // Show auth screen if not authenticated
+    // Show auth screen if not authenticated, otherwise show main app
     when (authState) {
         is AuthState.Loading -> {
-            // Show loading indicator
             LoadingScreen()
         }
-        is AuthState.NotAuthenticated -> {
+        is AuthState.NotAuthenticated, is AuthState.Error -> {
+            // Show auth screen for both not authenticated and error states
             AuthScreen(authViewModel = authViewModel)
         }
-        is AuthState.Authenticated, is AuthState.Error -> {
-            MainApp()
+        is AuthState.Authenticated -> {
+            MainApp(authViewModel = authViewModel)
         }
     }
 }
@@ -62,7 +62,9 @@ fun LoadingScreen() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainApp() {
+fun MainApp(
+    authViewModel: AuthViewModel = hiltViewModel()
+) {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route

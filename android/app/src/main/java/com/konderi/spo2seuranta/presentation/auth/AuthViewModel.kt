@@ -34,17 +34,21 @@ class AuthViewModel @Inject constructor(
     private fun checkAuthStatus() {
         viewModelScope.launch {
             settingsRepository.userSettings.collect { settings ->
-                // Only update if we're still in Loading or NotAuthenticated state
-                if (_authState.value is AuthState.Loading || _authState.value is AuthState.NotAuthenticated) {
-                    _authState.value = if (!settings.userId.isNullOrEmpty()) {
-                        AuthState.Authenticated(
-                            userId = settings.userId,
-                            userName = settings.userName,
-                            userEmail = settings.userEmail
-                        )
-                    } else {
-                        AuthState.NotAuthenticated
-                    }
+                // Update auth state based on user settings
+                // Always update to ensure proper re-authentication after logout
+                val newState = if (!settings.userId.isNullOrEmpty()) {
+                    AuthState.Authenticated(
+                        userId = settings.userId,
+                        userName = settings.userName,
+                        userEmail = settings.userEmail
+                    )
+                } else {
+                    AuthState.NotAuthenticated
+                }
+                
+                // Only update if state actually changed to avoid unnecessary recompositions
+                if (_authState.value::class != newState::class) {
+                    _authState.value = newState
                 }
             }
         }
