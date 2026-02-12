@@ -77,7 +77,7 @@ fun BloodPressureScreen(
                     )
                     
                     Text(
-                        text = "Mittaa verenpaineesi yhdessä SpO2:n ja sykkeen kanssa saadaksesi kattavan kuvan terveydestäsi.",
+                        text = "Seuraa verenpaineesi kehitystä. Voit halutessasi lisätä myös SpO2:n ja sykkeen.",
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -135,9 +135,9 @@ fun BloodPressureScreen(
                     
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
                     
-                    // Additional Vitals Section
+                    // Additional Vitals Section (Optional)
                     Text(
-                        text = "Lisätiedot (pakollinen)",
+                        text = "Lisätiedot (valinnainen)",
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
@@ -145,7 +145,7 @@ fun BloodPressureScreen(
                     NumberInputField(
                         value = spo2Value,
                         onValueChange = { spo2Value = it },
-                        label = "SpO2 (%)",
+                        label = "SpO2 (%) - valinnainen",
                         minValue = 50,
                         maxValue = 100
                     )
@@ -153,7 +153,7 @@ fun BloodPressureScreen(
                     NumberInputField(
                         value = heartRateValue,
                         onValueChange = { heartRateValue = it },
-                        label = "Syke (BPM)",
+                        label = "Syke (BPM) - valinnainen",
                         minValue = 30,
                         maxValue = 220
                     )
@@ -175,16 +175,28 @@ fun BloodPressureScreen(
                             val spo2 = spo2Value.toIntOrNull()
                             val hr = heartRateValue.toIntOrNull()
                             
-                            if (sys != null && dia != null && spo2 != null && hr != null &&
-                                sys in 80..200 && dia in 50..130 && sys > dia &&
-                                spo2 in 50..100 && hr in 30..220) {
-                                viewModel.saveMeasurement(spo2, hr, sys, dia, notes)
+                            // Validate required BP fields
+                            if (sys != null && dia != null &&
+                                sys in 80..200 && dia in 50..130 && sys > dia) {
+                                
+                                // Validate optional fields if provided
+                                val spo2Valid = spo2 == null || spo2 in 50..100
+                                val hrValid = hr == null || hr in 30..220
+                                
+                                if (spo2Valid && hrValid) {
+                                    // Use default values (95 for SpO2, 70 for HR) if not provided
+                                    viewModel.saveMeasurement(
+                                        spo2 ?: 95,
+                                        hr ?: 70, 
+                                        sys, 
+                                        dia, 
+                                        notes
+                                    )
+                                }
                             }
                         },
                         enabled = systolicValue.toIntOrNull() != null && 
-                                  diastolicValue.toIntOrNull() != null &&
-                                  spo2Value.toIntOrNull() != null && 
-                                  heartRateValue.toIntOrNull() != null
+                                  diastolicValue.toIntOrNull() != null
                     )
                 }
             }

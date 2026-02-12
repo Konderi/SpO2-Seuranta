@@ -148,7 +148,7 @@ fun MainApp(
                 tonalElevation = 0.dp
             ) {
                 NavigationBarItem(
-                    icon = { Icon(Icons.Default.Favorite, contentDescription = "Päivittäinen") },
+                    icon = { Icon(Icons.Default.Air, contentDescription = "Päivittäinen") },
                     selected = currentRoute == Screen.Daily.route,
                     onClick = {
                         navController.navigate(Screen.Daily.route) {
