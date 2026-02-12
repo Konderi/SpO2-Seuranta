@@ -368,7 +368,14 @@ export default function History() {
                     )}
                     <div>
                       <h3 className="text-xl font-bold text-text-primary">
-                        {measurement.type === 'daily' ? 'Päivittäinen mittaus' : `Liikunta: ${measurement.exerciseType}`}
+                        {measurement.type === 'daily' ? (
+                          // Determine title based on what data exists
+                          (measurement.spo2 || measurement.heartRate) && (measurement.systolic || measurement.diastolic)
+                            ? 'SpO2 & Verenpaine'
+                            : (measurement.systolic || measurement.diastolic)
+                            ? 'Verenpaine'
+                            : 'Päivittäinen mittaus'
+                        ) : `Liikunta: ${measurement.exerciseType}`}
                       </h3>
                       <p className="text-text-secondary">
                         {new Date(measurement.date).toLocaleDateString('fi-FI', { 
@@ -383,21 +390,43 @@ export default function History() {
                 </div>
 
                 {measurement.type === 'daily' ? (
-                  <div className="grid md:grid-cols-2 gap-4">
-                    <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
-                      <Heart className="w-8 h-8 text-success" />
-                      <div>
-                        <div className="text-3xl font-bold text-text-primary">{measurement.spo2}%</div>
-                        <div className="text-sm text-text-secondary">Happisaturaatio</div>
+                  <div>
+                    {/* Determine measurement type */}
+                    {(measurement.spo2 || measurement.heartRate) && (
+                      <div className="grid md:grid-cols-2 gap-4 mb-4">
+                        {measurement.spo2 && (
+                          <div className="flex items-center gap-3 p-4 bg-green-50 rounded-xl">
+                            <Heart className="w-8 h-8 text-success" />
+                            <div>
+                              <div className="text-3xl font-bold text-text-primary">{measurement.spo2}%</div>
+                              <div className="text-sm text-text-secondary">Happisaturaatio</div>
+                            </div>
+                          </div>
+                        )}
+                        {measurement.heartRate && (
+                          <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl">
+                            <Activity className="w-8 h-8 text-error" />
+                            <div>
+                              <div className="text-3xl font-bold text-text-primary">{measurement.heartRate}</div>
+                              <div className="text-sm text-text-secondary">Syke (bpm)</div>
+                            </div>
+                          </div>
+                        )}
                       </div>
-                    </div>
-                    <div className="flex items-center gap-3 p-4 bg-red-50 rounded-xl">
-                      <Activity className="w-8 h-8 text-error" />
-                      <div>
-                        <div className="text-3xl font-bold text-text-primary">{measurement.heartRate}</div>
-                        <div className="text-sm text-text-secondary">Syke (bpm)</div>
+                    )}
+                    
+                    {/* Blood Pressure */}
+                    {(measurement.systolic || measurement.diastolic) && (
+                      <div className="flex items-center gap-3 p-4 bg-purple-50 rounded-xl">
+                        <TrendingUp className="w-8 h-8 text-purple-600" />
+                        <div>
+                          <div className="text-3xl font-bold text-text-primary">
+                            {measurement.systolic}/{measurement.diastolic}
+                          </div>
+                          <div className="text-sm text-text-secondary">Verenpaine (mmHg)</div>
+                        </div>
                       </div>
-                    </div>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-4">

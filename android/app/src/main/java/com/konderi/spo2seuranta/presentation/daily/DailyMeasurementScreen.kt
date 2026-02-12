@@ -137,29 +137,50 @@ fun MeasurementCard(measurement: DailyMeasurement) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                if (measurement.spo2 != null) {
-                    Text(
-                        text = "SpO2: ${measurement.spo2}%",
-                        style = MaterialTheme.typography.titleMedium
-                    )
-                }
-                if (measurement.heartRate != null) {
-                    Text(
-                        text = "Syke: ${measurement.heartRate} BPM",
-                        style = MaterialTheme.typography.titleMedium
-                    )
+            // Determine measurement type
+            val hasSpO2 = measurement.spo2 != null
+            val hasBP = measurement.systolic != null && measurement.diastolic != null
+            
+            // Show title based on measurement type
+            Text(
+                text = when {
+                    hasSpO2 && hasBP -> "SpO2 & Verenpaine"
+                    hasBP -> "Verenpaine"
+                    hasSpO2 -> "SpO2-mittaus"
+                    else -> "Mittaus"
+                },
+                style = MaterialTheme.typography.titleSmall,
+                color = MaterialTheme.colorScheme.primary
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // SpO2 and Heart Rate
+            if (hasSpO2) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    if (measurement.spo2 != null) {
+                        Text(
+                            text = "SpO2: ${measurement.spo2}%",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                    if (measurement.heartRate != null) {
+                        Text(
+                            text = "Syke: ${measurement.heartRate} BPM",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
                 }
             }
             
-            // Show BP if available
-            if (measurement.systolic != null && measurement.diastolic != null) {
+            // Blood Pressure
+            if (hasBP) {
                 Text(
                     text = "Verenpaine: ${measurement.systolic}/${measurement.diastolic} mmHg",
-                    style = MaterialTheme.typography.bodyMedium
+                    style = if (hasSpO2) MaterialTheme.typography.bodyLarge else MaterialTheme.typography.titleMedium
                 )
             }
             
