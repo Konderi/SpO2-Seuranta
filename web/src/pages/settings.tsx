@@ -294,10 +294,10 @@ export default function Settings() {
               <button
                 type="submit"
                 disabled={saving}
-                className="button-primary w-full text-xl py-4"
+                className="btn btn-primary w-full text-xl py-4 flex items-center justify-center gap-3"
               >
                 <Save className="w-6 h-6" />
-                {saving ? 'Tallennetaan...' : 'Tallenna asetukset'}
+                <span>{saving ? 'Tallennetaan...' : 'Tallenna asetukset'}</span>
               </button>
             </form>
           )}
