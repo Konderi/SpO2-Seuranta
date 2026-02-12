@@ -37,6 +37,7 @@ fun BloodPressureScreen(
     var systolicValue by remember { mutableStateOf("") }
     var diastolicValue by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
+    var errorMessage by remember { mutableStateOf<String?>(null) }
     
     // Reset form on success
     LaunchedEffect(uiState.saveSuccess) {
@@ -44,7 +45,15 @@ fun BloodPressureScreen(
             systolicValue = ""
             diastolicValue = ""
             notes = ""
+            errorMessage = null
             viewModel.resetSaveStatus()
+        }
+    }
+    
+    // Show error from ViewModel
+    LaunchedEffect(uiState.errorMessage) {
+        if (uiState.errorMessage != null) {
+            errorMessage = uiState.errorMessage
         }
     }
     
@@ -77,6 +86,40 @@ fun BloodPressureScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
+                    
+                    // Error message
+                    if (errorMessage != null) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.errorContainer
+                        ) {
+                            Text(
+                                text = errorMessage ?: "",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
+                    }
+                    
+                    // Success message
+                    if (uiState.saveSuccess) {
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Surface(
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(12.dp),
+                            color = Color(0xFF4CAF50).copy(alpha = 0.2f)
+                        ) {
+                            Text(
+                                text = "✓ Mittaus tallennettu onnistuneesti!",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF2E7D32),
+                                modifier = Modifier.padding(12.dp)
+                            )
+                        }
+                    }
                     
                     Divider(modifier = Modifier.padding(vertical = 8.dp))
                     
@@ -141,25 +184,37 @@ fun BloodPressureScreen(
                     LargeButton(
                         text = "Tallenna mittaus",
                         onClick = {
+                            errorMessage = null // Clear previous errors
                             val sys = systolicValue.toIntOrNull()
                             val dia = diastolicValue.toIntOrNull()
                             
                             // Validate BP fields
-                            if (sys != null && dia != null &&
-                                sys in 80..200 && dia in 50..130 && sys > dia) {
-                                
-                                // BP only - no SpO2/HR
-                                viewModel.saveMeasurement(
-                                    null,  // No SpO2
-                                    null,  // No HR
-                                    sys, 
-                                    dia, 
-                                    notes
-                                )
+                            when {
+                                sys == null || dia == null -> {
+                                    errorMessage = "Syötä molemmat verenpaineen arvot"
+                                }
+                                sys !in 80..200 -> {
+                                    errorMessage = "Yläpaineen tulee olla 80-200 mmHg välillä"
+                                }
+                                dia !in 50..130 -> {
+                                    errorMessage = "Alapaineen tulee olla 50-130 mmHg välillä"
+                                }
+                                sys <= dia -> {
+                                    errorMessage = "Yläpaineen tulee olla suurempi kuin alapaineen"
+                                }
+                                else -> {
+                                    // Valid - save measurement
+                                    viewModel.saveMeasurement(
+                                        null,  // No SpO2
+                                        null,  // No HR
+                                        sys, 
+                                        dia, 
+                                        notes
+                                    )
+                                }
                             }
                         },
-                        enabled = systolicValue.toIntOrNull() != null && 
-                                  diastolicValue.toIntOrNull() != null
+                        enabled = systolicValue.isNotEmpty() && diastolicValue.isNotEmpty()
                     )
                 }
             }
