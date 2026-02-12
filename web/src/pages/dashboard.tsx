@@ -24,6 +24,8 @@ export default function Dashboard() {
         setMeasurements(dailyDemo.map(m => ({
           spo2: m.spo2,
           heart_rate: m.heartRate,
+          systolic: m.systolic,
+          diastolic: m.diastolic,
           measured_at: m.measured_at, // Already in seconds (Unix timestamp)
         })))
         setStats(demoStats)
@@ -42,7 +44,11 @@ export default function Dashboard() {
         
         // Fetch weekly statistics
         const weeklyStats = await apiClient.getWeeklyStats()
-        setStats(weeklyStats)
+        setStats({
+          ...weeklyStats,
+          latest_systolic: dailyData.length > 0 ? dailyData[0].systolic : null,
+          latest_diastolic: dailyData.length > 0 ? dailyData[0].diastolic : null,
+        })
       } catch (error) {
         console.error('Failed to fetch dashboard data:', error)
       } finally {
@@ -57,6 +63,8 @@ export default function Dashboard() {
   const latestMeasurements = measurements.length > 0 ? {
     spo2: measurements[0].spo2,
     heartRate: measurements[0].heart_rate || measurements[0].heartRate,
+    systolic: measurements[0].systolic,
+    diastolic: measurements[0].diastolic,
     trend: measurements.length > 1 
       ? `${measurements[0].spo2 > measurements[1].spo2 ? '+' : ''}${measurements[0].spo2 - measurements[1].spo2}%`
       : '0%',
@@ -64,6 +72,8 @@ export default function Dashboard() {
   } : {
     spo2: 0,
     heartRate: 0,
+    systolic: null,
+    diastolic: null,
     trend: '0%',
     date: new Date().toLocaleDateString('fi-FI'),
   }
@@ -71,9 +81,13 @@ export default function Dashboard() {
   const weeklyAverage = stats ? {
     spo2: Math.round(stats.avg_spo2 || stats.spo2?.average7days || 0),
     heartRate: Math.round(stats.avg_heart_rate || stats.heartRate?.average7days || 0),
+    systolic: stats.avg_systolic ? Math.round(stats.avg_systolic) : null,
+    diastolic: stats.avg_diastolic ? Math.round(stats.avg_diastolic) : null,
   } : {
     spo2: 0,
     heartRate: 0,
+    systolic: null,
+    diastolic: null,
   }
 
   return (
@@ -272,27 +286,42 @@ export default function Dashboard() {
                 </Link>
               </div>
             ) : (
-              <div className="grid md:grid-cols-3 gap-6">
-                <div className="card bg-green-50 border-2 p-8">
-                  <Heart className="w-12 h-12 text-success mb-4" strokeWidth={2} />
-                  <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.spo2}%</div>
-                  <div className="text-lg text-text-secondary font-medium">Happisaturaatio</div>
-                  <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
-                </div>
+              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                {latestMeasurements.spo2 > 0 && (
+                  <div className="card bg-green-50 border-2 p-8">
+                    <Heart className="w-12 h-12 text-success mb-4" strokeWidth={2} />
+                    <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.spo2}%</div>
+                    <div className="text-lg text-text-secondary font-medium">Happisaturaatio</div>
+                    <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
+                  </div>
+                )}
 
-                <div className="card bg-red-50 border-2 p-8">
-                  <Activity className="w-12 h-12 text-error mb-4" strokeWidth={2} />
-                  <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.heartRate}</div>
-                  <div className="text-lg text-text-secondary font-medium">Syke (bpm)</div>
-                  <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
-                </div>
+                {latestMeasurements.heartRate > 0 && (
+                  <div className="card bg-red-50 border-2 p-8">
+                    <Activity className="w-12 h-12 text-error mb-4" strokeWidth={2} />
+                    <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.heartRate}</div>
+                    <div className="text-lg text-text-secondary font-medium">Syke (bpm)</div>
+                    <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
+                  </div>
+                )}
 
-                <div className="card bg-blue-50 border-2 p-8">
-                  <TrendingUp className="w-12 h-12 text-primary mb-4" strokeWidth={2} />
-                  <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.trend}</div>
-                  <div className="text-lg text-text-secondary font-medium">Kehitys</div>
-                  <div className="text-sm text-text-secondary mt-2">Edelliseen mittaukseen</div>
-                </div>
+                {latestMeasurements.systolic && latestMeasurements.diastolic && (
+                  <div className="card bg-purple-50 border-2 p-8">
+                    <TrendingUp className="w-12 h-12 text-purple-600 mb-4" strokeWidth={2} />
+                    <div className="text-4xl font-bold text-text-primary mb-2">{latestMeasurements.systolic}/{latestMeasurements.diastolic}</div>
+                    <div className="text-lg text-text-secondary font-medium">Verenpaine</div>
+                    <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
+                  </div>
+                )}
+
+                {latestMeasurements.spo2 > 0 && (
+                  <div className="card bg-blue-50 border-2 p-8">
+                    <TrendingUp className="w-12 h-12 text-primary mb-4" strokeWidth={2} />
+                    <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.trend}</div>
+                    <div className="text-lg text-text-secondary font-medium">Kehitys</div>
+                    <div className="text-sm text-text-secondary mt-2">Edelliseen mittaukseen</div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -306,24 +335,39 @@ export default function Dashboard() {
               </div>
             ) : stats && measurements.length > 0 ? (
               <div className="card p-8">
-                <div className="grid md:grid-cols-2 gap-8">
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <Heart className="w-8 h-8 text-success" strokeWidth={2} />
-                      <h3 className="text-xl font-bold text-text-primary">Happisaturaatio</h3>
+                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {weeklyAverage.spo2 > 0 && (
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <Heart className="w-8 h-8 text-success" strokeWidth={2} />
+                        <h3 className="text-xl font-bold text-text-primary">Happisaturaatio</h3>
+                      </div>
+                      <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.spo2}%</div>
+                      <p className="text-text-secondary">Normaali alue: 95-100%</p>
                     </div>
-                    <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.spo2}%</div>
-                    <p className="text-text-secondary">Normaali alue: 95-100%</p>
-                  </div>
+                  )}
 
-                  <div>
-                    <div className="flex items-center gap-3 mb-4">
-                      <Activity className="w-8 h-8 text-error" strokeWidth={2} />
-                      <h3 className="text-xl font-bold text-text-primary">Syke</h3>
+                  {weeklyAverage.heartRate > 0 && (
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <Activity className="w-8 h-8 text-error" strokeWidth={2} />
+                        <h3 className="text-xl font-bold text-text-primary">Syke</h3>
+                      </div>
+                      <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.heartRate} bpm</div>
+                      <p className="text-text-secondary">Normaali alue: 60-100 bpm</p>
                     </div>
-                    <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.heartRate} bpm</div>
-                    <p className="text-text-secondary">Normaali alue: 60-100 bpm</p>
-                  </div>
+                  )}
+
+                  {weeklyAverage.systolic && weeklyAverage.diastolic && (
+                    <div>
+                      <div className="flex items-center gap-3 mb-4">
+                        <TrendingUp className="w-8 h-8 text-purple-600" strokeWidth={2} />
+                        <h3 className="text-xl font-bold text-text-primary">Verenpaine</h3>
+                      </div>
+                      <div className="text-4xl font-bold text-text-primary mb-2">{weeklyAverage.systolic}/{weeklyAverage.diastolic}</div>
+                      <p className="text-text-secondary">Normaali: &lt;120/80 mmHg</p>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : (

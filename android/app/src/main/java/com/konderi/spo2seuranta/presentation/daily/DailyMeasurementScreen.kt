@@ -120,6 +120,15 @@ fun DailyMeasurementScreen(
             onDismiss = { viewModel.dismissAlert() }
         )
     }
+    
+    // Show alert if BP is high
+    if (uiState.showHighBpAlert) {
+        AlertDialog(
+            title = "Kohonnut verenpaine!",
+            message = "Verenpainearvo (${uiState.lastMeasurement?.systolic}/${uiState.lastMeasurement?.diastolic} mmHg) on koholla. Keskustele säännöllisesti lääkärin kanssa verenpaineen seurannasta.",
+            onDismiss = { viewModel.dismissAlert() }
+        )
+    }
 }
 
 @Composable

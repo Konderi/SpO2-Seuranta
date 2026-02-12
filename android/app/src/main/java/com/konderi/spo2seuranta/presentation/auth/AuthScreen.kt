@@ -1,6 +1,7 @@
 package com.konderi.spo2seuranta.presentation.auth
 
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.*
@@ -15,6 +16,8 @@ import androidx.compose.ui.unit.dp
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.common.api.ApiException
 
+private const val TAG = "AuthScreen"
+
 @Composable
 fun AuthScreen(
     authViewModel: AuthViewModel
@@ -22,15 +25,21 @@ fun AuthScreen(
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.StartActivityForResult()
     ) { result ->
+        Log.d(TAG, "ActivityResult received: resultCode=${result.resultCode}, RESULT_OK=${Activity.RESULT_OK}, RESULT_CANCELED=${Activity.RESULT_CANCELED}")
+        
         if (result.resultCode == Activity.RESULT_OK) {
+            Log.d(TAG, "Result OK, getting signed in account from intent")
             val task = GoogleSignIn.getSignedInAccountFromIntent(result.data)
             try {
                 val account = task.getResult(ApiException::class.java)
+                Log.d(TAG, "Got account: ${account?.email}")
                 authViewModel.handleSignInResult(account)
             } catch (e: ApiException) {
+                Log.e(TAG, "ApiException getting account: statusCode=${e.statusCode}", e)
                 authViewModel.handleSignInResult(null)
             }
         } else {
+            Log.d(TAG, "Result not OK, result code: ${result.resultCode}")
             authViewModel.handleSignInResult(null)
         }
     }
@@ -56,7 +65,7 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(32.dp))
             
             Text(
-                text = "SpO2 Seuranta",
+                text = "Hapetus",
                 style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.primary,
                 textAlign = TextAlign.Center
@@ -65,7 +74,7 @@ fun AuthScreen(
             Spacer(modifier = Modifier.height(16.dp))
             
             Text(
-                text = "Happisaturaation ja sykkeen seuranta",
+                text = "Happisaturaation, sykkeen ja verenpaineen seuranta",
                 style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onBackground

@@ -233,6 +233,24 @@ export default function Statistics() {
           ? Math.round(filteredDailyStats.reduce((sum: any, s: any) => sum + s.avg_heart_rate, 0) / filteredDailyStats.length)
           : 0
 
+        // Calculate BP stats from filtered data (only for days with BP data)
+        const bpDays = filteredDailyStats.filter((s: any) => s.avg_systolic && s.avg_diastolic)
+        const avgSystolic = bpDays.length > 0
+          ? Math.round(bpDays.reduce((sum: any, s: any) => sum + s.avg_systolic, 0) / bpDays.length)
+          : 0
+        const avgDiastolic = bpDays.length > 0
+          ? Math.round(bpDays.reduce((sum: any, s: any) => sum + s.avg_diastolic, 0) / bpDays.length)
+          : 0
+
+        // Get BP stats from weekly stats and daily data
+        const bpMeasurements = dailyData.filter((m: any) => m.systolic && m.diastolic)
+        const systolicValues = bpMeasurements.map((m: any) => m.systolic)
+        const diastolicValues = bpMeasurements.map((m: any) => m.diastolic)
+        
+        // Count high BP measurements
+        const highBpCount = bpMeasurements.filter((m: any) => m.systolic >= 140 || m.diastolic >= 90).length
+        const highBpPercentage = bpMeasurements.length > 0 ? Math.round((highBpCount / bpMeasurements.length) * 100) : 0
+
         // Get latest measurement from daily data
         const latestDaily = dailyData.length > 0 ? dailyData[0] : null
 
@@ -255,6 +273,25 @@ export default function Statistics() {
             min: weeklyStats.min_heart_rate || 0,
             max: weeklyStats.max_heart_rate || 0,
           },
+          bloodPressure: bpMeasurements.length > 0 ? {
+            systolic: {
+              current: latestDaily?.systolic || 0,
+              average7days: weeklyStats.avg_systolic ? Math.round(weeklyStats.avg_systolic) : 0,
+              average30days: avgSystolic,
+              min: systolicValues.length > 0 ? Math.min(...systolicValues) : 0,
+              max: systolicValues.length > 0 ? Math.max(...systolicValues) : 0,
+            },
+            diastolic: {
+              current: latestDaily?.diastolic || 0,
+              average7days: weeklyStats.avg_diastolic ? Math.round(weeklyStats.avg_diastolic) : 0,
+              average30days: avgDiastolic,
+              min: diastolicValues.length > 0 ? Math.min(...diastolicValues) : 0,
+              max: diastolicValues.length > 0 ? Math.max(...diastolicValues) : 0,
+            },
+            measurementCount: bpMeasurements.length,
+            highBpCount,
+            highBpPercentage,
+          } : undefined,
           totalMeasurements: dailyData.length,
           exerciseSessions: exerciseData.length,
           warningCount,
@@ -267,7 +304,9 @@ export default function Statistics() {
           date: new Date(day.date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' }),
           dateLabel: new Date(day.date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' }),
           spo2: Math.round(day.avg_spo2 * 10) / 10,
-          heartRate: Math.round(day.avg_heart_rate)
+          heartRate: Math.round(day.avg_heart_rate),
+          systolic: day.avg_systolic ? Math.round(day.avg_systolic) : undefined,
+          diastolic: day.avg_diastolic ? Math.round(day.avg_diastolic) : undefined
         }))
         
         console.log('Chart Data Generated:', {
@@ -340,7 +379,9 @@ export default function Statistics() {
     const chartDataForExport = chartData.map(item => ({
       Päivämäärä: item.dateLabel,
       'SpO2 (%)': item.spo2,
-      'Syke (bpm)': item.heartRate
+      'Syke (bpm)': item.heartRate,
+      'Systolinen (mmHg)': item.systolic || '',
+      'Diastolinen (mmHg)': item.diastolic || ''
     }))
     
     // Export summary
@@ -355,7 +396,7 @@ export default function Statistics() {
       downloadCSV(
         chartDataForExport,
         `hapetus-tilastot-kaavio-${new Date().toISOString().split('T')[0]}.csv`,
-        ['Päivämäärä', 'SpO2 (%)', 'Syke (bpm)']
+        ['Päivämäärä', 'SpO2 (%)', 'Syke (bpm)', 'Systolinen (mmHg)', 'Diastolinen (mmHg)']
       )
     }, 500)
   }

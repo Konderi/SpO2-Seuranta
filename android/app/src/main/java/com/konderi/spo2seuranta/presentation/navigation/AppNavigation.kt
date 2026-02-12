@@ -1,5 +1,6 @@
 package com.konderi.spo2seuranta.presentation.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +41,8 @@ import com.konderi.spo2seuranta.presentation.reports.ReportsScreen
 import com.konderi.spo2seuranta.presentation.settings.SettingsScreen
 import kotlinx.coroutines.launch
 
+private const val TAG = "AppNavigation"
+
 /**
  * Main navigation for the app
  */
@@ -51,6 +54,8 @@ fun AppNavigation(
 ) {
     val authState by authViewModel.authState.collectAsState()
     
+    Log.d(TAG, "AppNavigation recomposed with state: ${authState::class.simpleName}")
+    
     // Show auth screen if not authenticated, otherwise show main app
     when (authState) {
         is AuthState.Loading -> {
@@ -58,9 +63,11 @@ fun AppNavigation(
         }
         is AuthState.NotAuthenticated, is AuthState.Error -> {
             // Show auth screen for both not authenticated and error states
+            Log.d(TAG, "Showing AuthScreen")
             AuthScreen(authViewModel = authViewModel)
         }
         is AuthState.Authenticated -> {
+            Log.d(TAG, "Showing MainApp")
             MainApp(authViewModel = authViewModel, onRefresh = onRefresh)
         }
     }

@@ -1,5 +1,6 @@
 package com.konderi.spo2seuranta.presentation.auth
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount
@@ -15,6 +16,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
+private const val TAG = "AuthViewModel"
+
 /**
  * ViewModel for authentication with Firebase integration
  */
@@ -29,6 +32,7 @@ class AuthViewModel @Inject constructor(
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
     
     init {
+        Log.d(TAG, "AuthViewModel initialized")
         checkAuthStatus()
     }
     
@@ -37,6 +41,8 @@ class AuthViewModel @Inject constructor(
     private fun checkAuthStatus() {
         viewModelScope.launch {
             settingsRepository.userSettings.collect { settings ->
+                Log.d(TAG, "checkAuthStatus: userId=${settings.userId}, current state=${_authState.value::class.simpleName}")
+                
                 // Update auth state based on user settings
                 // Always update to ensure proper re-authentication after logout
                 val newState = if (!settings.userId.isNullOrEmpty()) {
@@ -61,19 +67,24 @@ class AuthViewModel @Inject constructor(
                     else -> false
                 }
                 
+                Log.d(TAG, "checkAuthStatus: shouldUpdate=$shouldUpdate, newState=${newState::class.simpleName}")
+                
                 if (shouldUpdate) {
                     _authState.value = newState
+                    Log.d(TAG, "checkAuthStatus: Updated state to ${newState::class.simpleName}")
                 }
             }
         }
     }
     
     fun handleSignInResult(account: GoogleSignInAccount?) {
+        Log.d(TAG, "handleSignInResult called: account=${account?.email}")
         viewModelScope.launch {
             if (account != null) {
                 try {
                     // Get ID token from Google Sign-In
                     val idToken = account.idToken
+                    Log.d(TAG, "handleSignInResult: Got ID token: ${idToken != null}")
                     
                     if (idToken != null) {
                         // Authenticate with Firebase using the Google ID token
@@ -87,11 +98,15 @@ class AuthViewModel @Inject constructor(
                             val userName = account.displayName ?: firebaseUser.displayName ?: "User"
                             val userEmail = account.email ?: firebaseUser.email ?: ""
                             
+                            Log.d(TAG, "handleSignInResult: Firebase auth success - userId=$userId, userName=$userName")
+                            
                             settingsRepository.updateUserInfo(
                                 userId = userId,
                                 userName = userName,
                                 userEmail = userEmail
                             )
+                            
+                            Log.d(TAG, "handleSignInResult: User info saved to repository")
                             
                             // Update state to authenticated
                             _authState.value = AuthState.Authenticated(
@@ -99,18 +114,24 @@ class AuthViewModel @Inject constructor(
                                 userName = userName,
                                 userEmail = userEmail
                             )
+                            
+                            Log.d(TAG, "handleSignInResult: State updated to Authenticated")
                         } else {
+                            Log.e(TAG, "handleSignInResult: Firebase user is null")
                             _authState.value = AuthState.Error("Failed to get Firebase user")
                         }
                     } else {
                         // No ID token - authentication failed
+                        Log.e(TAG, "handleSignInResult: No ID token")
                         _authState.value = AuthState.Error("Failed to get authentication token")
                     }
                 } catch (e: Exception) {
                     // Firebase authentication failed
+                    Log.e(TAG, "handleSignInResult: Firebase auth failed", e)
                     _authState.value = AuthState.Error("Authentication failed: ${e.message}")
                 }
             } else {
+                Log.d(TAG, "handleSignInResult: Account is null")
                 _authState.value = AuthState.NotAuthenticated
             }
         }

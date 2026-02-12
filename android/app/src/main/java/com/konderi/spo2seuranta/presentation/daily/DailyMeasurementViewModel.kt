@@ -67,6 +67,14 @@ class DailyMeasurementViewModel @Inject constructor(
                     )
                 }
                 
+                // Check for high blood pressure alert (only if BP was actually measured)
+                if (systolic != null && diastolic != null && (systolic >= 140 || diastolic >= 90)) {
+                    _uiState.value = _uiState.value.copy(
+                        showHighBpAlert = true,
+                        lastMeasurement = measurement
+                    )
+                }
+                
                 _uiState.value = _uiState.value.copy(
                     saveSuccess = true,
                     errorMessage = null
@@ -87,7 +95,10 @@ class DailyMeasurementViewModel @Inject constructor(
     }
     
     fun dismissAlert() {
-        _uiState.value = _uiState.value.copy(showLowOxygenAlert = false)
+        _uiState.value = _uiState.value.copy(
+            showLowOxygenAlert = false,
+            showHighBpAlert = false
+        )
     }
     
     fun resetSaveStatus() {
@@ -101,6 +112,7 @@ data class DailyMeasurementUiState(
     val saveSuccess: Boolean = false,
     val errorMessage: String? = null,
     val showLowOxygenAlert: Boolean = false,
+    val showHighBpAlert: Boolean = false,
     val lastMeasurement: DailyMeasurement? = null,
     val alertThreshold: Int = 90
 )

@@ -250,11 +250,11 @@ fun SettingsScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         Text(
-                            text = "SpO2 Seuranta v1.0.0",
+                            text = "Hapetus v1.0.0",
                             style = MaterialTheme.typography.bodyMedium
                         )
                         Text(
-                            text = "Happisaturaation ja sykkeen seuranta",
+                            text = "Happisaturaation, sykkeen ja verenpaineen seuranta",
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

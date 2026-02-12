@@ -8,6 +8,8 @@ export interface DemoMeasurement {
   time: string
   spo2?: number
   heartRate?: number
+  systolic?: number
+  diastolic?: number
   spo2Before?: number
   heartRateBefore?: number
   spo2After?: number
@@ -32,6 +34,16 @@ const generateHeartRate = (base: number = 72, isExercise: boolean = false): numb
   }
   const variation = Math.random() * 10 - 5 // ±5 bpm
   return Math.round(Math.max(60, Math.min(85, base + variation)))
+}
+
+// Generate realistic blood pressure (normal: 120/80)
+const generateBloodPressure = (baseSystolic: number = 125, baseDiastolic: number = 82): { systolic: number, diastolic: number } => {
+  const systolicVariation = Math.random() * 10 - 5 // ±5 mmHg
+  const diastolicVariation = Math.random() * 6 - 3 // ±3 mmHg
+  return {
+    systolic: Math.round(Math.max(100, Math.min(160, baseSystolic + systolicVariation))),
+    diastolic: Math.round(Math.max(60, Math.min(100, baseDiastolic + diastolicVariation)))
+  }
 }
 
 // Generate demo data: 3 measurements per day for 3 months (90 days)
@@ -69,11 +81,20 @@ export const generateDemoData = (): DemoMeasurement[] => {
     const baseSpo2 = lowPeriod ? lowPeriod.baseSpo2 : 96
     const baseHR = lowPeriod ? lowPeriod.baseHR : 70
 
+    // For BP, add some variation but include periods with elevated BP
+    // Days 20-25: Slightly elevated BP
+    // Days 50-55: More elevated BP
+    const isElevatedBP = (day >= 20 && day <= 25) || (day >= 50 && day <= 55)
+    const baseSystolic = isElevatedBP ? 135 : 125
+    const baseDiastolic = isElevatedBP ? 87 : 82
+
     // Morning measurement (8:00-9:00)
     const morningHour = 8
     const morningMinute = Math.floor(Math.random() * 60)
     const morningTime = new Date(date)
     morningTime.setHours(morningHour, morningMinute)
+    
+    const morningBP = generateBloodPressure(baseSystolic, baseDiastolic)
     
     measurements.push({
       id: `demo-${idCounter++}`,
@@ -82,6 +103,8 @@ export const generateDemoData = (): DemoMeasurement[] => {
       time: `${String(morningHour).padStart(2, '0')}:${String(morningMinute).padStart(2, '0')}`,
       spo2: generateSpo2(baseSpo2),
       heartRate: generateHeartRate(baseHR),
+      systolic: morningBP.systolic,
+      diastolic: morningBP.diastolic,
       notes: lowPeriod ? 'Tunsin oloni hieman väsyneeksi' : (day % 7 === 0 ? 'Viikonloppu, tunsin oloni virkeäksi' : undefined),
       measured_at: Math.floor(morningTime.getTime() / 1000)
     })
@@ -116,6 +139,7 @@ export const generateDemoData = (): DemoMeasurement[] => {
         measured_at: Math.floor(afternoonTime.getTime() / 1000)
       })
     } else {
+      const afternoonBP = generateBloodPressure(baseSystolic + 2, baseDiastolic + 1)
       measurements.push({
         id: `demo-${idCounter++}`,
         type: 'daily',
@@ -123,6 +147,8 @@ export const generateDemoData = (): DemoMeasurement[] => {
         time: `${String(afternoonHour).padStart(2, '0')}:${String(afternoonMinute).padStart(2, '0')}`,
         spo2: generateSpo2(lowPeriod ? baseSpo2 - 1 : 95.5),
         heartRate: generateHeartRate(baseHR + 2),
+        systolic: afternoonBP.systolic,
+        diastolic: afternoonBP.diastolic,
         measured_at: Math.floor(afternoonTime.getTime() / 1000)
       })
     }
@@ -133,6 +159,8 @@ export const generateDemoData = (): DemoMeasurement[] => {
     const eveningTime = new Date(date)
     eveningTime.setHours(eveningHour, eveningMinute)
     
+    const eveningBP = generateBloodPressure(baseSystolic - 2, baseDiastolic - 1)
+    
     measurements.push({
       id: `demo-${idCounter++}`,
       type: 'daily',
@@ -140,6 +168,8 @@ export const generateDemoData = (): DemoMeasurement[] => {
       time: `${String(eveningHour).padStart(2, '0')}:${String(eveningMinute).padStart(2, '0')}`,
       spo2: generateSpo2(lowPeriod ? baseSpo2 : 96),
       heartRate: generateHeartRate(baseHR),
+      systolic: eveningBP.systolic,
+      diastolic: eveningBP.diastolic,
       notes: lowPeriod ? 'Lepäsin tänään, toivottavasti huomenna parempi' : (day % 5 === 4 ? 'Iltamittaus ennen nukkumaanmenoa' : undefined),
       measured_at: Math.floor(eveningTime.getTime() / 1000)
     })
@@ -160,18 +190,24 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
   // All measurements
   const allSpo2 = dailyMeasurements.map(m => m.spo2!).filter(v => v !== undefined)
   const allHeartRate = dailyMeasurements.map(m => m.heartRate!).filter(v => v !== undefined)
+  const allSystolic = dailyMeasurements.map(m => m.systolic!).filter(v => v !== undefined)
+  const allDiastolic = dailyMeasurements.map(m => m.diastolic!).filter(v => v !== undefined)
 
   // Last 7 days
   const sevenDaysAgo = Math.floor(Date.now() / 1000) - (7 * 24 * 60 * 60)
   const last7Days = dailyMeasurements.filter(m => m.measured_at >= sevenDaysAgo)
   const spo2Last7 = last7Days.map(m => m.spo2!).filter(v => v !== undefined)
   const hrLast7 = last7Days.map(m => m.heartRate!).filter(v => v !== undefined)
+  const systolicLast7 = last7Days.map(m => m.systolic!).filter(v => v !== undefined)
+  const diastolicLast7 = last7Days.map(m => m.diastolic!).filter(v => v !== undefined)
 
   // Last 30 days
   const thirtyDaysAgo = Math.floor(Date.now() / 1000) - (30 * 24 * 60 * 60)
   const last30Days = dailyMeasurements.filter(m => m.measured_at >= thirtyDaysAgo)
   const spo2Last30 = last30Days.map(m => m.spo2!).filter(v => v !== undefined)
   const hrLast30 = last30Days.map(m => m.heartRate!).filter(v => v !== undefined)
+  const systolicLast30 = last30Days.map(m => m.systolic!).filter(v => v !== undefined)
+  const diastolicLast30 = last30Days.map(m => m.diastolic!).filter(v => v !== undefined)
 
   const avg = (arr: number[]) => arr.length > 0 ? arr.reduce((a, b) => a + b, 0) / arr.length : 0
   const min = (arr: number[]) => arr.length > 0 ? Math.min(...arr) : 0
@@ -181,6 +217,13 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
   const DEFAULT_SPO2_THRESHOLD = 90
   const warningCount = allSpo2.filter(v => v < DEFAULT_SPO2_THRESHOLD).length
   const warningPercentage = allSpo2.length > 0 ? Math.round((warningCount / allSpo2.length) * 100) : 0
+
+  // Calculate high BP count (≥140/90)
+  const highBpCount = dailyMeasurements.filter(m => 
+    (m.systolic && m.systolic >= 140) || (m.diastolic && m.diastolic >= 90)
+  ).length
+  const bpMeasurementCount = dailyMeasurements.filter(m => m.systolic && m.diastolic).length
+  const highBpPercentage = bpMeasurementCount > 0 ? Math.round((highBpCount / bpMeasurementCount) * 100) : 0
 
   return {
     spo2: {
@@ -197,6 +240,25 @@ export const calculateDemoStats = (measurements: DemoMeasurement[]) => {
       min: min(allHeartRate),
       max: max(allHeartRate),
     },
+    bloodPressure: {
+      systolic: {
+        current: allSystolic[0] || 0,
+        average7days: Math.round(avg(systolicLast7)),
+        average30days: Math.round(avg(systolicLast30)),
+        min: min(allSystolic),
+        max: max(allSystolic),
+      },
+      diastolic: {
+        current: allDiastolic[0] || 0,
+        average7days: Math.round(avg(diastolicLast7)),
+        average30days: Math.round(avg(diastolicLast30)),
+        min: min(allDiastolic),
+        max: max(allDiastolic),
+      },
+      measurementCount: bpMeasurementCount,
+      highBpCount,
+      highBpPercentage,
+    },
     totalMeasurements: dailyMeasurements.length,
     exerciseSessions: exerciseMeasurements.length,
     warningCount,
@@ -212,14 +274,16 @@ export const generateDailyChartData = (measurements: DemoMeasurement[]) => {
   const recentMeasurements = dailyMeasurements.filter(m => m.measured_at >= thirtyDaysAgo)
 
   // Group by date
-  const groupedByDate: { [date: string]: { spo2: number[], heartRate: number[] } } = {}
+  const groupedByDate: { [date: string]: { spo2: number[], heartRate: number[], systolic: number[], diastolic: number[] } } = {}
   
   recentMeasurements.forEach(m => {
     if (!groupedByDate[m.date]) {
-      groupedByDate[m.date] = { spo2: [], heartRate: [] }
+      groupedByDate[m.date] = { spo2: [], heartRate: [], systolic: [], diastolic: [] }
     }
     if (m.spo2) groupedByDate[m.date].spo2.push(m.spo2)
     if (m.heartRate) groupedByDate[m.date].heartRate.push(m.heartRate)
+    if (m.systolic) groupedByDate[m.date].systolic.push(m.systolic)
+    if (m.diastolic) groupedByDate[m.date].diastolic.push(m.diastolic)
   })
 
   // Calculate daily averages
@@ -229,12 +293,16 @@ export const generateDailyChartData = (measurements: DemoMeasurement[]) => {
       const data = groupedByDate[date]
       const avgSpo2 = data.spo2.reduce((a, b) => a + b, 0) / data.spo2.length
       const avgHR = data.heartRate.reduce((a, b) => a + b, 0) / data.heartRate.length
+      const avgSystolic = data.systolic.length > 0 ? data.systolic.reduce((a, b) => a + b, 0) / data.systolic.length : undefined
+      const avgDiastolic = data.diastolic.length > 0 ? data.diastolic.reduce((a, b) => a + b, 0) / data.diastolic.length : undefined
       
       return {
         date,
         dateLabel: new Date(date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' }),
         spo2: Math.round(avgSpo2 * 10) / 10,
-        heartRate: Math.round(avgHR)
+        heartRate: Math.round(avgHR),
+        systolic: avgSystolic ? Math.round(avgSystolic) : undefined,
+        diastolic: avgDiastolic ? Math.round(avgDiastolic) : undefined
       }
     })
 

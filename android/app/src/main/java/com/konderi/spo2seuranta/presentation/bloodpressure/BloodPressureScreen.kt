@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.konderi.spo2seuranta.domain.model.DailyMeasurement
+import com.konderi.spo2seuranta.presentation.components.AlertDialog
 import com.konderi.spo2seuranta.presentation.components.LargeButton
 import com.konderi.spo2seuranta.presentation.components.NumberInputField
 import com.konderi.spo2seuranta.presentation.daily.DailyMeasurementViewModel
@@ -267,6 +268,15 @@ fun BloodPressureScreen(
                 )
             }
         }
+    }
+    
+    // Show alert if BP is high
+    if (uiState.showHighBpAlert) {
+        AlertDialog(
+            title = "Kohonnut verenpaine!",
+            message = "Verenpainearvo (${uiState.lastMeasurement?.systolic}/${uiState.lastMeasurement?.diastolic} mmHg) on koholla. Keskustele säännöllisesti lääkärin kanssa verenpaineen seurannasta.",
+            onDismiss = { viewModel.dismissAlert() }
+        )
     }
 }
 

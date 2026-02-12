@@ -44,6 +44,8 @@ export default function History() {
             time: date.toLocaleTimeString('fi-FI', { hour: '2-digit', minute: '2-digit' }),
             spo2: m.spo2,
             heartRate: m.heart_rate,
+            systolic: m.systolic,
+            diastolic: m.diastolic,
             notes: m.notes,
             measured_at: m.measured_at
           }
