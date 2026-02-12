@@ -156,8 +156,16 @@ export default function Statistics() {
           apiClient.getExerciseMeasurements()
         ])
 
+        console.log('Statistics Debug:', {
+          weeklyStats,
+          dailyStatsCount: dailyStats?.length,
+          dailyStatsFirst: dailyStats?.[0],
+          dailyDataCount: dailyData?.length,
+          exerciseDataCount: exerciseData?.length
+        })
+
         // Filter daily stats based on time range
-        let filteredDailyStats = dailyStats
+        let filteredDailyStats = dailyStats || []
         if (timeRange === '7days') {
           filteredDailyStats = dailyStats.slice(0, 7)
         } else if (timeRange === '30days') {
@@ -217,6 +225,14 @@ export default function Statistics() {
           spo2: Math.round(day.avg_spo2 * 10) / 10,
           heartRate: Math.round(day.avg_heart_rate)
         }))
+        
+        console.log('Chart Data Generated:', {
+          filteredCount: filteredDailyStats.length,
+          chartDataCount: formattedChartData.length,
+          firstChartPoint: formattedChartData[0],
+          lastChartPoint: formattedChartData[formattedChartData.length - 1]
+        })
+        
         setChartData(formattedChartData)
       } catch (error) {
         console.error('Failed to fetch statistics:', error)
