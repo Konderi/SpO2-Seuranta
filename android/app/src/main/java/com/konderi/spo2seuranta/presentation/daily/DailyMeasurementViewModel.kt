@@ -43,13 +43,15 @@ class DailyMeasurementViewModel @Inject constructor(
         }
     }
     
-    fun saveMeasurement(spo2: Int, heartRate: Int, notes: String) {
+    fun saveMeasurement(spo2: Int, heartRate: Int, systolic: Int?, diastolic: Int?, notes: String) {
         viewModelScope.launch {
             try {
                 val settings = settingsRepository.userSettings.first()
                 val measurement = DailyMeasurement(
                     spo2 = spo2,
                     heartRate = heartRate,
+                    systolic = systolic,
+                    diastolic = diastolic,
                     notes = notes,
                     timestamp = LocalDateTime.now(),
                     userId = settings.userId

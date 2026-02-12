@@ -24,6 +24,8 @@ fun DailyMeasurementScreen(
     
     var spo2Value by remember { mutableStateOf("") }
     var heartRateValue by remember { mutableStateOf("") }
+    var systolicValue by remember { mutableStateOf("") }
+    var diastolicValue by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     
     Scaffold(
@@ -71,10 +73,40 @@ fun DailyMeasurementScreen(
                             maxValue = 220
                         )
                         
+                        // Blood Pressure (Optional)
+                        Text(
+                            text = "Verenpaine (valinnainen)",
+                            style = MaterialTheme.typography.labelLarge,
+                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                        )
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            NumberInputField(
+                                value = systolicValue,
+                                onValueChange = { systolicValue = it },
+                                label = "Yläpaine (mmHg)",
+                                minValue = 80,
+                                maxValue = 200,
+                                modifier = Modifier.weight(1f)
+                            )
+                            
+                            NumberInputField(
+                                value = diastolicValue,
+                                onValueChange = { diastolicValue = it },
+                                label = "Alapaine (mmHg)",
+                                minValue = 50,
+                                maxValue = 130,
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                        
                         OutlinedTextField(
                             value = notes,
                             onValueChange = { notes = it },
-                            label = { Text("Muistiinpanot (vapaa ehtoinen)") },
+                            label = { Text("Muistiinpanot (vapaehtoinen)") },
                             modifier = Modifier.fillMaxWidth(),
                             minLines = 3
                         )
@@ -84,12 +116,26 @@ fun DailyMeasurementScreen(
                             onClick = {
                                 val spo2 = spo2Value.toIntOrNull()
                                 val hr = heartRateValue.toIntOrNull()
+                                val systolic = systolicValue.toIntOrNull()
+                                val diastolic = diastolicValue.toIntOrNull()
                                 
+                                // Validate required fields
                                 if (spo2 != null && spo2 in 50..100 && hr != null && hr in 30..220) {
-                                    viewModel.saveMeasurement(spo2, hr, notes)
-                                    spo2Value = ""
-                                    heartRateValue = ""
-                                    notes = ""
+                                    // Validate BP if provided
+                                    val bpValid = if (systolic != null || diastolic != null) {
+                                        systolic != null && diastolic != null &&
+                                        systolic in 80..200 && diastolic in 50..130 &&
+                                        systolic > diastolic
+                                    } else true
+                                    
+                                    if (bpValid) {
+                                        viewModel.saveMeasurement(spo2, hr, systolic, diastolic, notes)
+                                        spo2Value = ""
+                                        heartRateValue = ""
+                                        systolicValue = ""
+                                        diastolicValue = ""
+                                        notes = ""
+                                    }
                                 }
                             },
                             enabled = spo2Value.toIntOrNull() != null && heartRateValue.toIntOrNull() != null
@@ -149,6 +195,21 @@ fun MeasurementCard(measurement: DailyMeasurement) {
                     text = "Syke: ${measurement.heartRate} BPM",
                     style = MaterialTheme.typography.titleMedium
                 )
+            }
+            
+            // Show blood pressure if available
+            if (measurement.systolic != null && measurement.diastolic != null) {
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Start
+                ) {
+                    Text(
+                        text = "Verenpaine: ${measurement.systolic}/${measurement.diastolic} mmHg",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
             }
             
             Spacer(modifier = Modifier.height(8.dp))
