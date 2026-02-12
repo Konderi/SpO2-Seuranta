@@ -91,6 +91,22 @@ export default function Statistics() {
           const warningCount = spo2Values.filter(v => v < DEFAULT_SPO2_THRESHOLD).length
           const warningPercentage = spo2Values.length > 0 ? Math.round((warningCount / spo2Values.length) * 100) : 0
           
+          // Calculate BP statistics
+          const systolicValues = dailyFiltered.map(m => m.systolic).filter(v => v !== undefined) as number[]
+          const diastolicValues = dailyFiltered.map(m => m.diastolic).filter(v => v !== undefined) as number[]
+          
+          const systolicLast7 = last7Days.map(m => m.systolic).filter(v => v !== undefined) as number[]
+          const diastolicLast7 = last7Days.map(m => m.diastolic).filter(v => v !== undefined) as number[]
+          const systolicLast30 = last30Days.map(m => m.systolic).filter(v => v !== undefined) as number[]
+          const diastolicLast30 = last30Days.map(m => m.diastolic).filter(v => v !== undefined) as number[]
+          
+          // Count high BP (Hypertension: ≥140/90)
+          const highBpCount = dailyFiltered.filter(m => 
+            (m.systolic && m.systolic >= 140) || (m.diastolic && m.diastolic >= 90)
+          ).length
+          const bpMeasurementCount = dailyFiltered.filter(m => m.systolic && m.diastolic).length
+          const highBpPercentage = bpMeasurementCount > 0 ? Math.round((highBpCount / bpMeasurementCount) * 100) : 0
+          
           setStats({
             spo2: {
               current: dailyFiltered[0]?.spo2 || 0,
@@ -106,6 +122,25 @@ export default function Statistics() {
               min: hrValues.length > 0 ? Math.min(...hrValues) : 0,
               max: hrValues.length > 0 ? Math.max(...hrValues) : 0,
             },
+            bloodPressure: {
+              systolic: {
+                current: dailyFiltered[0]?.systolic || 0,
+                average7days: avg(systolicLast7),
+                average30days: avg(systolicLast30),
+                min: systolicValues.length > 0 ? Math.min(...systolicValues) : 0,
+                max: systolicValues.length > 0 ? Math.max(...systolicValues) : 0,
+              },
+              diastolic: {
+                current: dailyFiltered[0]?.diastolic || 0,
+                average7days: avg(diastolicLast7),
+                average30days: avg(diastolicLast30),
+                min: diastolicValues.length > 0 ? Math.min(...diastolicValues) : 0,
+                max: diastolicValues.length > 0 ? Math.max(...diastolicValues) : 0,
+              },
+              measurementCount: bpMeasurementCount,
+              highBpCount,
+              highBpPercentage,
+            },
             totalMeasurements: dailyFiltered.length,
             exerciseSessions: filteredMeasurements.filter(m => m.type === 'exercise').length,
             warningCount,
@@ -114,27 +149,33 @@ export default function Statistics() {
           })
           
           // Generate chart data grouped by date
-          const groupedByDate: { [date: string]: { spo2: number[], heartRate: number[] } } = {}
+          const groupedByDate: { [date: string]: { spo2: number[], heartRate: number[], systolic: number[], diastolic: number[] } } = {}
           dailyFiltered.forEach(m => {
             if (!groupedByDate[m.date]) {
-              groupedByDate[m.date] = { spo2: [], heartRate: [] }
+              groupedByDate[m.date] = { spo2: [], heartRate: [], systolic: [], diastolic: [] }
             }
             if (m.spo2) groupedByDate[m.date].spo2.push(m.spo2)
             if (m.heartRate) groupedByDate[m.date].heartRate.push(m.heartRate)
+            if (m.systolic) groupedByDate[m.date].systolic.push(m.systolic)
+            if (m.diastolic) groupedByDate[m.date].diastolic.push(m.diastolic)
           })
           
           const chartData = Object.keys(groupedByDate)
             .sort()
             .map(date => {
               const data = groupedByDate[date]
-              const avgSpo2 = data.spo2.reduce((a, b) => a + b, 0) / data.spo2.length
-              const avgHR = data.heartRate.reduce((a, b) => a + b, 0) / data.heartRate.length
+              const avgSpo2 = data.spo2.length > 0 ? data.spo2.reduce((a, b) => a + b, 0) / data.spo2.length : undefined
+              const avgHR = data.heartRate.length > 0 ? data.heartRate.reduce((a, b) => a + b, 0) / data.heartRate.length : undefined
+              const avgSystolic = data.systolic.length > 0 ? data.systolic.reduce((a, b) => a + b, 0) / data.systolic.length : undefined
+              const avgDiastolic = data.diastolic.length > 0 ? data.diastolic.reduce((a, b) => a + b, 0) / data.diastolic.length : undefined
               
               return {
                 date,
                 dateLabel: new Date(date).toLocaleDateString('fi-FI', { day: 'numeric', month: 'numeric' }),
-                spo2: Math.round(avgSpo2 * 10) / 10,
-                heartRate: Math.round(avgHR)
+                spo2: avgSpo2 ? Math.round(avgSpo2 * 10) / 10 : undefined,
+                heartRate: avgHR ? Math.round(avgHR) : undefined,
+                systolic: avgSystolic ? Math.round(avgSystolic) : undefined,
+                diastolic: avgDiastolic ? Math.round(avgDiastolic) : undefined
               }
             })
           
@@ -622,6 +663,124 @@ export default function Statistics() {
             </div>
           </div>
 
+          {/* Blood Pressure Cards */}
+          {stats.bloodPressure && stats.bloodPressure.measurementCount > 0 && (
+            <div className="grid md:grid-cols-2 gap-6 mb-12">
+              <div className="card p-8 bg-purple-50 border-2">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-xl bg-purple-100 flex items-center justify-center">
+                    <TrendingUp className="w-8 h-8 text-purple-600" strokeWidth={2} />
+                  </div>
+                  <h2 className="text-2xl font-bold text-text-primary">Systolinen paine</h2>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-text-secondary mb-1">Viimeisin</p>
+                    <p className="text-4xl font-bold text-text-primary">{stats.bloodPressure.systolic.current} mmHg</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">7 päivän keskiarvo</p>
+                      <p className="text-2xl font-bold text-text-primary">{stats.bloodPressure.systolic.average7days} mmHg</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">30 päivän keskiarvo</p>
+                      <p className="text-2xl font-bold text-text-primary">{stats.bloodPressure.systolic.average30days} mmHg</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">Minimi</p>
+                      <p className="text-xl font-bold text-text-primary">{stats.bloodPressure.systolic.min} mmHg</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">Maksimi</p>
+                      <p className="text-xl font-bold text-text-primary">{stats.bloodPressure.systolic.max} mmHg</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="card p-8 bg-indigo-50 border-2">
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="w-16 h-16 rounded-xl bg-indigo-100 flex items-center justify-center">
+                    <TrendingUp className="w-8 h-8 text-indigo-600" strokeWidth={2} />
+                  </div>
+                  <h2 className="text-2xl font-bold text-text-primary">Diastolinen paine</h2>
+                </div>
+
+                <div className="space-y-4">
+                  <div>
+                    <p className="text-text-secondary mb-1">Viimeisin</p>
+                    <p className="text-4xl font-bold text-text-primary">{stats.bloodPressure.diastolic.current} mmHg</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">7 päivän keskiarvo</p>
+                      <p className="text-2xl font-bold text-text-primary">{stats.bloodPressure.diastolic.average7days} mmHg</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">30 päivän keskiarvo</p>
+                      <p className="text-2xl font-bold text-text-primary">{stats.bloodPressure.diastolic.average30days} mmHg</p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border">
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">Minimi</p>
+                      <p className="text-xl font-bold text-text-primary">{stats.bloodPressure.diastolic.min} mmHg</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-text-secondary mb-1">Maksimi</p>
+                      <p className="text-xl font-bold text-text-primary">{stats.bloodPressure.diastolic.max} mmHg</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* BP Warning Statistics */}
+          {stats.bloodPressure && stats.bloodPressure.measurementCount > 0 && (
+            <div className={`card p-8 mb-12 ${stats.bloodPressure.highBpCount > 0 ? 'border-2 border-yellow-500' : ''}`}>
+              <div className="flex items-center gap-4 mb-6">
+                <div className={`w-16 h-16 rounded-xl flex items-center justify-center ${
+                  stats.bloodPressure.highBpCount > 0 ? 'bg-yellow-100' : 'bg-green-100'
+                }`}>
+                  <TrendingUp className={`w-8 h-8 ${
+                    stats.bloodPressure.highBpCount > 0 ? 'text-yellow-600' : 'text-green-600'
+                  }`} strokeWidth={2} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-text-primary">Kohonnut verenpaine</h2>
+                  <p className="text-text-secondary text-sm mt-1">
+                    Systolinen ≥140 mmHg tai diastolinen ≥90 mmHg
+                  </p>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="p-6 bg-surface rounded-xl">
+                  <p className="text-text-secondary mb-2">Kohonneita mittauksia</p>
+                  <p className="text-4xl font-bold text-text-primary">{stats.bloodPressure.highBpCount}</p>
+                </div>
+                <div className="p-6 bg-surface rounded-xl">
+                  <p className="text-text-secondary mb-2">Osuus mittauksista</p>
+                  <p className="text-4xl font-bold text-text-primary">{stats.bloodPressure.highBpPercentage}%</p>
+                </div>
+              </div>
+
+              {stats.bloodPressure.highBpCount > 0 && (
+                <div className="mt-4 p-4 bg-yellow-50 rounded-xl border border-yellow-200">
+                  <p className="text-sm text-yellow-900">
+                    <strong>Huom!</strong> Sinulla on kohonneita verenpainemittauksia. 
+                    Keskustele säännöllisesti lääkärin kanssa verenpaineen seurannasta.
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Activity Summary */}
           <div className="card p-8 mb-12">
             <div className="flex items-center gap-4 mb-6">
@@ -848,7 +1007,7 @@ export default function Statistics() {
                 </div>
 
                 {/* Heart Rate Chart */}
-                <div>
+                <div className="mb-12">
                   <h3 className="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
                     <Activity className="w-6 h-6 text-error" />
                     Sykkeen Kehitys
@@ -888,6 +1047,80 @@ export default function Statistics() {
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
+
+                {/* Blood Pressure Chart */}
+                {chartData.some(d => d.systolic || d.diastolic) && (
+                  <div>
+                    <h3 className="text-xl font-semibold text-text-primary mb-4 flex items-center gap-2">
+                      <TrendingUp className="w-6 h-6 text-purple-600" />
+                      Verenpaineen Kehitys
+                    </h3>
+                    <ResponsiveContainer width="100%" height={300}>
+                      <LineChart data={chartData}>
+                        <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                        <XAxis 
+                          dataKey="dateLabel"
+                          stroke="#6b7280"
+                          style={{ fontSize: '14px' }}
+                        />
+                        <YAxis 
+                          domain={chartData.length === 1 ? ['auto', 'auto'] : [60, 160]}
+                          stroke="#6b7280"
+                          style={{ fontSize: '14px' }}
+                          label={{ value: 'Paine (mmHg)', angle: -90, position: 'insideLeft' }}
+                        />
+                        <Tooltip 
+                          contentStyle={{ 
+                            backgroundColor: 'white',
+                            border: '1px solid #e5e7eb',
+                            borderRadius: '12px',
+                            padding: '12px'
+                          }}
+                          labelStyle={{ fontWeight: 'bold', marginBottom: '8px' }}
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="systolic" 
+                          stroke="#9333ea" 
+                          strokeWidth={3}
+                          dot={{ fill: '#9333ea', strokeWidth: 2, r: chartData.length <= 3 ? 6 : 4 }}
+                          activeDot={{ r: 8 }}
+                          name="Systolinen (mmHg)"
+                        />
+                        <Line 
+                          type="monotone" 
+                          dataKey="diastolic" 
+                          stroke="#4f46e5" 
+                          strokeWidth={3}
+                          dot={{ fill: '#4f46e5', strokeWidth: 2, r: chartData.length <= 3 ? 6 : 4 }}
+                          activeDot={{ r: 8 }}
+                          name="Diastolinen (mmHg)"
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                    
+                    {/* BP Guidelines Reference */}
+                    <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                      <p className="text-sm text-gray-700 mb-2">
+                        <strong>Viitearvot:</strong>
+                      </p>
+                      <div className="grid md:grid-cols-3 gap-4 text-sm">
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                          <span>Normaali: &lt;120/80 mmHg</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+                          <span>Koholla: 120-139/80-89 mmHg</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-3 h-3 rounded-full bg-red-500"></div>
+                          <span>Korkea: ≥140/90 mmHg</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </>
             ) : (
               <div className="text-center py-12">

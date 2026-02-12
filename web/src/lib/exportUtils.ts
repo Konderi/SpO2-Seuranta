@@ -249,7 +249,7 @@ export function formatMeasurementForExport(measurement: any) {
  */
 export function formatStatisticsForExport(stats: any, timeRange: string) {
   const now = new Date()
-  return {
+  const exportData: any = {
     Raportti: 'Hapetus Terveystilastot',
     Luotu: now.toLocaleString('fi-FI'),
     Aikaväli: timeRange,
@@ -263,9 +263,29 @@ export function formatStatisticsForExport(stats: any, timeRange: string) {
     'Syke Keskiarvo (30pv)': `${stats.heartRate.average30days} bpm`,
     'Syke Minimi': `${stats.heartRate.min} bpm`,
     'Syke Maksimi': `${stats.heartRate.max} bpm`,
-    'Mittauksia yhteensä': stats.totalMeasurements,
-    Liikuntakertoja: stats.exerciseSessions
   }
+  
+  // Add BP data if available
+  if (stats.bloodPressure && stats.bloodPressure.measurementCount > 0) {
+    exportData['Verenpaine Mittauksia'] = stats.bloodPressure.measurementCount
+    exportData['Systolinen Viimeisin'] = `${stats.bloodPressure.systolic.current} mmHg`
+    exportData['Systolinen Keskiarvo (7pv)'] = `${stats.bloodPressure.systolic.average7days} mmHg`
+    exportData['Systolinen Keskiarvo (30pv)'] = `${stats.bloodPressure.systolic.average30days} mmHg`
+    exportData['Systolinen Minimi'] = `${stats.bloodPressure.systolic.min} mmHg`
+    exportData['Systolinen Maksimi'] = `${stats.bloodPressure.systolic.max} mmHg`
+    exportData['Diastolinen Viimeisin'] = `${stats.bloodPressure.diastolic.current} mmHg`
+    exportData['Diastolinen Keskiarvo (7pv)'] = `${stats.bloodPressure.diastolic.average7days} mmHg`
+    exportData['Diastolinen Keskiarvo (30pv)'] = `${stats.bloodPressure.diastolic.average30days} mmHg`
+    exportData['Diastolinen Minimi'] = `${stats.bloodPressure.diastolic.min} mmHg`
+    exportData['Diastolinen Maksimi'] = `${stats.bloodPressure.diastolic.max} mmHg`
+    exportData['Kohonnut Verenpaine Lkm'] = stats.bloodPressure.highBpCount
+    exportData['Kohonnut Verenpaine %'] = `${stats.bloodPressure.highBpPercentage}%`
+  }
+  
+  exportData['Mittauksia yhteensä'] = stats.totalMeasurements
+  exportData['Liikuntakertoja'] = stats.exerciseSessions
+  
+  return exportData
 }
 
 /**
