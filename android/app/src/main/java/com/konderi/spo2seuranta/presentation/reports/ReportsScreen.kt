@@ -187,12 +187,69 @@ fun StatisticsView(uiState: ReportsUiState) {
             if (uiState.statistics != null) {
                 val stats = uiState.statistics
                 
+                // SpO2 and Heart Rate Statistics
+                Text(
+                    text = "Happisaturaatio ja syke",
+                    style = MaterialTheme.typography.titleMedium,
+                    color = MaterialTheme.colorScheme.primary
+                )
                 StatRow("Keskiarvo SpO2", "${String.format("%.1f", stats.averageSpo2)}%")
                 StatRow("Keskiarvo syke", "${String.format("%.0f", stats.averageHeartRate)} BPM")
                 StatRow("Alin SpO2", "${stats.minSpo2}%")
                 StatRow("Ylin SpO2", "${stats.maxSpo2}%")
-                StatRow("Mittausten määrä", "${stats.measurementCount}")
                 StatRow("Matala happisaturaatio", "${stats.lowOxygenCount}")
+                
+                // Blood Pressure Statistics
+                if (stats.bpMeasurementCount > 0 && 
+                    stats.averageSystolic != null && 
+                    stats.averageDiastolic != null) {
+                    
+                    HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                    
+                    Text(
+                        text = "Verenpaine",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    StatRow(
+                        "Keskiarvo systolinen", 
+                        "${String.format("%.0f", stats.averageSystolic)} mmHg"
+                    )
+                    StatRow(
+                        "Keskiarvo diastolinen", 
+                        "${String.format("%.0f", stats.averageDiastolic)} mmHg"
+                    )
+                    if (stats.minSystolic != null && stats.maxSystolic != null) {
+                        StatRow("Systolinen (min/max)", "${stats.minSystolic}/${stats.maxSystolic} mmHg")
+                    }
+                    if (stats.minDiastolic != null && stats.maxDiastolic != null) {
+                        StatRow("Diastolinen (min/max)", "${stats.minDiastolic}/${stats.maxDiastolic} mmHg")
+                    }
+                    StatRow("VP-mittausten määrä", "${stats.bpMeasurementCount}")
+                    
+                    if (stats.highBpCount > 0) {
+                        StatRow(
+                            "Kohonnut verenpaine", 
+                            "${stats.highBpCount}",
+                        )
+                        Card(
+                            modifier = Modifier.fillMaxWidth(),
+                            colors = CardDefaults.cardColors(
+                                containerColor = MaterialTheme.colorScheme.errorContainer
+                            )
+                        ) {
+                            Text(
+                                text = "⚠️ Kohonneita verenpainemittauksia (≥140/90 mmHg). Keskustele lääkärin kanssa.",
+                                style = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(8.dp),
+                                color = MaterialTheme.colorScheme.onErrorContainer
+                            )
+                        }
+                    }
+                }
+                
+                HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+                StatRow("Mittausten määrä", "${stats.measurementCount}")
             } else {
                 Text(
                     text = "Ei mittauksia valitulla aikavälillä",

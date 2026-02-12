@@ -247,6 +247,18 @@ class DailyMeasurementRepository @Inject constructor(
         
         if (validSpo2.isEmpty() || validHR.isEmpty()) return null
         
+        // Calculate blood pressure statistics
+        val validSystolic = measurements.mapNotNull { it.systolic }
+        val validDiastolic = measurements.mapNotNull { it.diastolic }
+        
+        val avgSystolic = if (validSystolic.isNotEmpty()) validSystolic.average() else null
+        val avgDiastolic = if (validDiastolic.isNotEmpty()) validDiastolic.average() else null
+        val bpMeasurementCount = measurements.count { it.systolic != null && it.diastolic != null }
+        val highBpCount = measurements.count { 
+            (it.systolic != null && it.systolic >= 140) || 
+            (it.diastolic != null && it.diastolic >= 90)
+        }
+        
         return MeasurementStatistics(
             averageSpo2 = avgSpo2,
             averageHeartRate = avgHR,
@@ -258,7 +270,16 @@ class DailyMeasurementRepository @Inject constructor(
             lowOxygenCount = lowOxygenCount,
             period = period,
             startDate = startDate,
-            endDate = endDate
+            endDate = endDate,
+            // Blood pressure stats
+            averageSystolic = avgSystolic,
+            averageDiastolic = avgDiastolic,
+            minSystolic = validSystolic.minOrNull(),
+            maxSystolic = validSystolic.maxOrNull(),
+            minDiastolic = validDiastolic.minOrNull(),
+            maxDiastolic = validDiastolic.maxOrNull(),
+            bpMeasurementCount = bpMeasurementCount,
+            highBpCount = highBpCount
         )
     }
 }

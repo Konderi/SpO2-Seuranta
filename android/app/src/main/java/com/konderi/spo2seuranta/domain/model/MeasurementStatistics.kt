@@ -16,7 +16,16 @@ data class MeasurementStatistics(
     val lowOxygenCount: Int, // Count of measurements below threshold
     val period: StatisticsPeriod,
     val startDate: LocalDateTime,
-    val endDate: LocalDateTime
+    val endDate: LocalDateTime,
+    // Blood Pressure statistics
+    val averageSystolic: Double? = null,
+    val averageDiastolic: Double? = null,
+    val minSystolic: Int? = null,
+    val maxSystolic: Int? = null,
+    val minDiastolic: Int? = null,
+    val maxDiastolic: Int? = null,
+    val bpMeasurementCount: Int = 0,
+    val highBpCount: Int = 0 // Count of measurements with systolic ≥140 or diastolic ≥90
 )
 
 enum class StatisticsPeriod {
@@ -25,3 +34,4 @@ enum class StatisticsPeriod {
     THREE_MONTHS,
     ALL_TIME
 }
+
