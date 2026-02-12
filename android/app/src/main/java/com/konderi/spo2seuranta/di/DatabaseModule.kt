@@ -40,13 +40,39 @@ object DatabaseModule {
     
     /**
      * Migration from version 3 to 4: Make spo2 and heartRate nullable
-     * Note: SQLite doesn't support ALTER COLUMN, but Room handles nullability in Kotlin layer
-     * The columns are already nullable in SQLite (INTEGER allows NULL by default)
+     * SQLite doesn't support ALTER COLUMN, so we need to recreate the table
      */
     private val MIGRATION_3_4 = object : Migration(3, 4) {
         override fun migrate(database: SupportSQLiteDatabase) {
-            // No SQL changes needed - SQLite columns are already nullable by default
-            // This migration just updates the schema version to match the Kotlin model changes
+            // Create new table with nullable spo2 and heartRate
+            database.execSQL("""
+                CREATE TABLE daily_measurements_new (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+                    spo2 INTEGER,
+                    heartRate INTEGER,
+                    systolic INTEGER,
+                    diastolic INTEGER,
+                    notes TEXT NOT NULL DEFAULT '',
+                    timestamp TEXT NOT NULL,
+                    userId TEXT,
+                    serverId TEXT,
+                    syncedToServer INTEGER NOT NULL DEFAULT 0
+                )
+            """.trimIndent())
+            
+            // Copy data from old table to new table
+            database.execSQL("""
+                INSERT INTO daily_measurements_new 
+                (id, spo2, heartRate, systolic, diastolic, notes, timestamp, userId, serverId, syncedToServer)
+                SELECT id, spo2, heartRate, systolic, diastolic, notes, timestamp, userId, serverId, syncedToServer
+                FROM daily_measurements
+            """.trimIndent())
+            
+            // Drop old table
+            database.execSQL("DROP TABLE daily_measurements")
+            
+            // Rename new table to original name
+            database.execSQL("ALTER TABLE daily_measurements_new RENAME TO daily_measurements")
         }
     }
     
