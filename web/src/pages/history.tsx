@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, Calendar, Heart, TrendingUp, Printer, FileDown, Download, Menu, X, LogOut } from 'lucide-react'
+import { Activity, Calendar, Heart, TrendingUp, Printer, FileDown, Download, Menu, X, LogOut, Settings } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -175,6 +175,9 @@ export default function History() {
                 <Link href="/statistics" className="text-lg text-text-secondary hover:text-primary transition-colors">
                   Tilastot
                 </Link>
+                <Link href="/settings" className="text-lg text-text-secondary hover:text-primary transition-colors">
+                  Asetukset
+                </Link>
                 <div className="flex items-center gap-3 ml-6 pl-6 border-l border-border">
                   <div className="text-right">
                     <p className="text-sm text-text-secondary">
@@ -237,6 +240,13 @@ export default function History() {
                     onClick={() => setMobileMenuOpen(false)}
                   >
                     Tilastot
+                  </Link>
+                  <Link
+                    href="/settings"
+                    className="text-lg text-text-secondary hover:text-primary transition-colors py-2"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Asetukset
                   </Link>
                   <div className="pt-4 mt-4 border-t border-border">
                     <p className="text-sm text-text-secondary mb-2">

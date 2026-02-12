@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, Heart, TrendingUp, Plus, LogOut, User, Menu, X } from 'lucide-react'
+import { Activity, Heart, TrendingUp, Plus, LogOut, User, Menu, X, Settings } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -142,6 +142,9 @@ export default function Dashboard() {
                 <Link href="/statistics" className="text-lg text-text-secondary hover:text-primary transition-colors">
                   Tilastot
                 </Link>
+                <Link href="/settings" className="text-lg text-text-secondary hover:text-primary transition-colors">
+                  Asetukset
+                </Link>
                 <div className="flex items-center gap-3 ml-6 pl-6 border-l border-border">
                   <div className="text-right">
                     <p className="text-sm text-text-secondary">
@@ -192,6 +195,9 @@ export default function Dashboard() {
                   </Link>
                   <Link href="/statistics" className="text-lg text-text-secondary hover:text-primary px-4 py-2">
                     Tilastot
+                  </Link>
+                  <Link href="/settings" className="text-lg text-text-secondary hover:text-primary px-4 py-2">
+                    Asetukset
                   </Link>
                   <div className="px-4 py-2 border-t border-border mt-2">
                     <p className="text-sm text-text-secondary mb-1">Kirjautunut</p>
