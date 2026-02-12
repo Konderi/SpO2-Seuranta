@@ -85,10 +85,8 @@ export default function AddBloodPressure() {
       const dateTime = new Date(`${formData.date}T${formData.time}`)
       const measured_at = Math.floor(dateTime.getTime() / 1000) // Unix timestamp in seconds
       
-      // Save to backend API - BP only, no SpO2/HR
+      // Save to backend API - BP only, no SpO2/HR (undefined means not measured)
       await apiClient.createDailyMeasurement({
-        spo2: 0, // 0 indicates not measured
-        heart_rate: 0, // 0 indicates not measured
         systolic: systolicValue,
         diastolic: diastolicValue,
         notes: formData.notes,

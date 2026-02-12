@@ -61,39 +61,41 @@ daily.post('/', async (c) => {
     const body = await c.req.json();
     const { spo2, heart_rate, systolic, diastolic, notes, measured_at } = body;
 
-    // At least one measurement type must be provided
-    const hasSpO2Data = spo2 !== undefined && spo2 !== null && spo2 !== 0;
-    const hasBPData = (systolic !== undefined && systolic !== null) && (diastolic !== undefined && diastolic !== null);
+    // Check if SpO2/HR data is provided (must be a valid number, not 0/null/undefined)
+    const hasSpO2Data = typeof spo2 === 'number' && spo2 > 0;
+    const hasHRData = typeof heart_rate === 'number' && heart_rate > 0;
+    const hasBPData = typeof systolic === 'number' && typeof diastolic === 'number';
     
+    // At least one measurement type must be provided
     if (!hasSpO2Data && !hasBPData) {
-      return c.json({ error: 'At least SpO2/HR or BP measurements required' }, 400);
+      return c.json({ error: 'At least SpO2 or BP measurements required' }, 400);
     }
 
     if (!measured_at) {
       return c.json({ error: 'Measurement timestamp is required' }, 400);
     }
 
-    // Validate SpO2 if provided
+    // Validate SpO2 ONLY if provided
     if (hasSpO2Data && (spo2 < 50 || spo2 > 100)) {
       return c.json({ error: 'SpO2 must be between 50 and 100' }, 400);
     }
 
-    // Validate heart rate if provided
-    if (heart_rate && (heart_rate < 30 || heart_rate > 250)) {
+    // Validate heart rate ONLY if provided
+    if (hasHRData && (heart_rate < 30 || heart_rate > 250)) {
       return c.json({ error: 'Heart rate must be between 30 and 250' }, 400);
     }
 
-    // Validate blood pressure if provided
-    if (systolic && (systolic < 80 || systolic > 200)) {
+    // Validate blood pressure ONLY if provided
+    if (typeof systolic === 'number' && (systolic < 80 || systolic > 200)) {
       return c.json({ error: 'Systolic pressure must be between 80 and 200' }, 400);
     }
 
-    if (diastolic && (diastolic < 50 || diastolic > 130)) {
+    if (typeof diastolic === 'number' && (diastolic < 50 || diastolic > 130)) {
       return c.json({ error: 'Diastolic pressure must be between 50 and 130' }, 400);
     }
 
     // Ensure systolic > diastolic if both provided
-    if (systolic && diastolic && systolic <= diastolic) {
+    if (typeof systolic === 'number' && typeof diastolic === 'number' && systolic <= diastolic) {
       return c.json({ error: 'Systolic pressure must be greater than diastolic' }, 400);
     }
 
