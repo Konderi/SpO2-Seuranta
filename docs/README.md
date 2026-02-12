@@ -18,6 +18,7 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 ### Ongelmanratkaisu
 - **[SHA1_SETUP.md](SHA1_SETUP.md)** - Google Sign-In: SHA-1 fingerprint -asennus
 - **[FIX_GOOGLE_SIGNIN.md](FIX_GOOGLE_SIGNIN.md)** - Google-kirjautumisen vianetsintä
+- **[ANDROID_RELOGIN_FIX.md](ANDROID_RELOGIN_FIX.md)** - Uudelleenkirjautuminen ilman sovelluksen sulkemista ✅
 
 ### Integraatio
 - **[ANDROID_API_INTEGRATION_GUIDE.md](ANDROID_API_INTEGRATION_GUIDE.md)** - Backend API:n integrointi (835 riviä, valmis toteutettavaksi)
@@ -75,9 +76,8 @@ Tervetuloa Hapetus-projektin dokumentaatioon! Täältä löydät kaikki ohjeet j
 **Viimeksi päivitetty:** 12.2.2026
 
 **Viimeisimmät päivitykset:**
+- ✅ Android: Uudelleenkirjautuminen ilman sovelluksen sulkemista
+- ✅ Web: Päivämäärän valitsimen mobiilioptimointi
 - ✅ Graafinen tulostus: Tilastot ja historia tulostetaan kaavioiden kanssa
 - ✅ Varoitusmittaukset: Seuranta SpO2-arvoille alle 90%
 - ✅ Värikoodatut varoitukset: Vihreä/keltainen/punainen indikaattorit
-- ✅ Navigaatiovalikko palautettu tilastot- ja historiasivuille
-- ✅ Tulostustoiminto: Käyttää natiivitulostusta kaavioiden kanssa
-- ✅ Demo-tila: Varoituslaskenta automaattisesti mukana
