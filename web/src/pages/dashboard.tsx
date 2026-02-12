@@ -59,35 +59,52 @@ export default function Dashboard() {
     fetchData()
   }, [isDemoMode, demoMeasurements, demoStats, authLoading, user])
 
-  // Calculate latest measurements and trend from real data
+  // Calculate latest measurements from real data - find latest for each metric
   const latestMeasurements = measurements.length > 0 ? {
-    spo2: measurements[0].spo2 || 0,
-    heartRate: measurements[0].heart_rate || measurements[0].heartRate || 0,
-    systolic: measurements[0].systolic || null,
-    diastolic: measurements[0].diastolic || null,
-    trend: measurements.length > 1 && measurements[0].spo2 && measurements[1].spo2
-      ? `${measurements[0].spo2 > measurements[1].spo2 ? '+' : ''}${measurements[0].spo2 - measurements[1].spo2}%`
-      : '0%',
-    date: new Date(measurements[0].measured_at * 1000).toLocaleDateString('fi-FI'), // Convert Unix timestamp (seconds) to milliseconds
+    spo2: measurements.find(m => m.spo2 && m.spo2 > 0)?.spo2 || 0,
+    heartRate: measurements.find(m => (m.heart_rate || m.heartRate) && (m.heart_rate || m.heartRate) > 0)?.heart_rate || 
+               measurements.find(m => (m.heart_rate || m.heartRate) && (m.heart_rate || m.heartRate) > 0)?.heartRate || 0,
+    systolic: measurements.find(m => m.systolic && m.systolic > 0)?.systolic || null,
+    diastolic: measurements.find(m => m.diastolic && m.diastolic > 0)?.diastolic || null,
+    date: new Date(measurements[0].measured_at * 1000).toLocaleDateString('fi-FI'), // Use latest measurement date
   } : {
     spo2: 0,
     heartRate: 0,
     systolic: null,
     diastolic: null,
-    trend: '0%',
     date: new Date().toLocaleDateString('fi-FI'),
+  }
+
+  // Debug logging
+  if (measurements.length > 0) {
+    console.log('Dashboard Latest Measurement Data:', {
+      raw: measurements[0],
+      calculated: latestMeasurements,
+      allMeasurements: measurements.slice(0,3)
+    })
   }
 
   const weeklyAverage = stats ? {
     spo2: Math.round(stats.avg_spo2 || stats.spo2?.average7days || 0),
     heartRate: Math.round(stats.avg_heart_rate || stats.heartRate?.average7days || 0),
-    systolic: stats.avg_systolic || stats.bloodPressure?.average7daysSystolic ? Math.round(stats.avg_systolic || stats.bloodPressure?.average7daysSystolic || 0) : null,
-    diastolic: stats.avg_diastolic || stats.bloodPressure?.average7daysDiastolic ? Math.round(stats.avg_diastolic || stats.bloodPressure?.average7daysDiastolic || 0) : null,
+    systolic: (stats.avg_systolic || stats.bloodPressure?.average7daysSystolic) ? Math.round(stats.avg_systolic || stats.bloodPressure?.average7daysSystolic || 0) : null,
+    diastolic: (stats.avg_diastolic || stats.bloodPressure?.average7daysDiastolic) ? Math.round(stats.avg_diastolic || stats.bloodPressure?.average7daysDiastolic || 0) : null,
   } : {
     spo2: 0,
     heartRate: 0,
     systolic: null,
     diastolic: null,
+  }
+
+  // Debug logging for weekly stats
+  if (stats) {
+    console.log('Dashboard Weekly Stats:', {
+      raw_stats: stats,
+      avg_systolic: stats.avg_systolic,
+      avg_diastolic: stats.avg_diastolic,
+      bloodPressure: stats.bloodPressure,
+      calculated: weeklyAverage
+    })
   }
 
   return (
@@ -286,7 +303,7 @@ export default function Dashboard() {
                 </Link>
               </div>
             ) : (
-              <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <div className="card bg-green-50 border-2 p-8">
                   <Heart className="w-12 h-12 text-success mb-4" strokeWidth={2} />
                   <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.spo2}%</div>
@@ -303,19 +320,12 @@ export default function Dashboard() {
 
                 {latestMeasurements.systolic && latestMeasurements.diastolic && (
                   <div className="card bg-purple-50 border-2 p-8">
-                    <TrendingUp className="w-12 h-12 text-purple-600 mb-4" strokeWidth={2} />
+                    <Heart className="w-12 h-12 text-purple-600 mb-4" strokeWidth={2} />
                     <div className="text-4xl font-bold text-text-primary mb-2">{latestMeasurements.systolic}/{latestMeasurements.diastolic}</div>
                     <div className="text-lg text-text-secondary font-medium">Verenpaine</div>
                     <div className="text-sm text-text-secondary mt-2">{latestMeasurements.date}</div>
                   </div>
                 )}
-
-                <div className="card bg-blue-50 border-2 p-8">
-                  <TrendingUp className="w-12 h-12 text-primary mb-4" strokeWidth={2} />
-                  <div className="text-5xl font-bold text-text-primary mb-2">{latestMeasurements.trend}</div>
-                  <div className="text-lg text-text-secondary font-medium">Kehitys</div>
-                  <div className="text-sm text-text-secondary mt-2">Edelliseen mittaukseen</div>
-                </div>
               </div>
             )}
           </div>
