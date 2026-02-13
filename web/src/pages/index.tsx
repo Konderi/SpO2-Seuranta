@@ -118,39 +118,63 @@ export default function Home() {
             </div>
 
             {/* Preview Cards */}
-            <div className="mt-20 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">{[
-                { 
-                  icon: Heart, 
-                  value: '96%', 
-                  label: 'Happisaturaatio', 
-                  color: 'text-spo2-healthy',
-                  bgColor: 'bg-green-50'
-                },
-                { 
-                  icon: Activity, 
-                  value: '120/80', 
-                  label: 'Verenpaine (mmHg)', 
-                  color: 'text-primary',
-                  bgColor: 'bg-red-50'
-                },
-                { 
-                  icon: TrendingUp, 
-                  value: 'Hyvä', 
-                  label: 'Kokonaistila', 
-                  color: 'text-success',
-                  bgColor: 'bg-blue-50'
-                },
-              ].map((stat, i) => (
-                <div
-                  key={i}
-                  className={`card ${stat.bgColor} border-2 hover:shadow-elevation-3 transition-all duration-normal`}
-                  style={{ animationDelay: `${i * 150}ms` }}
-                >
-                  <stat.icon className={`w-16 h-16 ${stat.color} mx-auto mb-4`} strokeWidth={2} />
-                  <div className="text-5xl font-bold mb-3 text-text-primary">{stat.value}</div>
-                  <div className="text-lg text-text-secondary font-medium">{stat.label}</div>
+            <div className="mt-20 grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+              {/* Combined SpO2 & Heart Rate Card with Diagonal Split */}
+              <div 
+                className="card bg-white border-2 hover:shadow-elevation-3 transition-all duration-normal relative overflow-hidden"
+                style={{ animationDelay: '0ms' }}
+              >
+                {/* Diagonal Divider Line */}
+                <div className="absolute inset-0 pointer-events-none">
+                  <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
+                    <line 
+                      x1="0" y1="0" 
+                      x2="100" y2="100" 
+                      stroke="#e5e7eb" 
+                      strokeWidth="0.5"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </svg>
                 </div>
-              ))}
+
+                {/* Top-Left: SpO2 */}
+                <div className="absolute top-0 left-0 w-full h-full flex items-start justify-start p-6 pb-16 pr-16">
+                  <div className="text-left">
+                    <Heart className="w-12 h-12 text-spo2-healthy mb-2" strokeWidth={2} />
+                    <div className="text-4xl font-bold text-text-primary mb-1">96%</div>
+                    <div className="text-sm text-text-secondary font-medium">SpO₂</div>
+                  </div>
+                </div>
+
+                {/* Bottom-Right: Heart Rate */}
+                <div className="absolute bottom-0 right-0 w-full h-full flex items-end justify-end p-6 pt-16 pl-16">
+                  <div className="text-right">
+                    <Activity className="w-12 h-12 text-danger ml-auto mb-2" strokeWidth={2} />
+                    <div className="text-4xl font-bold text-text-primary mb-1">72</div>
+                    <div className="text-sm text-text-secondary font-medium">Syke (bpm)</div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Blood Pressure Card */}
+              <div
+                className="card bg-red-50 border-2 hover:shadow-elevation-3 transition-all duration-normal"
+                style={{ animationDelay: '150ms' }}
+              >
+                <Activity className="w-16 h-16 text-primary mx-auto mb-4" strokeWidth={2} />
+                <div className="text-5xl font-bold mb-3 text-text-primary">120/80</div>
+                <div className="text-lg text-text-secondary font-medium">Verenpaine (mmHg)</div>
+              </div>
+
+              {/* Overall Status Card */}
+              <div
+                className="card bg-blue-50 border-2 hover:shadow-elevation-3 transition-all duration-normal"
+                style={{ animationDelay: '300ms' }}
+              >
+                <TrendingUp className="w-16 h-16 text-success mx-auto mb-4" strokeWidth={2} />
+                <div className="text-5xl font-bold mb-3 text-text-primary">Hyvä</div>
+                <div className="text-lg text-text-secondary font-medium">Kokonaistila</div>
+              </div>
             </div>
           </div>
         </section>
