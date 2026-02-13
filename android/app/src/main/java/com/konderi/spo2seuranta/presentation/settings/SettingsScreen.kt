@@ -161,6 +161,47 @@ fun SettingsScreen(
             
             item {
                 Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.tertiaryContainer
+                    )
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp)
+                    ) {
+                        Text(
+                            text = "🔍 Virheenjäljitys",
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = "User ID: ${uiState.settings.userId ?: "EI KÄYTETTÄVISSÄ"}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                        
+                        Text(
+                            text = "Email: ${uiState.settings.userEmail ?: "ei kirjautunut"}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                        
+                        Spacer(modifier = Modifier.height(8.dp))
+                        
+                        Text(
+                            text = "Jos mittaukset eivät näy mutta näkyvät verkkosivulla, kirjaudu ulos ja uudelleen sisään.",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer
+                        )
+                    }
+                }
+            }
+            
+            item {
+                Card(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Column(

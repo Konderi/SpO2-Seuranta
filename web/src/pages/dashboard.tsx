@@ -18,7 +18,16 @@ export default function Dashboard() {
   // Fetch real data from API or use demo data
   useEffect(() => {
     const fetchData = async () => {
+      console.log('🔍 Dashboard fetchData - Auth State:', {
+        isDemoMode,
+        authLoading,
+        hasUser: !!user,
+        userEmail: user?.email,
+        userId: user?.uid
+      })
+      
       if (isDemoMode) {
+        console.log('📊 Using DEMO data')
         // Use demo data
         const dailyDemo = demoMeasurements.filter(m => m.type === 'daily')
         setMeasurements(dailyDemo.map(m => ({
@@ -34,23 +43,39 @@ export default function Dashboard() {
       }
 
       // Wait for auth to be ready before making API calls
-      if (authLoading || !user) return;
+      if (authLoading) {
+        console.log('⏳ Waiting for auth...')
+        return
+      }
+      
+      if (!user) {
+        console.log('❌ No user - cannot fetch data')
+        return
+      }
+      
+      console.log('✅ User authenticated, fetching real data...')
+
+      console.log('✅ User authenticated, fetching real data...')
 
       try {
         setLoading(true)
+        console.log('📡 Calling API: getDailyMeasurements...')
         // Fetch latest measurements
         const dailyData = await apiClient.getDailyMeasurements()
+        console.log('📥 Received daily data:', dailyData.length, 'measurements')
         setMeasurements(dailyData)
         
+        console.log('📡 Calling API: getWeeklyStats...')
         // Fetch weekly statistics
         const weeklyStats = await apiClient.getWeeklyStats()
+        console.log('📊 Received weekly stats:', weeklyStats)
         setStats({
           ...weeklyStats,
           latest_systolic: dailyData.length > 0 ? dailyData[0].systolic : null,
           latest_diastolic: dailyData.length > 0 ? dailyData[0].diastolic : null,
         })
       } catch (error) {
-        console.error('Failed to fetch dashboard data:', error)
+        console.error('❌ Failed to fetch dashboard data:', error)
       } finally {
         setLoading(false)
       }
