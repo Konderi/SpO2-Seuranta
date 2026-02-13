@@ -76,6 +76,19 @@ interface ApiService {
         @Header("Authorization") token: String
     ): Response<ApiResponse<UserProfileDto>>
     
+    // ============= User Settings =============
+    
+    @GET("/api/user/settings")
+    suspend fun getUserSettings(
+        @Header("Authorization") token: String
+    ): Response<ApiResponse<UserSettingsDto>>
+    
+    @PUT("/api/user/settings")
+    suspend fun updateUserSettings(
+        @Header("Authorization") token: String,
+        @Body settings: UpdateUserSettingsRequest
+    ): Response<ApiResponse<UserSettingsDto>>
+    
     // ============= Statistics =============
     
     @GET("/api/stats/week")

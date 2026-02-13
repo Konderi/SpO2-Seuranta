@@ -24,6 +24,7 @@ class SettingsViewModel @Inject constructor(
     
     init {
         loadSettings()
+        syncSettingsFromCloud()
     }
     
     private fun loadSettings() {
@@ -37,10 +38,23 @@ class SettingsViewModel @Inject constructor(
         }
     }
     
+    private fun syncSettingsFromCloud() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isSyncing = true)
+            val result = repository.syncFromCloud()
+            _uiState.value = _uiState.value.copy(
+                isSyncing = false,
+                syncError = if (result.isFailure) result.exceptionOrNull()?.message else null
+            )
+        }
+    }
+    
     fun updateLowSpo2Threshold(threshold: Int) {
         viewModelScope.launch {
             try {
                 repository.updateLowSpo2Threshold(threshold)
+                // Sync to cloud
+                repository.syncToCloud()
                 _uiState.value = _uiState.value.copy(
                     saveSuccess = true,
                     errorMessage = null
@@ -57,6 +71,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.updateLargeFontEnabled(enabled)
+                // Sync to cloud
+                repository.syncToCloud()
                 _uiState.value = _uiState.value.copy(
                     saveSuccess = true,
                     errorMessage = null
@@ -73,6 +89,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.updateGender(gender)
+                // Sync to cloud
+                repository.syncToCloud()
                 _uiState.value = _uiState.value.copy(
                     saveSuccess = true,
                     errorMessage = null
@@ -89,6 +107,8 @@ class SettingsViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 repository.updateBirthYear(birthYear)
+                // Sync to cloud
+                repository.syncToCloud()
                 _uiState.value = _uiState.value.copy(
                     saveSuccess = true,
                     errorMessage = null
@@ -109,6 +129,8 @@ class SettingsViewModel @Inject constructor(
 data class SettingsUiState(
     val settings: UserSettings = UserSettings(),
     val isLoading: Boolean = true,
+    val isSyncing: Boolean = false,
     val saveSuccess: Boolean = false,
-    val errorMessage: String? = null
+    val errorMessage: String? = null,
+    val syncError: String? = null
 )
