@@ -723,9 +723,11 @@ app.get('/api/user/settings', async (c) => {
       'SELECT * FROM user_settings WHERE user_id = ?'
     ).bind(authUser.uid).all();
 
-    return c.json({ data: results[0] || null });
+    console.log('📖 GET user_settings for user:', authUser.uid, 'result:', results[0]);
+
+    return c.json({ success: true, data: results[0] || null });
   } catch (error: any) {
-    return c.json({ error: 'Failed to fetch settings', message: error.message }, 500);
+    return c.json({ success: false, error: 'Failed to fetch settings', message: error.message }, 500);
   }
 });
 
@@ -742,6 +744,24 @@ app.put('/api/user/settings', async (c) => {
 
   try {
     const body: any = await c.req.json();
+    
+    console.log('🔧 Settings Update Request:', {
+      userId: authUser.uid,
+      body
+    });
+    
+    // First, ensure user_settings row exists
+    const { results: existing } = await c.env.DB.prepare(
+      'SELECT user_id FROM user_settings WHERE user_id = ?'
+    ).bind(authUser.uid).all();
+    
+    if (!existing || existing.length === 0) {
+      // Create default settings row if it doesn't exist
+      console.log('⚠️ No settings row found, creating default...');
+      await c.env.DB.prepare(
+        'INSERT INTO user_settings (user_id) VALUES (?)'
+      ).bind(authUser.uid).run();
+    }
     
     // Build dynamic UPDATE query based on provided fields
     const updates: string[] = [];
@@ -778,6 +798,7 @@ app.put('/api/user/settings', async (c) => {
     if (body.birth_year !== undefined) {
       updates.push('birth_year = ?');
       values.push(body.birth_year || null);
+      console.log('📅 Saving birth_year:', body.birth_year, 'type:', typeof body.birth_year);
     }
     
     if (updates.length === 0) {
@@ -789,11 +810,27 @@ app.put('/api/user/settings', async (c) => {
     
     const query = `UPDATE user_settings SET ${updates.join(', ')} WHERE user_id = ?`;
     
-    await c.env.DB.prepare(query).bind(...values).run();
+    console.log('💾 Executing query:', query);
+    console.log('💾 With values:', values);
+    
+    const result = await c.env.DB.prepare(query).bind(...values).run();
+    
+    console.log('✅ Update result:', result);
+    
+    // Fetch and return the updated settings
+    const { results: updatedSettings } = await c.env.DB.prepare(
+      'SELECT * FROM user_settings WHERE user_id = ?'
+    ).bind(authUser.uid).all();
+    
+    console.log('📖 Updated settings from DB:', updatedSettings[0]);
 
-    return c.json({ message: 'Settings updated successfully' });
+    return c.json({ 
+      success: true,
+      message: 'Settings updated successfully',
+      data: updatedSettings[0]
+    });
   } catch (error: any) {
-    console.error('Settings update error:', error);
+    console.error('❌ Settings update error:', error);
     return c.json({ error: 'Failed to update settings', message: error.message }, 500);
   }
 });
