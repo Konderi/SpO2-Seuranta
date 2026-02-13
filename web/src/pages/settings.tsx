@@ -30,25 +30,14 @@ export default function Settings() {
       try {
         setLoading(true)
         const settings = await apiClient.getUserSettings()
-        console.log('📖 Loaded settings from API:', settings);
-        console.log('📅 Birth year from API:', {
-          value: settings.birth_year,
-          type: typeof settings.birth_year,
-          toString: settings.birth_year?.toString(),
-          toStringType: typeof settings.birth_year?.toString()
-        });
         setFormData({
           spo2_low_threshold: settings.spo2_low_threshold || 90,
           large_font_enabled: settings.large_font_enabled || false,
           gender: settings.gender || '',
           birth_year: settings.birth_year?.toString() || '',
         })
-        console.log('📝 Form data after load:', {
-          birth_year: settings.birth_year?.toString(),
-          type: typeof settings.birth_year?.toString()
-        });
       } catch (error) {
-        console.error('❌ Failed to load settings:', error)
+        console.error('Failed to load settings:', error)
       } finally {
         setLoading(false)
       }
@@ -92,17 +81,7 @@ export default function Settings() {
         birth_year: formData.birth_year ? parseInt(formData.birth_year) : undefined,
       };
       
-      console.log('💾 Saving settings:', settingsPayload);
-      console.log('📅 Birth year details:', {
-        raw: formData.birth_year,
-        type: typeof formData.birth_year,
-        parsed: parseInt(formData.birth_year),
-        parsedType: typeof parseInt(formData.birth_year)
-      });
-      
-      const result = await apiClient.updateUserSettings(settingsPayload);
-      
-      console.log('✅ Settings save result:', result);
+      await apiClient.updateUserSettings(settingsPayload);
 
       setSuccess(true)
       setTimeout(() => {

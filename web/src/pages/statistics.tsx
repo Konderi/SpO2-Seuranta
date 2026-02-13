@@ -200,16 +200,6 @@ export default function Statistics() {
           apiClient.getExerciseMeasurements()
         ])
 
-        console.log('Statistics Debug:', {
-          weeklyStats,
-          dailyStatsCount: dailyStats?.length,
-          dailyStatsFirst: dailyStats?.[0],
-          dailyDataCount: dailyData?.length,
-          dailyDataFirst: dailyData?.[0],
-          dailyDataWithBP: dailyData?.filter((m: any) => m.systolic || m.diastolic),
-          exerciseDataCount: exerciseData?.length
-        })
-
         // Filter daily stats based on time range
         let filteredDailyStats = dailyStats || []
         if (timeRange === '7days') {
@@ -263,15 +253,6 @@ export default function Statistics() {
         const warningCount = dailyData.filter((m: any) => m.spo2 < DEFAULT_SPO2_THRESHOLD).length
         const warningPercentage = dailyData.length > 0 ? Math.round((warningCount / dailyData.length) * 100) : 0
 
-        console.log('Statistics Calculated Values:', {
-          latestSpo2, latestHR, latestSystolic, latestDiastolic,
-          weeklyAvgSpo2: weeklyStats.avg_spo2,
-          weeklyAvgHR: weeklyStats.avg_heart_rate,
-          weeklyAvgSystolic: weeklyStats.avg_systolic,
-          weeklyAvgDiastolic: weeklyStats.avg_diastolic,
-          avgSystolic, avgDiastolic
-        })
-
         setStats({
           spo2: {
             current: latestSpo2,
@@ -322,22 +303,6 @@ export default function Statistics() {
           systolic: day.avg_systolic ? Math.round(day.avg_systolic) : undefined,
           diastolic: day.avg_diastolic ? Math.round(day.avg_diastolic) : undefined
         }))
-        
-        console.log('📊 Chart Data Generated:', {
-          filteredCount: filteredDailyStats.length,
-          chartDataCount: formattedChartData.length,
-          firstChartPoint: formattedChartData[0],
-          lastChartPoint: formattedChartData[formattedChartData.length - 1],
-          hasBPData: formattedChartData.some(d => d.systolic || d.diastolic),
-          bpDataPoints: formattedChartData.filter(d => d.systolic || d.diastolic).length,
-          sampleDaysWithBP: filteredDailyStats.filter((d: any) => d.avg_systolic || d.avg_diastolic).slice(0, 3),
-          allChartData: formattedChartData
-        })
-        
-        console.log('🩺 BP Chart Check:', {
-          willShowBPChart: formattedChartData.some(d => d.systolic || d.diastolic),
-          chartDataWithBP: formattedChartData.filter(d => d.systolic || d.diastolic)
-        })
         
         setChartData(formattedChartData)
       } catch (error) {
