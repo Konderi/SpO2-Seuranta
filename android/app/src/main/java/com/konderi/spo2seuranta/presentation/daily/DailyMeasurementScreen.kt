@@ -4,8 +4,11 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -107,7 +110,10 @@ fun DailyMeasurementScreen(
             }
             
             items(uiState.measurements.take(10)) { measurement ->
-                MeasurementCard(measurement = measurement)
+                MeasurementCard(
+                    measurement = measurement,
+                    onDelete = { viewModel.deleteMeasurement(measurement) }
+                )
             }
         }
     }
@@ -132,8 +138,12 @@ fun DailyMeasurementScreen(
 }
 
 @Composable
-fun MeasurementCard(measurement: DailyMeasurement) {
+fun MeasurementCard(
+    measurement: DailyMeasurement,
+    onDelete: () -> Unit
+) {
     val formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy HH:mm")
+    var showDeleteDialog by remember { mutableStateOf(false) }
     
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -146,23 +156,47 @@ fun MeasurementCard(measurement: DailyMeasurement) {
         Column(
             modifier = Modifier.padding(16.dp)
         ) {
-            // Determine measurement type
-            val hasSpO2 = measurement.spo2 != null
-            val hasBP = measurement.systolic != null && measurement.diastolic != null
-            
-            // Show title based on measurement type
-            Text(
-                text = when {
-                    hasSpO2 && hasBP -> "SpO2 & Verenpaine"
-                    hasBP -> "Verenpaine"
-                    hasSpO2 -> "SpO2-mittaus"
-                    else -> "Mittaus"
-                },
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.primary
-            )
+            // Header row with title and delete button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Determine measurement type
+                val hasSpO2 = measurement.spo2 != null
+                val hasBP = measurement.systolic != null && measurement.diastolic != null
+                
+                // Show title based on measurement type
+                Text(
+                    text = when {
+                        hasSpO2 && hasBP -> "SpO2 & Verenpaine"
+                        hasBP -> "Verenpaine"
+                        hasSpO2 -> "SpO2-mittaus"
+                        else -> "Mittaus"
+                    },
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                // Delete button
+                IconButton(
+                    onClick = { showDeleteDialog = true },
+                    modifier = Modifier.size(40.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Delete,
+                        contentDescription = "Poista mittaus",
+                        tint = MaterialTheme.colorScheme.error
+                    )
+                }
+            }
             
             Spacer(modifier = Modifier.height(8.dp))
+            
+            // Determine measurement type for layout
+            val hasSpO2 = measurement.spo2 != null
+            val hasBP = measurement.systolic != null && measurement.diastolic != null
             
             // SpO2 and Heart Rate
             if (hasSpO2) {
@@ -209,5 +243,29 @@ fun MeasurementCard(measurement: DailyMeasurement) {
                 )
             }
         }
+    }
+    
+    // Delete confirmation dialog
+    if (showDeleteDialog) {
+        androidx.compose.material3.AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            title = { Text("Poista mittaus") },
+            text = { Text("Haluatko varmasti poistaa tämän mittauksen? Tätä toimintoa ei voi perua.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDeleteDialog = false
+                        onDelete()
+                    }
+                ) {
+                    Text("Poista", color = MaterialTheme.colorScheme.error)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Peruuta")
+                }
+            }
+        )
     }
 }
