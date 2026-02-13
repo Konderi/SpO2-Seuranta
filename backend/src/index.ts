@@ -565,6 +565,8 @@ app.get('/api/stats/week', async (c) => {
       `SELECT 
         AVG(spo2) as avg_spo2,
         AVG(heart_rate) as avg_heart_rate,
+        AVG(systolic) as avg_systolic,
+        AVG(diastolic) as avg_diastolic,
         MIN(spo2) as min_spo2,
         MAX(spo2) as max_spo2,
         MIN(heart_rate) as min_heart_rate,
@@ -639,6 +641,8 @@ app.get('/api/stats/daily', async (c) => {
         DATE(measured_at, 'unixepoch') as date,
         AVG(spo2) as avg_spo2,
         AVG(heart_rate) as avg_heart_rate,
+        AVG(systolic) as avg_systolic,
+        AVG(diastolic) as avg_diastolic,
         MIN(spo2) as min_spo2,
         MAX(spo2) as max_spo2,
         COUNT(*) as count
