@@ -744,19 +744,23 @@ app.put('/api/user/settings', async (c) => {
       heart_rate_low_threshold,
       heart_rate_high_threshold,
       large_font_enabled,
-      notifications_enabled
+      notifications_enabled,
+      gender,
+      birth_year
     } = body;
 
     await c.env.DB.prepare(
       `UPDATE user_settings 
        SET spo2_low_threshold = ?, spo2_high_threshold = ?,
            heart_rate_low_threshold = ?, heart_rate_high_threshold = ?,
-           large_font_enabled = ?, notifications_enabled = ?
+           large_font_enabled = ?, notifications_enabled = ?,
+           gender = ?, birth_year = ?
        WHERE user_id = ?`
     ).bind(
       spo2_low_threshold, spo2_high_threshold,
       heart_rate_low_threshold, heart_rate_high_threshold,
       large_font_enabled ? 1 : 0, notifications_enabled ? 1 : 0,
+      gender || null, birth_year || null,
       authUser.uid
     ).run();
 
