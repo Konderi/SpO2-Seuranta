@@ -20,8 +20,10 @@ import java.time.format.DateTimeFormatter
 
 @Composable
 fun DailyMeasurementChart(measurements: List<DailyMeasurement>) {
-    // Filter measurements that have SpO2 and heart rate data
-    val validMeasurements = measurements.filter { it.spo2 != null && it.heartRate != null }
+    // Filter measurements that have any valid data (SpO2, heart rate, or blood pressure)
+    val validMeasurements = measurements.filter { 
+        it.spo2 != null || it.heartRate != null || (it.systolic != null && it.diastolic != null)
+    }
     
     if (validMeasurements.isEmpty()) {
         Card(
@@ -46,87 +48,93 @@ fun DailyMeasurementChart(measurements: List<DailyMeasurement>) {
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // SpO2 Chart
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "SpO2 Trendi",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary
+        val spo2Measurements = sortedMeasurements.filter { it.spo2 != null }
+        if (spo2Measurements.isNotEmpty()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                ProvideChartStyle(m3ChartStyle()) {
-                    val entries = sortedMeasurements.mapIndexed { index, measurement ->
-                        FloatEntry(x = index.toFloat(), y = measurement.spo2!!.toFloat())
-                    }
-                    val model = ChartEntryModelProducer(entries).getModel() ?: return@ProvideChartStyle
-                    
-                    Chart(
-                        chart = lineChart(),
-                        model = model,
-                        startAxis = rememberStartAxis(),
-                        bottomAxis = rememberBottomAxis(
-                            valueFormatter = { value, _ ->
-                                if (value.toInt() < sortedMeasurements.size) {
-                                    sortedMeasurements[value.toInt()].timestamp
-                                        .format(DateTimeFormatter.ofPattern("dd.MM"))
-                                } else ""
-                            }
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "SpO2 Trendi",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    ProvideChartStyle(m3ChartStyle()) {
+                        val entries = spo2Measurements.mapIndexed { index, measurement ->
+                            FloatEntry(x = index.toFloat(), y = measurement.spo2!!.toFloat())
+                        }
+                        val model = ChartEntryModelProducer(entries).getModel() ?: return@ProvideChartStyle
+                        
+                        Chart(
+                            chart = lineChart(),
+                            model = model,
+                            startAxis = rememberStartAxis(),
+                            bottomAxis = rememberBottomAxis(
+                                valueFormatter = { value, _ ->
+                                    if (value.toInt() < spo2Measurements.size) {
+                                        spo2Measurements[value.toInt()].timestamp
+                                            .format(DateTimeFormatter.ofPattern("dd.MM"))
+                                    } else ""
+                                }
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        )
+                    }
                 }
             }
         }
         
         // Heart Rate Chart
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surface
-            )
-        ) {
-            Column(
-                modifier = Modifier.padding(16.dp)
-            ) {
-                Text(
-                    text = "Syke Trendi",
-                    style = MaterialTheme.typography.titleLarge,
-                    color = MaterialTheme.colorScheme.primary
+        val heartRateMeasurements = sortedMeasurements.filter { it.heartRate != null }
+        if (heartRateMeasurements.isNotEmpty()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                ProvideChartStyle(m3ChartStyle()) {
-                    val entries = sortedMeasurements.mapIndexed { index, measurement ->
-                        FloatEntry(x = index.toFloat(), y = measurement.heartRate!!.toFloat())
-                    }
-                    val model = ChartEntryModelProducer(entries).getModel() ?: return@ProvideChartStyle
-                    
-                    Chart(
-                        chart = lineChart(),
-                        model = model,
-                        startAxis = rememberStartAxis(),
-                        bottomAxis = rememberBottomAxis(
-                            valueFormatter = { value, _ ->
-                                if (value.toInt() < sortedMeasurements.size) {
-                                    sortedMeasurements[value.toInt()].timestamp
-                                        .format(DateTimeFormatter.ofPattern("dd.MM"))
-                                } else ""
-                            }
-                        ),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Syke Trendi",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.primary
                     )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    ProvideChartStyle(m3ChartStyle()) {
+                        val entries = heartRateMeasurements.mapIndexed { index, measurement ->
+                            FloatEntry(x = index.toFloat(), y = measurement.heartRate!!.toFloat())
+                        }
+                        val model = ChartEntryModelProducer(entries).getModel() ?: return@ProvideChartStyle
+                        
+                        Chart(
+                            chart = lineChart(),
+                            model = model,
+                            startAxis = rememberStartAxis(),
+                            bottomAxis = rememberBottomAxis(
+                                valueFormatter = { value, _ ->
+                                    if (value.toInt() < heartRateMeasurements.size) {
+                                        heartRateMeasurements[value.toInt()].timestamp
+                                            .format(DateTimeFormatter.ofPattern("dd.MM"))
+                                    } else ""
+                                }
+                            ),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                        )
+                    }
                 }
             }
         }
