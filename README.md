@@ -46,20 +46,21 @@ Täysipainoinen Android-sovellus, joka toimii puhelimella tai tabletilla.
 - ✅ Päivittäisten mittausten seuranta (SpO2, syke, verenpaine)
 - ✅ Henkilökohtaiset verenpaineen suositukset (ikä & sukupuoli)
 - ✅ Liikunnan vaikutuksen mittaaminen
-- ✅ Graafinen tilastonäkymä
+- ✅ Graafinen tilastonäkymä kaikille mittauksille
+- ✅ Verenpaineen trendikaavio
 - ✅ Hälytysten asettaminen
 - ✅ Google-kirjautuminen ja Firebase Auth
 - ✅ **Offline-first arkkitehtuuri** - Toimii täysin ilman nettiä
 - ✅ **Automaattinen pilvisynkronointi** - Kaksisuuntainen synkronointi API:n kanssa
+- ✅ **Asetukset synkronoituvat** - Muutokset näkyvät kaikilla laitteilla
 - ✅ **Lifecycle-pohjainen päivitys** - Synkronoi automaattisesti kun palaat sovellukseen
-- ✅ **Yhtenäinen käyttöliittymä** - Yksi top bar MonitorHeart-ikonilla ja sivun otsikolla
-- ✅ **Manuaalinen päivitys** - Refresh-nappi top barissa välittömään synkronointiin
 - ✅ Monilaitteen tuki - Sama data näkyy Android-appissa ja verkkosivustolla
+- ✅ Puhdas, ammattimainen käyttöliittymä
 
 **Testattu laitteilla:**
 - Samsung Galaxy S9 (Android 10) ✅
 
-**[📱 Katso lisätietoja ja integraatio-ohje →](docs/ANDROID_API_INTEGRATION_GUIDE.md)**
+**[📱 Katso lisätietoja Android-sovelluksesta →](android/README.md)**
 
 ### ✅ Verkkosivusto (VALMIS ja LIVE!)
 
@@ -69,18 +70,20 @@ Moderni, responsiivinen verkkosivusto täydellä toiminnallisuudella.
 
 **Ominaisuudet:**
 - ✅ Google-kirjautuminen
-- ✅ Päivittäisten mittausten lisääminen
+- ✅ Päivittäisten mittausten lisääminen ja hallinta
+- ✅ Verenpaineen seuranta ja kaaviot
 - ✅ Liikuntamittausten tallentaminen
 - ✅ Mittaushistorian selaaminen ja suodattaminen
-- ✅ **Interaktiiviset kaaviot** (SpO2 ja syke trendit)
+- ✅ **Interaktiiviset kaaviot** (SpO2, syke ja verenpaine trendit)
 - ✅ **Demo-tila** - Kokeile sovellusta ilman kirjautumista!
 - ✅ Tilastojen laskenta (7-30 päivää)
 - ✅ Responsiivinen suunnittelu (toimii kaikilla laitteilla)
 - ✅ Tietojen synkronointi pilvipalveluun
+- ✅ Asetukset synkronoituvat automaattisesti
 
 **Demo-tila:** Klikkaa "Kokeile Demoa" -nappia etusivulla nähdäksesi 4 viikon realistisen esimerkkidatan kaavioineen!
 
-**[🌐 Siirry sivustolle →](https://hapetus.info)** | **[📖 Dokumentaatio →](docs/DEMO_MODE_COMPLETE.md)**
+**[🌐 Siirry sivustolle →](https://hapetus.info)** | **[📖 Dokumentaatio →](web/README.md)**
 
 ### ✅ Backend API (VALMIS ja LIVE!)
 
@@ -128,9 +131,10 @@ Native iOS-sovellus tulee myöhemmin vuonna 2026 samalla API-integraatiolla.
 
 ### 📱 Lataa Android-sovellus
 
+Sovellus on valmis ja sisältää täyden pilvisynkronoinnin!
+
 1. **Rakenna lähdekoodista**: [Android-ohjeet](android/README.md)
-2. **Konfiguroi API-synkronointi**: [Integraatio-ohje](ANDROID_API_INTEGRATION_GUIDE.md)
-3. **Google Play Kauppa** - Tulossa kesällä 2026
+2. **Google Play Kauppa** - Tulossa kevään 2026 aikana
 
 ---
 
@@ -200,7 +204,7 @@ Sovellus voi varoittaa sinua, jos:
 - ✅ **Tietosi ovat turvassa** - Firebase Authentication ja Cloudflare D1 käyttävät pankki-tason salausta
 - ✅ **Vain sinä näet tietosi** - Kukaan muu ei voi lukea mittauksiasi
 - ✅ **Ei mainoksia** - Emme myy tietojasi kenellekään
-- ✅ **Automaattinen varmuuskopiointi** - Verkkosivusto tallentaa tiedot automaattisesti pilveen
+- ✅ **Automaattinen synkronointi** - Tiedot synkronoituvat automaattisesti kaikkien laitteiden välillä
 - ✅ **Offline-toiminta** - Android-sovellus toimii ilman nettiä, synkronointi tapahtuu kun verkko palautuu
 - ✅ **Poisto milloin vain** - Voit poistaa kaikki tietosi koska haluat
 - ✅ **GDPR-yhteensopiva** - Täyttää EU:n tietosuoja-asetuksen vaatimukset
@@ -268,23 +272,20 @@ Tarvitset **pulssioksimetrin** (sormeen laitettava mittari). Voit ostaa sellaise
 Jos olet kehittäjä ja haluat osallistua projektin kehitykseen:
 
 - **📖 Tekninen dokumentaatio**: [README_EN.md](README_EN.md) (englanniksi)
-- **🎯 Projektin tila**: Kaikki komponentit valmiit!
+- **🎯 Projektin tila**: Kaikki pääkomponentit valmiit!
   - ✅ Verkkosivusto (Next.js + Cloudflare Pages)
   - ✅ Backend API (Cloudflare Workers + D1)
   - ✅ Android-sovellus (Kotlin + Jetpack Compose)
-  - ⏳ API-integraatio Androidiin (ohje valmis)
+  - ✅ Täysi kaksisuuntainen synkronointi
+  - ✅ Offline-first arkkitehtuuri
 - **🌐 Live-demo**: [hapetus.info](https://hapetus.info) - Kokeile demo-tilaa!
-- **📊 Demo-tila**: [DEMO_MODE_COMPLETE.md](DEMO_MODE_COMPLETE.md)
-- **🔗 API-integraatio**: [ANDROID_API_INTEGRATION_GUIDE.md](ANDROID_API_INTEGRATION_GUIDE.md)
-- **✅ Website-API yhteys**: [WEBSITE_API_INTEGRATION_COMPLETE.md](WEBSITE_API_INTEGRATION_COMPLETE.md)
-- **🚀 Deployment-ohje**: [backend/DEPLOYMENT_GUIDE.md](backend/DEPLOYMENT_GUIDE.md)
-- **📋 API-dokumentaatio**: [backend/README.md](backend/README.md)
+- ** API-dokumentaatio**: [backend/README.md](backend/README.md)
 - **🎨 Suunnittelujärjestelmä**: Material Design 3, Tailwind CSS
 
 **Teknologiat:**
 - **Frontend**: Next.js 14, TypeScript, Tailwind CSS, Recharts
 - **Backend**: Cloudflare Workers, D1 (SQLite), Hono framework
-- **Mobile**: Kotlin, Jetpack Compose, Room, Firebase Auth
+- **Mobile**: Kotlin, Jetpack Compose, Room, Firebase Auth, Retrofit
 - **Deployment**: Cloudflare Pages (web), Cloudflare Workers (API)
 
 ---
@@ -322,20 +323,22 @@ Jos olet kehittäjä ja haluat osallistua projektin kehitykseen:
 - ✅ CORS-tuki
 - ✅ Live osoitteessa: `https://api.hapetus.info`
 
-### ✅ Vaihe 3: Android-sovellus (VALMIS - Odottaa synkronointia!)
-- ✅ Täysin toimiva Android-sovellus
-- ✅ Kaikki perusominaisuudet
-- ✅ Google-kirjautuminen
-- ✅ Offline-tuki (Room database)
-- ⏳ API-synkronointi (integraatio-ohje valmis)
-- 📅 **API-integraatio: Helmikuu-maaliskuu 2026**
+### ✅ Vaihe 3: Android & Website Täysi Synkronointi (VALMIS!)
+- ✅ Android-sovellus integroitu API:in
+- ✅ Kaksisuuntainen synkronointi (Android ↔ API ↔ Website)
+- ✅ Offline-first -toiminnallisuus
+- ✅ Automaattinen synkronointi taustalla
+- ✅ Asetukset synkronoituvat laitteiden välillä
+- ✅ Verenpaineen mittaukset ja kaaviot kaikilla alustoilla
+- ✅ Puhdas käyttöliittymä ilman debug-elementtejä
+- 📅 **Valmistunut: Helmikuu 2026**
 
-### 📋 Vaihe 4: Cross-Platform Sync (Seuraavaksi!)
-- ⏳ Android-sovelluksen API-integraatio
-- ⏳ Offline-first -synkronointi
-- ⏳ Automaattinen tietojen synkronointi laitteiden välillä
-- ⏳ Konfliktien hallinta
-- 📅 **Tavoite: Maaliskuu 2026**
+### 📋 Vaihe 4: Julkaisu ja Jatko-kehitys (Käynnissä)
+- ⏳ Google Play Store -julkaisu
+- ⏳ App Store -julkaisu (iOS-versio)
+- ⏳ Käyttäjäpalautteen kerääminen
+- ⏳ Jatkuva kehitys ja parannukset
+- 📅 **Tavoite: Kevät-Kesä 2026**
 
 ### 📋 Vaihe 5: iPhone-sovellus (Suunnitelma)
 - ⏳ Native iOS-sovellus
@@ -385,6 +388,6 @@ Katso [LICENSE](LICENSE) tiedosto lisätietoja varten.
 
 ---
 
-**Päivitetty**: 11. helmikuuta 2026  
-**Versio**: 2.0.0  
-**Tila**: Android valmis ✅ | Verkkosivusto kehityksessä 🚧 | iOS suunnitteilla 📋
+**Päivitetty**: 13. helmikuuta 2026  
+**Versio**: 3.0.0  
+**Tila**: Android ✅ | Verkkosivusto ✅ | Täysi synkronointi ✅ | iOS suunnitteilla 📋

@@ -33,44 +33,65 @@
 
 ### ✅ Phase 1: Android Application (Complete)
 Native Android app with full functionality:
-- Daily and exercise measurements
-- Real-time charts and statistics  
+- Daily and exercise measurements with blood pressure support
+- Real-time charts and statistics for all vitals
+- Blood pressure trend charts
 - Google Sign-In authentication
 - Configurable alerts
 - Material Design 3 UI
-- Offline support
+- **Offline-first architecture** - Works completely offline
+- **Automatic cloud sync** - Bidirectional sync with API
+- **Settings synchronization** - Preferences sync across devices
+- **Multi-device support** - Same data on Android and web
 
 **[📱 View Android App →](android/)**
 
-### 🚧 Phase 2: Backend & Website (Deployed - Configuration Pending)
+### ✅ Phase 2: Backend & Website (Live in Production)
 
-#### ✅ Backend API (DEPLOYED!)
+#### ✅ Backend API (LIVE!)
 Professional Cloudflare Workers API with D1 database:
-- **Live at**: https://hapetus-api.toni-joronen.workers.dev
-- **Custom domain ready**: api.hapetus.info (DNS pending)
-- 15 REST API endpoints (daily, exercise, stats, user)
+- **Live at**: https://api.hapetus.info
+- Complete REST API (daily, exercise, stats, user, settings)
 - Firebase Authentication integration
 - Edge computing with <50ms response times
+- Blood pressure data support
 - **Cost**: $0/month (free tier)
 
-**Next Steps**: Configure Firebase secrets, set up custom domain
+**[📖 API Documentation →](backend/README.md)**
 
-**[🔧 View Backend Status →](backend/STATUS.md)** | **[📖 API Documentation →](backend/API.md)** | **[🚀 Deployment Guide →](backend/DEPLOYMENT_GUIDE.md)**
-
-#### ⏳ Website (Ready to Deploy)
+#### ✅ Website (LIVE!)
 Modern Next.js application for data viewing:
+- **Live at**: https://hapetus.info
 - Next.js 14 with TypeScript
-- Hapetus design system (Halo-lab inspired)
 - Firebase Auth integration
-- API client library ready
-- Landing page complete
-- Ready for Cloudflare Pages deployment
+- Interactive charts (SpO2, heart rate, blood pressure)
+- Demo mode for testing
+- Responsive design for all devices
+- **Settings sync** with backend
+- **Deployed on**: Cloudflare Pages
 
-**Target Launch**: February 2026
+**[🌐 Visit Website →](https://hapetus.info)** | **[� Documentation →](web/README.md)**
 
-**[📋 View Project Status →](PROJECT_STATUS.md)**
+### ✅ Phase 3: Android & Website Full Synchronization (COMPLETE!)
 
-### 📋 Phase 3: iOS Application (Planned)
+Complete bidirectional data synchronization between all platforms:
+- **Bidirectional sync**: Changes sync automatically Android ↔ Backend ↔ Website
+- **Offline-first architecture**: Android works completely offline, syncs when online
+- **Settings synchronization**: User preferences sync across all devices
+- **Blood pressure tracking**: Full support with charts on all platforms
+- **Clean, professional UI**: All debug elements removed
+- **Multi-device**: Same data accessible on all devices in real-time
+
+**Completed**: February 2026
+
+### 🚀 Phase 4: Release and Continued Development (In Progress)
+- Google Play Store release preparation
+- App Store release preparation (iOS development later)
+- User feedback collection
+- Feature improvements based on usage
+- Performance optimizations
+
+### 📋 Phase 5: iOS Application (Planned)
 Native iOS app with feature parity to Android:
 - SwiftUI implementation
 - HealthKit integration
@@ -96,11 +117,9 @@ SpO2-Seuranta/
 │   ├── migrations/       # D1 database schema
 │   ├── wrangler.toml    # Cloudflare configuration
 │   ├── API.md           # API documentation
-│   ├── STATUS.md        # Current status
-│   ├── DEPLOYMENT_GUIDE.md  # Deployment instructions
-│   └── COMPLETION.md    # Achievement summary
+│   └── README.md        # Backend documentation
 │
-├── web/                  # Next.js website ⏳
+├── web/                  # Next.js website ✅
 │   ├── src/
 │   │   ├── pages/       # Next.js pages
 │   │   ├── lib/         # API client, Firebase config
@@ -121,9 +140,6 @@ SpO2-Seuranta/
 │   └── api-specs/       # API specifications
 │
 ├── .github/             # GitHub workflows & Copilot instructions
-├── PROJECT_STATUS.md    # Current project status
-├── SETUP_GUIDE.md       # Complete setup guide
-├── PHASE2_SUMMARY.md    # Phase 2 overview
 ├── README.md            # Main README (Finnish) 🇫🇮
 ├── README_EN.md         # This file (English) 🇬🇧
 ├── CONTRIBUTING.md      # Contribution guidelines
@@ -156,7 +172,7 @@ Hapetus features a professional, modern design language inspired by award-winnin
 | Platform | Technologies |
 |----------|--------------|
 | **Web** | Next.js 14+, TypeScript, Tailwind CSS, Recharts, Firebase Auth |
-| **Android** | Kotlin, Jetpack Compose, Material Design 3, Room, Hilt, Firebase Auth |
+| **Mobile** | Kotlin, Jetpack Compose, Material Design 3, Room, Retrofit, Hilt, Firebase Auth |
 | **iOS** | Swift, SwiftUI, CoreData, HealthKit (planned) |
 | **Backend** | Cloudflare Workers, Hono, D1 Database, Firebase Auth |
 | **Design** | Hapetus Design System (Halo-lab inspired) |
@@ -189,8 +205,11 @@ Hapetus features a professional, modern design language inspired by award-winnin
 
 ## ✨ Key Features
 
+## ✨ Key Features
+
 ### 📊 Comprehensive Measurements
-- **Daily Tracking**: Quick SpO2 (50-100%) and heart rate entry
+- **Daily Tracking**: Quick SpO2 (50-100%), heart rate, and blood pressure entry
+- **Blood Pressure**: Systolic/diastolic with age/gender-based guidelines
 - **Exercise Monitoring**: Before/after measurements with exercise details
 - **Notes & Context**: Optional notes for each measurement
 - **Auto Timestamps**: Automatic date and time recording
@@ -198,7 +217,8 @@ Hapetus features a professional, modern design language inspired by award-winnin
 ### 📈 Advanced Analytics
 - **Time Ranges**: View data by week, month, quarter, or all time
 - **Statistics**: Averages, min/max values, trend analysis
-- **Visual Charts**: Interactive line graphs with date labels
+- **Visual Charts**: Interactive line graphs for SpO2, heart rate, and blood pressure
+- **Blood Pressure Trends**: Separate charts for systolic and diastolic values
 - **Comparison Views**: Before/after exercise comparisons
 
 ### ⚠️ Smart Alerts
@@ -206,10 +226,16 @@ Hapetus features a professional, modern design language inspired by award-winnin
 - **Significant Changes**: Alert on drops >5% during exercise
 - **Visual Indicators**: Color-coded status (red/orange/green)
 
+### 🔄 Cloud Synchronization
+- **Bidirectional Sync**: Automatic sync between Android and website
+- **Offline-First**: Android works completely offline
+- **Multi-Device**: Same data on all devices in real-time
+- **Settings Sync**: Preferences synchronized automatically
+- **Conflict-Free**: Smart sync with timestamp-based resolution
+
 ### 🔐 Secure Authentication
 - **Google Sign-In**: OAuth 2.0 authentication
 - **Multi-Device Sync**: Access data from any device
-- **Offline Support**: Android app works without internet
 - **Privacy First**: Your data, your control
 
 ### ♿ Accessibility
@@ -378,6 +404,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**Last Updated**: February 11, 2026  
-**Version**: 2.0.0 (Multi-platform monorepo)  
-**Status**: Android Complete ✅ | Backend Deployed ✅ | Website Ready ⏳ | iOS Planned 📋
+**Last Updated**: February 13, 2026  
+**Version**: 3.0.0 (Multi-platform monorepo)  
+**Status**: Android ✅ | Website ✅ | Full Synchronization ✅ | iOS Planned 📋
