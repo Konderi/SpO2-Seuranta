@@ -205,6 +205,8 @@ export default function Statistics() {
           dailyStatsCount: dailyStats?.length,
           dailyStatsFirst: dailyStats?.[0],
           dailyDataCount: dailyData?.length,
+          dailyDataFirst: dailyData?.[0],
+          dailyDataWithBP: dailyData?.filter((m: any) => m.systolic || m.diastolic),
           exerciseDataCount: exerciseData?.length
         })
 
@@ -321,14 +323,20 @@ export default function Statistics() {
           diastolic: day.avg_diastolic ? Math.round(day.avg_diastolic) : undefined
         }))
         
-        console.log('Chart Data Generated:', {
+        console.log('📊 Chart Data Generated:', {
           filteredCount: filteredDailyStats.length,
           chartDataCount: formattedChartData.length,
           firstChartPoint: formattedChartData[0],
           lastChartPoint: formattedChartData[formattedChartData.length - 1],
           hasBPData: formattedChartData.some(d => d.systolic || d.diastolic),
           bpDataPoints: formattedChartData.filter(d => d.systolic || d.diastolic).length,
-          sampleDaysWithBP: filteredDailyStats.filter((d: any) => d.avg_systolic || d.avg_diastolic).slice(0, 3)
+          sampleDaysWithBP: filteredDailyStats.filter((d: any) => d.avg_systolic || d.avg_diastolic).slice(0, 3),
+          allChartData: formattedChartData
+        })
+        
+        console.log('🩺 BP Chart Check:', {
+          willShowBPChart: formattedChartData.some(d => d.systolic || d.diastolic),
+          chartDataWithBP: formattedChartData.filter(d => d.systolic || d.diastolic)
         })
         
         setChartData(formattedChartData)

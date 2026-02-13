@@ -130,6 +130,76 @@ fun DailyMeasurementChart(measurements: List<DailyMeasurement>) {
                 }
             }
         }
+        
+        // Blood Pressure Chart
+        val bpMeasurements = sortedMeasurements.filter { 
+            it.systolic != null && it.diastolic != null 
+        }
+        
+        if (bpMeasurements.isNotEmpty()) {
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            ) {
+                Column(
+                    modifier = Modifier.padding(16.dp)
+                ) {
+                    Text(
+                        text = "Verenpaine Trendi",
+                        style = MaterialTheme.typography.titleLarge,
+                        color = MaterialTheme.colorScheme.secondary
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
+                    
+                    ProvideChartStyle(m3ChartStyle()) {
+                        val systolicEntries = bpMeasurements.mapIndexed { index, measurement ->
+                            FloatEntry(x = index.toFloat(), y = measurement.systolic!!.toFloat())
+                        }
+                        val diastolicEntries = bpMeasurements.mapIndexed { index, measurement ->
+                            FloatEntry(x = index.toFloat(), y = measurement.diastolic!!.toFloat())
+                        }
+                        val model = ChartEntryModelProducer(systolicEntries, diastolicEntries).getModel()
+                        
+                        if (model != null) {
+                            Chart(
+                                chart = lineChart(),
+                                model = model,
+                                startAxis = rememberStartAxis(),
+                                bottomAxis = rememberBottomAxis(
+                                    valueFormatter = { value, _ ->
+                                        if (value.toInt() < bpMeasurements.size) {
+                                            bpMeasurements[value.toInt()].timestamp
+                                                .format(DateTimeFormatter.ofPattern("dd.MM"))
+                                        } else ""
+                                    }
+                                ),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(200.dp)
+                            )
+                        } else {
+                            Text(
+                                text = "Kuvaajan luonti epäonnistui",
+                                style = MaterialTheme.typography.bodyMedium,
+                                modifier = Modifier.padding(16.dp)
+                            )
+                        }
+                    }
+                    
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        LegendItem(color = Color(0xFFE53935), label = "Systolinen")
+                        Spacer(modifier = Modifier.width(16.dp))
+                        LegendItem(color = Color(0xFF1E88E5), label = "Diastolinen")
+                    }
+                }
+            }
+        }
     }
 }
 
