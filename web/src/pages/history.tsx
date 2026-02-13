@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, Calendar, Heart, TrendingUp, Printer, FileDown, Download, Menu, X, LogOut, Settings } from 'lucide-react'
+import { Activity, Calendar, Heart, TrendingUp, Printer, FileDown, Download, Menu, X, LogOut, Settings, Trash2 } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import { useDemo } from '@/contexts/DemoContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
@@ -89,6 +89,33 @@ export default function History() {
   const filteredMeasurements = measurements.filter(m => 
     filter === 'all' || m.type === filter
   )
+
+  // Delete measurement
+  const handleDelete = async (measurementId: string, measurementType: 'daily' | 'exercise') => {
+    if (!confirm('Haluatko varmasti poistaa tämän mittauksen? Tätä toimintoa ei voi perua.')) {
+      return
+    }
+
+    if (isDemoMode) {
+      alert('Demo-tilassa ei voi poistaa mittauksia. Kirjaudu sisään käyttääksesi tätä toimintoa.')
+      return
+    }
+
+    try {
+      // Call appropriate delete API
+      if (measurementType === 'daily') {
+        await apiClient.deleteDailyMeasurement(measurementId)
+      } else {
+        await apiClient.deleteExerciseMeasurement(measurementId)
+      }
+
+      // Remove from local state
+      setMeasurements(prev => prev.filter(m => m.id !== measurementId))
+    } catch (error) {
+      console.error('Failed to delete measurement:', error)
+      alert('Mittauksen poisto epäonnistui. Yritä uudelleen.')
+    }
+  }
 
   // Export functions
   const handleExportCSV = () => {
@@ -399,6 +426,18 @@ export default function History() {
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Delete button */}
+                  {!isDemoMode && (
+                    <button
+                      onClick={() => handleDelete(measurement.id, measurement.type)}
+                      className="btn btn-secondary p-2 hover:bg-red-50 hover:text-red-600 transition-colors"
+                      title="Poista mittaus"
+                      aria-label="Poista mittaus"
+                    >
+                      <Trash2 className="w-5 h-5" />
+                    </button>
+                  )}
                 </div>
 
                 {measurement.type === 'daily' ? (

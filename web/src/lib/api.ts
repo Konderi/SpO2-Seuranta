@@ -130,6 +130,15 @@ class ApiClient {
     if (!response.ok) throw new Error('Failed to create measurement');
   }
 
+  async deleteDailyMeasurement(id: string): Promise<void> {
+    const headers = await this.getAuthHeader();
+    const response = await fetch(`${API_URL}/api/daily/${id}`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (!response.ok) throw new Error('Failed to delete measurement');
+  }
+
   // Exercise Measurements
   async getExerciseMeasurements(): Promise<ExerciseMeasurement[]> {
     const headers = await this.getAuthHeader();
@@ -147,6 +156,15 @@ class ApiClient {
       body: JSON.stringify(measurement),
     });
     if (!response.ok) throw new Error('Failed to create measurement');
+  }
+
+  async deleteExerciseMeasurement(id: string): Promise<void> {
+    const headers = await this.getAuthHeader();
+    const response = await fetch(`${API_URL}/api/exercise/${id}`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (!response.ok) throw new Error('Failed to delete measurement');
   }
 
   // Statistics
