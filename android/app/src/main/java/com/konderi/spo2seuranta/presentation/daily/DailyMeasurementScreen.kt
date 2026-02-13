@@ -102,25 +102,13 @@ fun DailyMeasurementScreen(
             }
             
             item {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = "Viimeisimmät mittaukset",
-                        style = MaterialTheme.typography.headlineSmall
-                    )
-                    TextButton(
-                        onClick = { viewModel.syncNow() }
-                    ) {
-                        Text("🔄 Päivitä")
-                    }
-                }
+                Text(
+                    text = "Viimeisimmät mittaukset",
+                    style = MaterialTheme.typography.headlineSmall,
+                    modifier = Modifier.padding(vertical = 8.dp)
+                )
                 
-                // Show sync status
+                // Show message if no measurements
                 if (uiState.measurements.isEmpty() && !uiState.isLoading) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
@@ -129,42 +117,9 @@ fun DailyMeasurementScreen(
                         )
                     ) {
                         Text(
-                            text = "Ei mittauksia. Lisää uusi mittaus tai paina 🔄 Päivitä ladataksesi pilvestä.",
+                            text = "Ei mittauksia. Lisää uusi mittaus yläpuolella.",
                             modifier = Modifier.padding(16.dp),
                             style = MaterialTheme.typography.bodyMedium
-                        )
-                    }
-                } else if (uiState.isLoading) {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                        )
-                    ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            horizontalArrangement = Arrangement.spacedBy(12.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            CircularProgressIndicator(modifier = Modifier.size(24.dp))
-                            Text(
-                                text = "Synkronoidaan...",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                } else {
-                    Card(
-                        modifier = Modifier.fillMaxWidth(),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.primaryContainer
-                        )
-                    ) {
-                        Text(
-                            text = "📊 Yhteensä ${uiState.measurements.size} mittausta tietokannassa",
-                            modifier = Modifier.padding(12.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                 }
