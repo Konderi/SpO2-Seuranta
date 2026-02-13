@@ -738,34 +738,58 @@ app.put('/api/user/settings', async (c) => {
 
   try {
     const body: any = await c.req.json();
-    const {
-      spo2_low_threshold,
-      spo2_high_threshold,
-      heart_rate_low_threshold,
-      heart_rate_high_threshold,
-      large_font_enabled,
-      notifications_enabled,
-      gender,
-      birth_year
-    } = body;
-
-    await c.env.DB.prepare(
-      `UPDATE user_settings 
-       SET spo2_low_threshold = ?, spo2_high_threshold = ?,
-           heart_rate_low_threshold = ?, heart_rate_high_threshold = ?,
-           large_font_enabled = ?, notifications_enabled = ?,
-           gender = ?, birth_year = ?
-       WHERE user_id = ?`
-    ).bind(
-      spo2_low_threshold, spo2_high_threshold,
-      heart_rate_low_threshold, heart_rate_high_threshold,
-      large_font_enabled ? 1 : 0, notifications_enabled ? 1 : 0,
-      gender || null, birth_year || null,
-      authUser.uid
-    ).run();
+    
+    // Build dynamic UPDATE query based on provided fields
+    const updates: string[] = [];
+    const values: any[] = [];
+    
+    if (body.spo2_low_threshold !== undefined) {
+      updates.push('spo2_low_threshold = ?');
+      values.push(body.spo2_low_threshold);
+    }
+    if (body.spo2_high_threshold !== undefined) {
+      updates.push('spo2_high_threshold = ?');
+      values.push(body.spo2_high_threshold);
+    }
+    if (body.heart_rate_low_threshold !== undefined) {
+      updates.push('heart_rate_low_threshold = ?');
+      values.push(body.heart_rate_low_threshold);
+    }
+    if (body.heart_rate_high_threshold !== undefined) {
+      updates.push('heart_rate_high_threshold = ?');
+      values.push(body.heart_rate_high_threshold);
+    }
+    if (body.large_font_enabled !== undefined) {
+      updates.push('large_font_enabled = ?');
+      values.push(body.large_font_enabled ? 1 : 0);
+    }
+    if (body.notifications_enabled !== undefined) {
+      updates.push('notifications_enabled = ?');
+      values.push(body.notifications_enabled ? 1 : 0);
+    }
+    if (body.gender !== undefined) {
+      updates.push('gender = ?');
+      values.push(body.gender || null);
+    }
+    if (body.birth_year !== undefined) {
+      updates.push('birth_year = ?');
+      values.push(body.birth_year || null);
+    }
+    
+    if (updates.length === 0) {
+      return c.json({ error: 'No fields to update' }, 400);
+    }
+    
+    // Add user_id to values for WHERE clause
+    values.push(authUser.uid);
+    
+    const query = `UPDATE user_settings SET ${updates.join(', ')} WHERE user_id = ?`;
+    
+    await c.env.DB.prepare(query).bind(...values).run();
 
     return c.json({ message: 'Settings updated successfully' });
   } catch (error: any) {
+    console.error('Settings update error:', error);
     return c.json({ error: 'Failed to update settings', message: error.message }, 500);
   }
 });
