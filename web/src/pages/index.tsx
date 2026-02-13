@@ -124,44 +124,44 @@ export default function Home() {
                 className="card bg-white border-2 hover:shadow-elevation-3 transition-all duration-normal relative overflow-hidden"
                 style={{ animationDelay: '0ms' }}
               >
-                {/* Diagonal Divider Line */}
+                {/* Diagonal Divider Line - Top Right to Bottom Left */}
                 <div className="absolute inset-0 pointer-events-none">
                   <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 100 100">
                     <line 
-                      x1="0" y1="0" 
-                      x2="100" y2="100" 
-                      stroke="#e5e7eb" 
-                      strokeWidth="0.5"
+                      x1="100" y1="0" 
+                      x2="0" y2="100" 
+                      stroke="#cbd5e1" 
+                      strokeWidth="1.5"
                       vectorEffect="non-scaling-stroke"
                     />
                   </svg>
                 </div>
 
-                {/* Top-Left: SpO2 */}
+                {/* Top-Left: SpO2 (Blue) */}
                 <div className="absolute top-0 left-0 w-full h-full flex items-start justify-start p-6 pb-16 pr-16">
                   <div className="text-left">
-                    <Heart className="w-12 h-12 text-spo2-healthy mb-2" strokeWidth={2} />
-                    <div className="text-4xl font-bold text-text-primary mb-1">96%</div>
+                    <Heart className="w-12 h-12 text-primary mb-2" strokeWidth={2} />
+                    <div className="text-4xl font-bold text-primary mb-1">96%</div>
                     <div className="text-sm text-text-secondary font-medium">SpO₂</div>
                   </div>
                 </div>
 
-                {/* Bottom-Right: Heart Rate */}
+                {/* Bottom-Right: Heart Rate (Red) */}
                 <div className="absolute bottom-0 right-0 w-full h-full flex items-end justify-end p-6 pt-16 pl-16">
                   <div className="text-right">
                     <Activity className="w-12 h-12 text-danger ml-auto mb-2" strokeWidth={2} />
-                    <div className="text-4xl font-bold text-text-primary mb-1">72</div>
+                    <div className="text-4xl font-bold text-danger mb-1">72</div>
                     <div className="text-sm text-text-secondary font-medium">Syke (bpm)</div>
                   </div>
                 </div>
               </div>
 
-              {/* Blood Pressure Card */}
+              {/* Blood Pressure Card (Red) */}
               <div
                 className="card bg-red-50 border-2 hover:shadow-elevation-3 transition-all duration-normal"
                 style={{ animationDelay: '150ms' }}
               >
-                <Activity className="w-16 h-16 text-primary mx-auto mb-4" strokeWidth={2} />
+                <Heart className="w-16 h-16 text-danger mx-auto mb-4" strokeWidth={2} />
                 <div className="text-5xl font-bold mb-3 text-text-primary">120/80</div>
                 <div className="text-lg text-text-secondary font-medium">Verenpaine (mmHg)</div>
               </div>
