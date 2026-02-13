@@ -220,9 +220,9 @@ app.get('/api/daily', async (c) => {
       'SELECT * FROM daily_measurements WHERE user_id = ? ORDER BY measured_at DESC LIMIT 100'
     ).bind(user.uid).all();
 
-    return c.json({ data: results });
+    return c.json({ success: true, data: results });
   } catch (error: any) {
-    return c.json({ error: 'Failed to fetch measurements', message: error.message }, 500);
+    return c.json({ success: false, error: 'Failed to fetch measurements', message: error.message }, 500);
   }
 });
 
@@ -440,9 +440,9 @@ app.get('/api/exercise', async (c) => {
       'SELECT * FROM exercise_measurements WHERE user_id = ? ORDER BY measured_at DESC LIMIT 100'
     ).bind(user.uid).all();
 
-    return c.json({ data: results });
+    return c.json({ success: true, data: results });
   } catch (error: any) {
-    return c.json({ error: 'Failed to fetch measurements', message: error.message }, 500);
+    return c.json({ success: false, error: 'Failed to fetch measurements', message: error.message }, 500);
   }
 });
 

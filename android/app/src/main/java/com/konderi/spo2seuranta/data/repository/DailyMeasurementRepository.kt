@@ -175,7 +175,10 @@ class DailyMeasurementRepository @Inject constructor(
             }
             
             // STEP 2: Download latest from server and merge
+            Log.d("SYNC_TEST", "📡 Calling getDailyMeasurements API...")
             val response = apiService.getDailyMeasurements(token = "")
+            
+            Log.d("SYNC_TEST", "📡 API Response: code=${response.code()}, isSuccessful=${response.isSuccessful}, success=${response.body()?.success}, dataSize=${response.body()?.data?.size}")
             
             if (response.isSuccessful && response.body()?.success == true) {
                 val cloudMeasurements = response.body()?.data ?: emptyList()
@@ -189,18 +192,23 @@ class DailyMeasurementRepository @Inject constructor(
                             serverId = dto.id
                         )
                         
+                        Log.d("SYNC_TEST", "Processing cloud measurement: serverId=${dto.id}, spo2=${dto.spo2}, hr=${dto.heartRate}, bp=${dto.systolic}/${dto.diastolic}")
+                        
                         // Check if we already have this measurement by server ID
                         val existingByServerId = entity.serverId?.let { dao.getMeasurementByServerId(it) }
                         
                         if (existingByServerId != null) {
+                            Log.d("SYNC_TEST", "  → Updating existing local ID ${existingByServerId.id}")
                             // Update existing measurement
                             dao.update(entity.copy(id = existingByServerId.id))
                         } else {
-                            // Insert new from cloud
-                            dao.insert(entity)
+                            Log.d("SYNC_TEST", "  → Inserting as new measurement")
+                            // Insert new from cloud - Room will auto-generate the ID
+                            val insertedId = dao.insert(entity)
+                            Log.d("SYNC_TEST", "  → Inserted with local ID: $insertedId")
                         }
                     } catch (e: Exception) {
-                        Log.e("SYNC_TEST", "❌ Failed to process cloud measurement: ${e.message}")
+                        Log.e("SYNC_TEST", "❌ Failed to process cloud measurement: ${e.message}", e)
                         // Skip individual measurement errors
                     }
                 }
@@ -208,6 +216,8 @@ class DailyMeasurementRepository @Inject constructor(
                 Log.d("SYNC_TEST", "✅ Sync complete!")
                 Result.success(Unit)
             } else {
+                val errorBody = response.errorBody()?.string()
+                Log.e("SYNC_TEST", "❌ Sync failed: code=${response.code()}, success=${response.body()?.success}, error=$errorBody")
                 Result.failure(Exception("Sync failed: ${response.code()}"))
             }
         } catch (e: Exception) {

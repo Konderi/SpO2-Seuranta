@@ -94,6 +94,31 @@ class DailyMeasurementViewModel @Inject constructor(
         }
     }
     
+    fun syncNow() {
+        viewModelScope.launch {
+            try {
+                _uiState.value = _uiState.value.copy(isLoading = true)
+                val result = repository.syncWithCloud()
+                if (result.isSuccess) {
+                    // Data will update automatically through Flow
+                    _uiState.value = _uiState.value.copy(
+                        errorMessage = null
+                    )
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        errorMessage = "Synkronointi epäonnistui",
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Synkronointivirhe: ${e.message}",
+                    isLoading = false
+                )
+            }
+        }
+    }
+    
     fun dismissAlert() {
         _uiState.value = _uiState.value.copy(
             showLowOxygenAlert = false,
