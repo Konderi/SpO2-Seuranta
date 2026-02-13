@@ -30,14 +30,25 @@ export default function Settings() {
       try {
         setLoading(true)
         const settings = await apiClient.getUserSettings()
+        console.log('📖 Loaded settings from API:', settings);
+        console.log('📅 Birth year from API:', {
+          value: settings.birth_year,
+          type: typeof settings.birth_year,
+          toString: settings.birth_year?.toString(),
+          toStringType: typeof settings.birth_year?.toString()
+        });
         setFormData({
           spo2_low_threshold: settings.spo2_low_threshold || 90,
           large_font_enabled: settings.large_font_enabled || false,
           gender: settings.gender || '',
           birth_year: settings.birth_year?.toString() || '',
         })
+        console.log('📝 Form data after load:', {
+          birth_year: settings.birth_year?.toString(),
+          type: typeof settings.birth_year?.toString()
+        });
       } catch (error) {
-        console.error('Failed to load settings:', error)
+        console.error('❌ Failed to load settings:', error)
       } finally {
         setLoading(false)
       }
@@ -74,19 +85,31 @@ export default function Settings() {
     setError(null)
 
     try {
-      await apiClient.updateUserSettings({
+      const settingsPayload = {
         spo2_low_threshold: threshold,
         large_font_enabled: formData.large_font_enabled,
         gender: formData.gender || undefined,
         birth_year: formData.birth_year ? parseInt(formData.birth_year) : undefined,
-      })
+      };
+      
+      console.log('💾 Saving settings:', settingsPayload);
+      console.log('📅 Birth year details:', {
+        raw: formData.birth_year,
+        type: typeof formData.birth_year,
+        parsed: parseInt(formData.birth_year),
+        parsedType: typeof parseInt(formData.birth_year)
+      });
+      
+      const result = await apiClient.updateUserSettings(settingsPayload);
+      
+      console.log('✅ Settings save result:', result);
 
       setSuccess(true)
       setTimeout(() => {
         setSuccess(false)
       }, 3000)
     } catch (err: any) {
-      console.error('Failed to save settings:', err)
+      console.error('❌ Failed to save settings:', err)
       setError(err.message || 'Asetusten tallennus epäonnistui. Yritä uudelleen.')
     } finally {
       setSaving(false)
