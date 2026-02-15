@@ -244,35 +244,58 @@ useEffect(() => {
   - "(automaattinen)" label on disabled inputs
 - **Status**: Deployed to production
 
-### Phase 3: Android Date/Time Pickers ⏳ PENDING
-- **Daily Measurement Screen**: Needs date/time picker implementation
-- **Blood Pressure Screen**: Needs date/time picker implementation
-- **Features Needed**:
-  - DatePickerDialog for date selection
-  - TimePickerDialog for time selection
-  - Show/hide based on manualEntryEnabled setting
-  - Validation to prevent future dates
-  - Visual indicators when manual mode is active
+### Phase 3: Android Date/Time Pickers ✅ COMPLETE
+- **DailyMeasurementScreen.kt**: Date/time picker implementation complete
+- **BloodPressureScreen.kt**: Date/time picker implementation complete
+- **DailyMeasurementViewModel.kt**: Updated to accept custom timestamp parameter
+- **Features Implemented**:
+  - DatePickerDialog for date selection with max date = today
+  - TimePickerDialog for time selection (24-hour format)
+  - Info banner showing current mode (blue for manual, gray for automatic)
+  - Date/time pickers shown as buttons when manual mode enabled
+  - Disabled text fields showing current date/time when automatic mode
+  - Auto-refresh date/time when manual mode is disabled
+  - Measurement saved with selected timestamp in manual mode
+  - Visual feedback with "(automaattinen)" labels
+- **Status**: Built and installed on SM-A546B (Android 15)
 
 ## Next Steps
 1. ~~Deploy website with manual entry toggle~~ ✅ COMPLETE
 2. ~~Implement date/time picker UI in website measurement pages~~ ✅ COMPLETE
-3. Implement date/time picker UI in Android Daily Measurement screen
-4. Implement date/time picker UI in Android Blood Pressure screen
-5. Update Android measurement submission logic to respect manual entry mode
-6. Add visual indicators in Android showing when manual mode is active
+3. ~~Implement date/time picker UI in Android Daily Measurement screen~~ ✅ COMPLETE
+4. ~~Implement date/time picker UI in Android Blood Pressure screen~~ ✅ COMPLETE
+5. ~~Update Android measurement submission logic to respect manual entry mode~~ ✅ COMPLETE
+6. ~~Add visual indicators in Android showing when manual mode is active~~ ✅ COMPLETE
 7. Test end-to-end flow on all platforms
 8. Gather user feedback
 
 ## Testing Checklist
+### Settings Sync
 - [x] Enable manual entry in settings (Android)
 - [x] Verify setting syncs to website
 - [x] Disable in website, verify syncs back to Android
+
+### Website Testing
 - [x] Website: Verify date/time pickers disabled in automatic mode
 - [x] Website: Verify date/time pickers enabled in manual mode
 - [x] Website: Verify future dates are blocked
 - [x] Website: Verify auto-update of date/time when switching to automatic
-- [ ] Android: Implement date/time picker dialogs
+
+### Android Testing
+- [x] Android: Date/time picker dialogs implemented
+- [ ] Android: Test DatePickerDialog opens and selects date correctly
+- [ ] Android: Test TimePickerDialog opens and selects time correctly
+- [ ] Android: Verify future dates are blocked in DatePickerDialog
+- [ ] Android: Verify measurement saves with selected timestamp
+- [ ] Android: Verify info banner shows correct mode
+- [ ] Android: Test switching from manual to automatic mode resets date/time
+
+### End-to-End Testing
+- [ ] Enter manual measurement on Android with past date
+- [ ] Verify measurement appears in history with correct timestamp
+- [ ] Verify measurement syncs to website with correct timestamp
+- [ ] Enter manual measurement on website with past date
+- [ ] Verify measurement syncs to Android with correct timestamp
 - [ ] Android: Test manual entry flow
 - [ ] Test with different users
 - [ ] Verify setting persists after app restart

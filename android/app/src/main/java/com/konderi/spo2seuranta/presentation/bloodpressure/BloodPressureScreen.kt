@@ -1,14 +1,19 @@
 package com.konderi.spo2seuranta.presentation.bloodpressure
 
+import android.app.DatePickerDialog
+import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.konderi.spo2seuranta.domain.model.DailyMeasurement
@@ -18,6 +23,9 @@ import com.konderi.spo2seuranta.presentation.components.NumberInputField
 import com.konderi.spo2seuranta.presentation.daily.DailyMeasurementViewModel
 import com.konderi.spo2seuranta.presentation.settings.SettingsViewModel
 import com.konderi.spo2seuranta.utils.BPGuidelinesUtil
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
 /**
@@ -31,6 +39,7 @@ fun BloodPressureScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val settingsUiState by settingsViewModel.uiState.collectAsState()
+    val context = LocalContext.current
     
     val userAge = settingsUiState.settings.getAge()
     val userGender = settingsUiState.settings.gender
@@ -39,6 +48,18 @@ fun BloodPressureScreen(
     var diastolicValue by remember { mutableStateOf("") }
     var notes by remember { mutableStateOf("") }
     var errorMessage by remember { mutableStateOf<String?>(null) }
+    
+    // Date and time for manual entry
+    var selectedDate by remember { mutableStateOf(LocalDate.now()) }
+    var selectedTime by remember { mutableStateOf(LocalTime.now()) }
+    
+    // Update date/time when manual entry is disabled
+    LaunchedEffect(uiState.manualEntryEnabled) {
+        if (!uiState.manualEntryEnabled) {
+            selectedDate = LocalDate.now()
+            selectedTime = LocalTime.now()
+        }
+    }
     
     // Reset form on success
     LaunchedEffect(uiState.saveSuccess) {
@@ -87,6 +108,101 @@ fun BloodPressureScreen(
                         style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSecondaryContainer
                     )
+                    
+                    // Info banner for manual/automatic mode
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        color = if (uiState.manualEntryEnabled) 
+                            MaterialTheme.colorScheme.primaryContainer 
+                        else 
+                            MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.padding(12.dp),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = if (uiState.manualEntryEnabled) 
+                                    MaterialTheme.colorScheme.onPrimaryContainer 
+                                else 
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = if (uiState.manualEntryEnabled) {
+                                    "Manuaalinen syöttö käytössä - Voit valita päivämäärän ja ajan"
+                                } else {
+                                    "Automaattinen ajankohta - Ota käyttöön manuaalinen syöttö asetuksista"
+                                },
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = if (uiState.manualEntryEnabled) 
+                                    MaterialTheme.colorScheme.onPrimaryContainer 
+                                else 
+                                    MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    
+                    // Date and time pickers
+                    if (uiState.manualEntryEnabled) {
+                        OutlinedButton(
+                            onClick = {
+                                DatePickerDialog(
+                                    context,
+                                    { _, year, month, dayOfMonth ->
+                                        selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
+                                    },
+                                    selectedDate.year,
+                                    selectedDate.monthValue - 1,
+                                    selectedDate.dayOfMonth
+                                ).apply {
+                                    datePicker.maxDate = System.currentTimeMillis()
+                                }.show()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Päivämäärä: ${selectedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))}")
+                        }
+                        
+                        OutlinedButton(
+                            onClick = {
+                                TimePickerDialog(
+                                    context,
+                                    { _, hourOfDay, minute ->
+                                        selectedTime = LocalTime.of(hourOfDay, minute)
+                                    },
+                                    selectedTime.hour,
+                                    selectedTime.minute,
+                                    true
+                                ).show()
+                            },
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text("Aika: ${selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))}")
+                        }
+                    } else {
+                        // Show current date/time in disabled state
+                        OutlinedTextField(
+                            value = selectedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
+                            onValueChange = {},
+                            label = { Text("Päivämäärä (automaattinen)") },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = false,
+                            readOnly = true
+                        )
+                        
+                        OutlinedTextField(
+                            value = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")),
+                            onValueChange = {},
+                            label = { Text("Aika (automaattinen)") },
+                            modifier = Modifier.fillMaxWidth(),
+                            enabled = false,
+                            readOnly = true
+                        )
+                    }
                     
                     // Error message
                     if (errorMessage != null) {
@@ -205,13 +321,20 @@ fun BloodPressureScreen(
                                 }
                                 else -> {
                                     // Valid - save measurement
+                                    val timestamp = LocalDateTime.of(selectedDate, selectedTime)
                                     viewModel.saveMeasurement(
                                         null,  // No SpO2
                                         null,  // No HR
                                         sys, 
                                         dia, 
-                                        notes
+                                        notes,
+                                        timestamp
                                     )
+                                    // Reset to current time after saving
+                                    if (!uiState.manualEntryEnabled) {
+                                        selectedDate = LocalDate.now()
+                                        selectedTime = LocalTime.now()
+                                    }
                                 }
                             }
                         },

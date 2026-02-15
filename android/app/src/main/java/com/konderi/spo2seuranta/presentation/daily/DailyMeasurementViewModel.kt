@@ -37,13 +37,21 @@ class DailyMeasurementViewModel @Inject constructor(
                 _uiState.value = _uiState.value.copy(
                     measurements = measurements,
                     isLoading = false,
-                    alertThreshold = settings.lowSpo2AlertThreshold
+                    alertThreshold = settings.lowSpo2AlertThreshold,
+                    manualEntryEnabled = settings.manualEntryEnabled
                 )
             }
         }
     }
     
-    fun saveMeasurement(spo2: Int?, heartRate: Int?, systolic: Int?, diastolic: Int?, notes: String) {
+    fun saveMeasurement(
+        spo2: Int?, 
+        heartRate: Int?, 
+        systolic: Int?, 
+        diastolic: Int?, 
+        notes: String,
+        timestamp: LocalDateTime = LocalDateTime.now()
+    ) {
         viewModelScope.launch {
             try {
                 val settings = settingsRepository.userSettings.first()
@@ -53,7 +61,7 @@ class DailyMeasurementViewModel @Inject constructor(
                     systolic = systolic,
                     diastolic = diastolic,
                     notes = notes,
-                    timestamp = LocalDateTime.now(),
+                    timestamp = timestamp,  // Use provided timestamp (manual or automatic)
                     userId = settings.userId
                 )
                 
@@ -139,5 +147,6 @@ data class DailyMeasurementUiState(
     val showLowOxygenAlert: Boolean = false,
     val showHighBpAlert: Boolean = false,
     val lastMeasurement: DailyMeasurement? = null,
-    val alertThreshold: Int = 90
+    val alertThreshold: Int = 90,
+    val manualEntryEnabled: Boolean = false
 )
