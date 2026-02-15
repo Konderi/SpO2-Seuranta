@@ -107,17 +107,41 @@ export default function Settings() {
       return
     }
 
+    // Final confirmation dialog
+    const confirmed = window.confirm(
+      'Oletko varma, että haluat jatkaa?\n\n' +
+      'KAIKKI tietosi poistetaan pysyvästi:\n' +
+      '• Kaikki mittaukset\n' +
+      '• Kaikki asetukset\n' +
+      '• Käyttäjätilisi tiedot\n\n' +
+      'Tätä toimintoa EI VOI perua!'
+    )
+
+    if (!confirmed) {
+      return
+    }
+
     setDeleting(true)
     setError(null)
 
     try {
-      await apiClient.deleteAllUserData()
+      const result = await apiClient.deleteAllUserData()
+      
+      // Show success message
+      alert(
+        '✅ Tiedot poistettu onnistuneesti!\n\n' +
+        `Poistettu:\n` +
+        `• Asetukset: ${result.deleted.settings}\n` +
+        `• Mittaukset: ${result.deleted.daily_measurements}\n` +
+        `• Liikuntamittaukset: ${result.deleted.exercise_measurements}\n\n` +
+        'Kirjaudut nyt ulos.'
+      )
       
       // Sign out after deletion
       await signOut()
       
-      // Redirect to homepage with message
-      router.push('/?deleted=true')
+      // Redirect to homepage
+      router.push('/')
     } catch (err: any) {
       console.error('❌ Failed to delete data:', err)
       setError(err.message || 'Tietojen poisto epäonnistui. Yritä uudelleen.')
