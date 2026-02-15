@@ -1,9 +1,9 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, ArrowLeft, Save } from 'lucide-react'
+import { Activity, ArrowLeft, Save, Info } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/router'
 import { apiClient } from '@/lib/api'
 
@@ -13,6 +13,8 @@ export default function AddDaily() {
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
+  const [manualEntryEnabled, setManualEntryEnabled] = useState(false)
+  const [loadingSettings, setLoadingSettings] = useState(true)
 
   const [formData, setFormData] = useState({
     spo2: '',
@@ -21,6 +23,37 @@ export default function AddDaily() {
     date: new Date().toISOString().split('T')[0],
     time: new Date().toTimeString().slice(0, 5),
   })
+
+  // Load settings to check if manual entry is enabled
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const settings = await apiClient.getUserSettings()
+        setManualEntryEnabled(settings.manual_entry_enabled || false)
+      } catch (error) {
+        console.error('Failed to load settings:', error)
+        setManualEntryEnabled(false)
+      } finally {
+        setLoadingSettings(false)
+      }
+    }
+
+    if (user) {
+      loadSettings()
+    }
+  }, [user])
+
+  // Update date/time to current when manual entry is disabled
+  useEffect(() => {
+    if (!manualEntryEnabled && !loadingSettings) {
+      const now = new Date()
+      setFormData(prev => ({
+        ...prev,
+        date: now.toISOString().split('T')[0],
+        time: now.toTimeString().slice(0, 5),
+      }))
+    }
+  }, [manualEntryEnabled, loadingSettings])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -122,11 +155,38 @@ export default function AddDaily() {
           {/* Form */}
           <form onSubmit={handleSubmit} className="card p-8">
             <div className="space-y-8">
+              {/* Manual Entry Info */}
+              {!loadingSettings && (
+                <div className={`border-l-4 p-4 ${manualEntryEnabled ? 'bg-blue-50 border-primary' : 'bg-gray-50 border-gray-400'}`}>
+                  <div className="flex items-start gap-3">
+                    <Info className={`w-6 h-6 flex-shrink-0 mt-0.5 ${manualEntryEnabled ? 'text-primary' : 'text-gray-600'}`} />
+                    <div>
+                      {manualEntryEnabled ? (
+                        <>
+                          <p className="font-semibold text-text-primary mb-1">Manuaalinen syöttö käytössä</p>
+                          <p className="text-sm text-text-secondary">
+                            Voit valita mittauksen päivämäärän ja ajan vapaasti. Tämä on hyödyllistä paperille kirjattujen mittausten tallentamiseen.
+                          </p>
+                        </>
+                      ) : (
+                        <>
+                          <p className="font-semibold text-text-primary mb-1">Automaattinen ajankohta</p>
+                          <p className="text-sm text-text-secondary">
+                            Mittaus tallennetaan nykyisellä ajankohdalla. Voit ottaa käyttöön manuaalisen syötön <Link href="/settings" className="text-primary hover:underline">asetuksista</Link>.
+                          </p>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Date and Time */}
               <div className="grid md:grid-cols-2 gap-6">
                 <div>
                   <label htmlFor="date" className="block text-lg font-semibold text-text-primary mb-3">
                     Päivämäärä
+                    {!manualEntryEnabled && <span className="text-sm font-normal text-text-secondary ml-2">(automaattinen)</span>}
                   </label>
                   <input
                     type="date"
@@ -134,6 +194,8 @@ export default function AddDaily() {
                     value={formData.date}
                     onChange={(e) => setFormData({ ...formData, date: e.target.value })}
                     className="input w-full"
+                    disabled={!manualEntryEnabled}
+                    max={new Date().toISOString().split('T')[0]}
                     required
                   />
                 </div>
@@ -141,6 +203,7 @@ export default function AddDaily() {
                 <div>
                   <label htmlFor="time" className="block text-lg font-semibold text-text-primary mb-3">
                     Kellonaika
+                    {!manualEntryEnabled && <span className="text-sm font-normal text-text-secondary ml-2">(automaattinen)</span>}
                   </label>
                   <input
                     type="time"
@@ -148,6 +211,7 @@ export default function AddDaily() {
                     value={formData.time}
                     onChange={(e) => setFormData({ ...formData, time: e.target.value })}
                     className="input w-full"
+                    disabled={!manualEntryEnabled}
                     required
                   />
                 </div>
