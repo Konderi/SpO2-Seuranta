@@ -30,7 +30,7 @@ export default function Privacy() {
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">1. Rekisterinpitäjä</h2>
             <div className="text-gray-700 space-y-2">
-              <p><strong>Palvelun nimi:</strong> SpO2-Seuranta / Hapetus</p>
+              <p><strong>Palvelun nimi:</strong> Hapetus</p>
               <p><strong>Verkkosivusto:</strong> hapetus.info</p>
               <p><strong>Sähköposti:</strong> toni.joronen@gmail.com</p>
             </div>
@@ -39,7 +39,7 @@ export default function Privacy() {
           {/* 2. Rekisterin nimi */}
           <section>
             <h2 className="text-2xl font-semibold text-gray-900 mb-3">2. Rekisterin nimi</h2>
-            <p className="text-gray-700">SpO2-Seuranta terveystietorekisteri</p>
+            <p className="text-gray-700">Hapetus terveystietorekisteri</p>
           </section>
 
           {/* 3. Henkilötietojen käsittelyn tarkoitus */}

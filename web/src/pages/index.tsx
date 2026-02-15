@@ -327,6 +327,11 @@ export default function Home() {
                     </a>
                   </li>
                   <li>
+                    <Link href="/privacy" className="text-text-secondary hover:text-primary transition-colors">
+                      Tietosuojaseloste
+                    </Link>
+                  </li>
+                  <li>
                     <Link href="/login" className="text-text-secondary hover:text-primary transition-colors">
                       Kirjaudu sisään
                     </Link>
