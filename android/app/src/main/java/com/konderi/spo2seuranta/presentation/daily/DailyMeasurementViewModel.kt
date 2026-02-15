@@ -28,17 +28,26 @@ class DailyMeasurementViewModel @Inject constructor(
     
     init {
         loadMeasurements()
+        loadSettings()
+    }
+    
+    private fun loadSettings() {
+        viewModelScope.launch {
+            settingsRepository.userSettings.collect { settings ->
+                _uiState.value = _uiState.value.copy(
+                    alertThreshold = settings.lowSpo2AlertThreshold,
+                    manualEntryEnabled = settings.manualEntryEnabled
+                )
+            }
+        }
     }
     
     private fun loadMeasurements() {
         viewModelScope.launch {
             repository.getAllMeasurements().collect { measurements ->
-                val settings = settingsRepository.userSettings.first()
                 _uiState.value = _uiState.value.copy(
                     measurements = measurements,
-                    isLoading = false,
-                    alertThreshold = settings.lowSpo2AlertThreshold,
-                    manualEntryEnabled = settings.manualEntryEnabled
+                    isLoading = false
                 )
             }
         }
