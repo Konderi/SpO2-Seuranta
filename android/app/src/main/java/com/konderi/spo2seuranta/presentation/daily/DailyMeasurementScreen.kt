@@ -115,7 +115,7 @@ fun DailyMeasurementScreen(
                             }
                         }
                         
-                        // Date picker (only visible and enabled when manual entry is on)
+                        // Date and time pickers (only visible when manual entry is enabled)
                         if (uiState.manualEntryEnabled) {
                             OutlinedButton(
                                 onClick = {
@@ -152,25 +152,6 @@ fun DailyMeasurementScreen(
                             ) {
                                 Text("Aika: ${selectedTime.format(DateTimeFormatter.ofPattern("HH:mm"))}")
                             }
-                        } else {
-                            // Show current date/time in disabled state
-                            OutlinedTextField(
-                                value = selectedDate.format(DateTimeFormatter.ofPattern("dd.MM.yyyy")),
-                                onValueChange = {},
-                                label = { Text("Päivämäärä (automaattinen)") },
-                                modifier = Modifier.fillMaxWidth(),
-                                enabled = false,
-                                readOnly = true
-                            )
-                            
-                            OutlinedTextField(
-                                value = selectedTime.format(DateTimeFormatter.ofPattern("HH:mm")),
-                                onValueChange = {},
-                                label = { Text("Aika (automaattinen)") },
-                                modifier = Modifier.fillMaxWidth(),
-                                enabled = false,
-                                readOnly = true
-                            )
                         }
                         
                         NumberInputField(
