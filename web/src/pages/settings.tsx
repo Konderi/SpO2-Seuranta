@@ -1,6 +1,6 @@
 import Head from 'next/head'
 import Link from 'next/link'
-import { Activity, ArrowLeft, Save, User } from 'lucide-react'
+import { Activity, ArrowLeft, Save, User, Trash2, AlertTriangle } from 'lucide-react'
 import { useAuth } from '@/contexts/AuthContext'
 import ProtectedRoute from '@/components/ProtectedRoute'
 import { useState, useEffect } from 'react'
@@ -8,12 +8,15 @@ import { useRouter } from 'next/router'
 import { apiClient } from '@/lib/api'
 
 export default function Settings() {
-  const { user, loading: authLoading } = useAuth()
+  const { user, loading: authLoading, signOut } = useAuth()
   const router = useRouter()
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteConfirmText, setDeleteConfirmText] = useState('')
+  const [deleting, setDeleting] = useState(false)
 
   const [formData, setFormData] = useState({
     spo2_low_threshold: 90,
@@ -95,6 +98,30 @@ export default function Settings() {
       setError(err.message || 'Asetusten tallennus epäonnistui. Yritä uudelleen.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  const handleDeleteAllData = async () => {
+    if (deleteConfirmText !== 'POISTA') {
+      setError('Kirjoita "POISTA" vahvistaaksesi')
+      return
+    }
+
+    setDeleting(true)
+    setError(null)
+
+    try {
+      await apiClient.deleteAllUserData()
+      
+      // Sign out after deletion
+      await signOut()
+      
+      // Redirect to homepage with message
+      router.push('/?deleted=true')
+    } catch (err: any) {
+      console.error('❌ Failed to delete data:', err)
+      setError(err.message || 'Tietojen poisto epäonnistui. Yritä uudelleen.')
+      setDeleting(false)
     }
   }
 
@@ -290,6 +317,7 @@ export default function Settings() {
                         checked={formData.large_font_enabled}
                         onChange={(e) => setFormData({ ...formData, large_font_enabled: e.target.checked })}
                         className="sr-only peer"
+                        aria-label="Suuri fontti"
                       />
                       <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
                     </label>
@@ -306,6 +334,7 @@ export default function Settings() {
                         checked={formData.manual_entry_enabled}
                         onChange={(e) => setFormData({ ...formData, manual_entry_enabled: e.target.checked })}
                         className="sr-only peer"
+                        aria-label="Manuaalinen syöttö"
                       />
                       <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
                     </label>
@@ -323,6 +352,99 @@ export default function Settings() {
                 <span>{saving ? 'Tallennetaan...' : 'Tallenna asetukset'}</span>
               </button>
             </form>
+          )}
+
+          {/* Privacy and Data Deletion Section - Always visible when not loading */}
+          {!loading && (
+            <div className="mt-8 space-y-6">
+              {/* Privacy Policy Link */}
+              <div className="card p-8">
+                <h2 className="text-2xl font-bold text-text-primary mb-4">Tietosuoja</h2>
+                <p className="text-base text-text-secondary mb-4">
+                  Lue tietosuojaseloste saadaksesi tietoa siitä, miten käsittelemme henkilötietojasi.
+                </p>
+                <Link 
+                  href="/privacy"
+                  className="inline-flex items-center gap-2 text-primary hover:underline font-medium"
+                >
+                  <User className="w-5 h-5" />
+                  <span>Lue tietosuojaseloste</span>
+                </Link>
+              </div>
+
+              {/* Delete All Data Section */}
+              <div className="card p-8 border-2 border-red-200 bg-red-50">
+                <div className="flex items-start gap-4 mb-4">
+                  <AlertTriangle className="w-8 h-8 text-red-600 flex-shrink-0 mt-1" />
+                  <div>
+                    <h2 className="text-2xl font-bold text-red-900 mb-2">Poista kaikki tiedot</h2>
+                    <p className="text-base text-red-800 mb-4">
+                      Tämä toiminto poistaa pysyvästi <strong>kaikki</strong> tietosi palvelusta:
+                    </p>
+                    <ul className="list-disc list-inside text-red-800 space-y-1 mb-4 ml-4">
+                      <li>Kaikki mittaukset (SpO2, syke, verenpaine, liikunta)</li>
+                      <li>Kaikki henkilökohtaiset asetukset</li>
+                      <li>Käyttäjätilisi tiedot</li>
+                    </ul>
+                    <p className="text-base text-red-900 font-semibold">
+                      ⚠️ Tätä toimintoa ei voi perua. Tiedot poistetaan lopullisesti.
+                    </p>
+                  </div>
+                </div>
+
+                {!showDeleteConfirm ? (
+                  <button
+                    type="button"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="btn bg-red-600 hover:bg-red-700 text-white w-full text-xl py-4 flex items-center justify-center gap-3"
+                  >
+                    <Trash2 className="w-6 h-6" />
+                    <span>Poista kaikki tietoni</span>
+                  </button>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <label htmlFor="confirmDelete" className="block text-base font-semibold text-red-900 mb-2">
+                        Vahvista kirjoittamalla: <span className="font-mono bg-red-200 px-2 py-1 rounded">POISTA</span>
+                      </label>
+                      <input
+                        id="confirmDelete"
+                        type="text"
+                        value={deleteConfirmText}
+                        onChange={(e) => setDeleteConfirmText(e.target.value)}
+                        placeholder="Kirjoita POISTA"
+                        className="input w-full text-lg"
+                        disabled={deleting}
+                      />
+                    </div>
+
+                    <div className="flex gap-3">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setShowDeleteConfirm(false)
+                          setDeleteConfirmText('')
+                          setError(null)
+                        }}
+                        disabled={deleting}
+                        className="btn bg-gray-500 hover:bg-gray-600 text-white flex-1 py-3"
+                      >
+                        Peruuta
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleDeleteAllData}
+                        disabled={deleting || deleteConfirmText !== 'POISTA'}
+                        className="btn bg-red-600 hover:bg-red-700 text-white flex-1 py-3 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                        <span>{deleting ? 'Poistetaan...' : 'Poista pysyvästi'}</span>
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
       </main>

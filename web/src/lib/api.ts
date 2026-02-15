@@ -203,6 +203,20 @@ class ApiClient {
     });
     if (!response.ok) throw new Error('Failed to update settings');
   }
+
+  // Delete all user data (GDPR "Right to be Forgotten")
+  async deleteAllUserData(): Promise<{ success: boolean; message: string; deleted: any }> {
+    const headers = await this.getAuthHeader();
+    const response = await fetch(`${API_URL}/api/user/data`, {
+      method: 'DELETE',
+      headers,
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || 'Failed to delete user data');
+    }
+    return await response.json();
+  }
 }
 
 export const apiClient = new ApiClient();

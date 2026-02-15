@@ -825,6 +825,66 @@ app.put('/api/user/settings', async (c) => {
   }
 });
 
+// ============================================================================
+// DELETE ALL USER DATA (GDPR "Right to be Forgotten")
+// ============================================================================
+
+/**
+ * DELETE /api/user/data
+ * Deletes ALL user data from the database
+ * This is irreversible and implements GDPR "Right to be Forgotten"
+ */
+app.delete('/api/user/data', async (c) => {
+  const authHeader = c.req.header('Authorization');
+  if (!authHeader?.startsWith('Bearer ')) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+
+  const token = authHeader.substring(7);
+  const authUser = await verifyFirebaseToken(token, c.env);
+  if (!authUser) {
+    return c.json({ error: 'Invalid token' }, 401);
+  }
+
+  try {
+    console.log('🗑️ Starting data deletion for user:', authUser.uid);
+    
+    // Delete user settings
+    const settingsResult = await c.env.DB.prepare(
+      'DELETE FROM user_settings WHERE user_id = ?'
+    ).bind(authUser.uid).run();
+    
+    console.log('✅ Deleted user_settings:', settingsResult.meta.changes);
+    
+    // Delete all daily measurements
+    const measurementsResult = await c.env.DB.prepare(
+      'DELETE FROM daily_measurements WHERE user_id = ?'
+    ).bind(authUser.uid).run();
+    
+    console.log('✅ Deleted daily_measurements:', measurementsResult.meta.changes);
+    
+    // Delete all exercise measurements
+    const exerciseResult = await c.env.DB.prepare(
+      'DELETE FROM exercise_measurements WHERE user_id = ?'
+    ).bind(authUser.uid).run();
+    
+    console.log('✅ Deleted exercise_measurements:', exerciseResult.meta.changes);
+    
+    return c.json({ 
+      success: true,
+      message: 'All user data has been permanently deleted',
+      deleted: {
+        settings: settingsResult.meta.changes,
+        daily_measurements: measurementsResult.meta.changes,
+        exercise_measurements: exerciseResult.meta.changes
+      }
+    });
+  } catch (error: any) {
+    console.error('❌ Data deletion error:', error);
+    return c.json({ error: 'Failed to delete user data', message: error.message }, 500);
+  }
+});
+
 // 404 handler
 app.notFound((c) => {
   return c.json({ error: 'Not Found', path: c.req.path }, 404);
