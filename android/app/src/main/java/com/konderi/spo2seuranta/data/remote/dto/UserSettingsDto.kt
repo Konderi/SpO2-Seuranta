@@ -24,6 +24,9 @@ data class UserSettingsDto(
     @SerializedName("large_font_enabled")
     val largeFontEnabled: Boolean? = null,
     
+    @SerializedName("manual_entry_enabled")
+    val manualEntryEnabled: Boolean? = null,
+    
     @SerializedName("notifications_enabled")
     val notificationsEnabled: Boolean? = null,
     
@@ -49,6 +52,9 @@ data class UpdateUserSettingsRequest(
     
     @SerializedName("large_font_enabled")
     val largeFontEnabled: Boolean? = null,
+    
+    @SerializedName("manual_entry_enabled")
+    val manualEntryEnabled: Boolean? = null,
     
     @SerializedName("gender")
     val gender: String? = null,

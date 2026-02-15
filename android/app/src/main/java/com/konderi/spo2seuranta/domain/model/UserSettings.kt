@@ -8,6 +8,7 @@ import com.konderi.spo2seuranta.utils.BPGuidelinesUtil
 data class UserSettings(
     val lowSpo2AlertThreshold: Int = 90, // Default alert threshold
     val largeFontEnabled: Boolean = false,
+    val manualEntryEnabled: Boolean = false, // Allow manual date/time selection for entries
     val userId: String? = null,
     val userName: String? = null,
     val userEmail: String? = null,

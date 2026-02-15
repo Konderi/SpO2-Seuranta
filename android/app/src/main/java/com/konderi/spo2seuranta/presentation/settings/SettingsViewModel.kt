@@ -85,6 +85,24 @@ class SettingsViewModel @Inject constructor(
         }
     }
     
+    fun updateManualEntryEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            try {
+                repository.updateManualEntryEnabled(enabled)
+                // Sync to cloud
+                repository.syncToCloud()
+                _uiState.value = _uiState.value.copy(
+                    saveSuccess = true,
+                    errorMessage = null
+                )
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Asetuksen tallennus epäonnistui: ${e.message}"
+                )
+            }
+        }
+    }
+    
     fun updateGender(gender: String) {
         viewModelScope.launch {
             try {

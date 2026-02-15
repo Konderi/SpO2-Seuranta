@@ -109,6 +109,30 @@ fun SettingsScreen(
                                 onCheckedChange = { viewModel.updateLargeFontEnabled(it) }
                             )
                         }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Column(modifier = Modifier.weight(1f)) {
+                                Text(
+                                    text = "Manuaalinen syöttö",
+                                    style = MaterialTheme.typography.titleMedium
+                                )
+                                Text(
+                                    text = "Valitse päivämäärä ja aika manuaalisesti",
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                            Switch(
+                                checked = uiState.settings.manualEntryEnabled,
+                                onCheckedChange = { viewModel.updateManualEntryEnabled(it) }
+                            )
+                        }
                     }
                 }
             }

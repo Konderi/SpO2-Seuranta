@@ -779,6 +779,10 @@ app.put('/api/user/settings', async (c) => {
       updates.push('large_font_enabled = ?');
       values.push(body.large_font_enabled ? 1 : 0);
     }
+    if (body.manual_entry_enabled !== undefined) {
+      updates.push('manual_entry_enabled = ?');
+      values.push(body.manual_entry_enabled ? 1 : 0);
+    }
     if (body.notifications_enabled !== undefined) {
       updates.push('notifications_enabled = ?');
       values.push(body.notifications_enabled ? 1 : 0);

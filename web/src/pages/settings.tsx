@@ -18,6 +18,7 @@ export default function Settings() {
   const [formData, setFormData] = useState({
     spo2_low_threshold: 90,
     large_font_enabled: false,
+    manual_entry_enabled: false,
     gender: '' as '' | 'male' | 'female' | 'other',
     birth_year: '',
   })
@@ -33,6 +34,7 @@ export default function Settings() {
         setFormData({
           spo2_low_threshold: settings.spo2_low_threshold || 90,
           large_font_enabled: settings.large_font_enabled || false,
+          manual_entry_enabled: settings.manual_entry_enabled || false,
           gender: settings.gender || '',
           birth_year: settings.birth_year?.toString() || '',
         })
@@ -77,6 +79,7 @@ export default function Settings() {
       const settingsPayload = {
         spo2_low_threshold: threshold,
         large_font_enabled: formData.large_font_enabled,
+        manual_entry_enabled: formData.manual_entry_enabled,
         gender: formData.gender || undefined,
         birth_year: formData.birth_year ? parseInt(formData.birth_year) : undefined,
       };
@@ -273,22 +276,40 @@ export default function Settings() {
 
               {/* Display Card */}
               <div className="card p-8">
-                <h2 className="text-2xl font-bold text-text-primary mb-6">Näyttö</h2>
+                <h2 className="text-2xl font-bold text-text-primary mb-6">Näyttö ja syöttö</h2>
                 
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-lg font-semibold text-text-primary">Suuri fontti</p>
-                    <p className="text-base text-text-secondary">Käytä suurempaa tekstikokoa</p>
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-semibold text-text-primary">Suuri fontti</p>
+                      <p className="text-base text-text-secondary">Käytä suurempaa tekstikokoa</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.large_font_enabled}
+                        onChange={(e) => setFormData({ ...formData, large_font_enabled: e.target.checked })}
+                        className="sr-only peer"
+                      />
+                      <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
                   </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={formData.large_font_enabled}
-                      onChange={(e) => setFormData({ ...formData, large_font_enabled: e.target.checked })}
-                      className="sr-only peer"
-                    />
-                    <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
-                  </label>
+                  
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-lg font-semibold text-text-primary">Manuaalinen syöttö</p>
+                      <p className="text-base text-text-secondary">Valitse päivämäärä ja aika manuaalisesti</p>
+                    </div>
+                    <label className="relative inline-flex items-center cursor-pointer">
+                      <input
+                        type="checkbox"
+                        checked={formData.manual_entry_enabled}
+                        onChange={(e) => setFormData({ ...formData, manual_entry_enabled: e.target.checked })}
+                        className="sr-only peer"
+                      />
+                      <div className="w-14 h-8 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary/30 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-6 after:w-6 after:transition-all peer-checked:bg-primary"></div>
+                    </label>
+                  </div>
                 </div>
               </div>
 

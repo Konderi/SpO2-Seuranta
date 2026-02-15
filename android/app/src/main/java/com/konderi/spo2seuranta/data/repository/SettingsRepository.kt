@@ -35,6 +35,7 @@ class SettingsRepository @Inject constructor(
     private object PreferencesKeys {
         val LOW_SPO2_THRESHOLD = intPreferencesKey("low_spo2_threshold")
         val LARGE_FONT_ENABLED = booleanPreferencesKey("large_font_enabled")
+        val MANUAL_ENTRY_ENABLED = booleanPreferencesKey("manual_entry_enabled")
         val USER_ID = stringPreferencesKey("user_id")
         val USER_NAME = stringPreferencesKey("user_name")
         val USER_EMAIL = stringPreferencesKey("user_email")
@@ -47,6 +48,7 @@ class SettingsRepository @Inject constructor(
         UserSettings(
             lowSpo2AlertThreshold = preferences[PreferencesKeys.LOW_SPO2_THRESHOLD] ?: 90,
             largeFontEnabled = preferences[PreferencesKeys.LARGE_FONT_ENABLED] ?: false,
+            manualEntryEnabled = preferences[PreferencesKeys.MANUAL_ENTRY_ENABLED] ?: false,
             userId = preferences[PreferencesKeys.USER_ID],
             userName = preferences[PreferencesKeys.USER_NAME],
             userEmail = preferences[PreferencesKeys.USER_EMAIL],
@@ -65,6 +67,12 @@ class SettingsRepository @Inject constructor(
     suspend fun updateLargeFontEnabled(enabled: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[PreferencesKeys.LARGE_FONT_ENABLED] = enabled
+        }
+    }
+    
+    suspend fun updateManualEntryEnabled(enabled: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[PreferencesKeys.MANUAL_ENTRY_ENABLED] = enabled
         }
     }
     
@@ -144,6 +152,9 @@ class SettingsRepository @Inject constructor(
                         cloudSettings.largeFontEnabled?.let {
                             preferences[PreferencesKeys.LARGE_FONT_ENABLED] = it
                         }
+                        cloudSettings.manualEntryEnabled?.let {
+                            preferences[PreferencesKeys.MANUAL_ENTRY_ENABLED] = it
+                        }
                         cloudSettings.gender?.let {
                             preferences[PreferencesKeys.GENDER] = it
                         }
@@ -188,6 +199,7 @@ class SettingsRepository @Inject constructor(
             val request = UpdateUserSettingsRequest(
                 spo2LowThreshold = currentSettings.lowSpo2AlertThreshold,
                 largeFontEnabled = currentSettings.largeFontEnabled,
+                manualEntryEnabled = currentSettings.manualEntryEnabled,
                 gender = currentSettings.gender,
                 birthYear = currentSettings.birthYear
             )

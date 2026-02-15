@@ -84,6 +84,7 @@ export interface UserSettings {
   heart_rate_low_threshold: number;
   heart_rate_high_threshold: number;
   large_font_enabled: boolean;
+  manual_entry_enabled: boolean;
   notifications_enabled: boolean;
   gender?: 'male' | 'female' | 'other';
   birth_year?: number;
